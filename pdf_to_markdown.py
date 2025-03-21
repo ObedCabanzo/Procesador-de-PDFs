@@ -16,7 +16,6 @@ def transform_pdf(pdf_path, output_directory):
 
     parser = LlamaParse(
         result_type="markdown",
-        parsing_instruction=instructions,
         user_prompt=instructions
     )
 

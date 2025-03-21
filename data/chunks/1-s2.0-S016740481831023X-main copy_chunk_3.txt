@@ -1,0 +1,50 @@
+adb: This is a command line tool which is directly used by the developer. Its main task is to parse command line call and then to form a request which is then sent to the adb daemon via a TCP socket.
+
+The main reason for splitting adb command line tool and the adb server is to allow multiple calls of this tool at the same time. It also allows external tools like SDK to reuse existing implementations of the USB protocol. The communication between the adbd and the adb server is realized using ADB protocol as described later in this section. It is also worth noting that the communication between the adb and the adb server is performed using different protocol which is out of scope of this paper.
+
+ADB is a message-based protocol and each ADB message is sent in two USB transfers. The first transfer has a static size defined in the protocol and contains a generic header. Then during the second transfer the command-dependent, variable length payload is sent (this part may be omitted as it is optional).
+
+Each field in the header is in a form of 32-bit unsigned integer in the little endian byte order. The field command identifies the message type. As every message carries a command these terms can be used interchangeably. The next two fields (arg0 and arg1) contain data specific to a given message type. Then, the data_length field contains the length of the data which are going to be sent during the second phase. If it is 0 then the second stage is omitted and the message consists only of a header. The next field is data_check which contains a simple checksum of the payload. The last field i.e. magic includes the same data as command but XORed with 0xffffffff fixed value.
+
+# Computers & Security 82 (2019) 80–98
+# USB DEVICE
+# USB HOST
+a Typical destinations are: TCP/UDP/local port, shell, and file.
+
+# Listing 1 – ADB message header structure.
+
+A_CNXN(&lt;version&gt;, &lt;maxp&gt;, &lt;system str&gt;)
+A_AUTH(TOKEN, RND)
+A_AUTH(SIGNATURE, SIGN(Priv, RND))
+A_AUTH(RSAPUBLICKEY, Pub)
+A_CNXN(&lt;version&gt;, &lt;maxp&gt;, &lt;system str&gt;)
+The communication is always initiated by the adb server. It waits for the new ADB-capable device to appear on the system and then issues CONNECT command. When the device receives a new CONNECT message it tries to authenticate a new host which is trying to access it
+The authentication process is done using the classical challenge-response scheme (Fig. 7). The device generates randomly 20 bytes and then send them to the host using AUTH TOKEN command. The host digitally signs this received payload using RSA 2048 private key and sends the resulting signature back to the device using AUTH SIGNATURE message. The device checks if a public key which has been used to generate the signature is on a list of trusted keys. If yes, then the host is authenticated and the device responds with a CONNECT message. Otherwise the device transmits a new
+4 Android OS versions older than 4 do not support Secure USB Debugging so they will not perform host authentication – they will just reply with a suitable CONNECT command.
+
+# 4. Related work
+As previously mentioned USB is currently the most commonly used external interface. Even machines which, for security reasons, are disconnected from the Internet, usually offer USB host functionality. Popularity and blind trust in the USB security seem to be one of the major reasons why malware started spreading using this attack vector.
+
+From this perspective existing attacks exploiting USB can be categorized in many ways. In Tian et al. (2018) categorized host-related attacks based on the layer which they exploit. As in this article we consider broader spectrum of the USB-related attacks we can divide them into one of three groups:
+- USB host-focused attacks,
+- USB traffic analysis, modification and injection attacks,
+- USB device-focused attacks.
+
+Below we review related work using above mentioned ad-hoc classification.
+
+# 4. USB host-focused attacks
+This type of attacks aims at taking over the control of the USB host machine. We can distinguish three subgroups of such attacks.
+
+The first group utilizes vulnerabilities in the high level system infrastructure related to support of the USB mass storage devices. The archetypal example of such a threat is Conficker , which was targeting mostly Windows machines. To infect the victim, Conficker used autorun files which had been automatically executed by Windows whenever new removable medium was mounted. Another and probably the most recognizable representative of this group is Stuxnet (Nicolas Falliere and Chien, 2011). Its targeted victims were PLC controllers manufactured by Siemens, however, as most of them were typically isolated from the global network, Stuxnet needed a way to get into private networks. Thus it infected Windows machines using custom-crafted content of the USB flash drive. The exact infection method was similar as in Conficker but included also new vulnerabilities like CPLINK (cpl, 2010). A lot of vulnerabilities of this type have been collected and described by Larimer (2011).
+
+Both Stuxnet and Conficker used USB flash drives only as just a kind of transport medium for the exploit itself. They did not interfere with the USB traffic directly but only placed malformed files on the removable media. That is why, now they are likely to be detected by most of the anti-virus software as they are not that much different than other malware which spreads over the Internet.
+
+The second group of the USB host-focused attacks uses vulnerabilities in the USB stack implementation. A good example of such attacks has been presented by Barral and Dewey (2005) during BlackHat Conference in 2005. They found a buffer overflow vulnerability in Windows 2000 and Windows XP USB stack that allowed to take control over a locked machine. As this is a kernel-level vulnerability it can be used to install malicious code bypassing SELinux and all other types of kernel-side protection mechanisms. Currently USB stacks are
+# Computers & Security 82 (2019) 80–98
+More resistant to such attacks. There are even fuzzers (uma, 2013; fac, 2017) available which help to find vulnerabilities in the inspected USB implementation. These hardware keyloggers are intentionally placed in public places like it was done in a library in Manchester (man, 2011) or at school in California . This type of device is usually utilized to obtain users’ credentials which are being entered from the USB keyboard.
+
+Finally, the third group of attacks abuses Plug & Play philosophy which is one of the USB principles. This group of attacks became known thanks to the presentation by Karsten Nohl and Lell (2014) during BlackHat Conference in 2014. These attacks are based on a fact that much of the USB devices’ logic is implemented in the firmware which can be replaced. It turned out that many USB devices are being shipped to the market with unlocked and unverified firmware upgrades. This, in turn, allows malware to replace firmware in, e.g., a pendrive (Karsten Nohl and Lell, 2014) or a mouse  and makes them behave like some other, malicious device, e.g., a keyboard or a network card. Unfortunately, users do not realize that there is no relationship between physical appearance of the device and provided functionality and they often plug in devices even if found on a street.
+
+Most of attacks in this group utilize only USB HID protocol to execute commands as currently logged in user. But as Kamkar (2016) proved by publishing PoisonTap tool it is also possible to exfiltrate hashes containing user password from the Windows-based machine and crack them to bypass the lockscreen. As Wang and Stavrou (2010) showed, mobile devices can be also used to prepare this kind of attack. There is also a Kali Linux NetHunter toolset (kal, 2017) which is prepared for the Nexus and OnePlus devices which also enables them to be used for the BadUSB-like attacks.
+
+It is also worth mentioning that not only smartphones or off-the-shelf USB devices can be used for such attacks. As Mengs proved by publishing P4wnP1 toolset  also a very cheap single-board computer dedicated for IoT (Raspberry Pi Zero in this case) can be extremely handy for the attacker purposes. Such a modified pendrive or a mobile device stays undetected by the anti-virus software and may covertly insert keyboard keystrokes to execute custom commands on a victim machine. To the authors’ best knowledge, currently there is no perfect method of protection against such attacks. The most popular approach implemented, for example, in usbguard  is to ask user for the explicit confirmation to use each new USB device.

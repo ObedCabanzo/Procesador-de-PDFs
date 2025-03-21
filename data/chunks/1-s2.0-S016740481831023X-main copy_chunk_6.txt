@@ -1,0 +1,63 @@
+As injecting content to the already opened user streams has limited functionality and requires streams to be opened by the user, this attack can be extended by opening new streams, not requested by the host. This enables the attacker to get access to the similar functionality as the user has without host PC even noticing this. The additional requirement to make it work is to provide some kind of the ADB streams proxy on the BBB to ensure stream-id uniqueness between the victim’s session.
+
+Lesson learned #5: this vulnerability seems to have two main root causes. The first is the lack of integrity mechanism in the ADB protocol. The second is the absence of protocol state checking at the A_AUTH messages recipient. If the session has been already authenticated then adbd should not take actions on any A_AUTH command or at least invalidate session authentication when such a message arrives. The lack of such sanity check leads to a situation where a single...
+
+# 94
+# c o m p u t e r s & s e c u r i t y 8 2 ( 2 0 1 9 ) 8 0 – 9 8
+# Attacker PC
+TCP socket
+Source
+adb
+USB DEVICE
+Destination
+adbd
+EP IN
+MITM Device
+Victim Host
+Destination
+EP OUT
+ADB
+EP IN
+Source
+EP OUT
+Streams
+Proxy
+adb
+server
+entity is able to do both: trigger the authentication pop-up and then approve it.
+
+# 7. Countermeasures
+A CNXN(&lt;versionz, &lt;maxpz, &lt;system strz)
+A AUTH(TOKEN, PubDH1)
+AUTH(SIGNATURE, PubDH2, SIGN(PrivRSA, PubDH2))
+A AUTH(TOKEN, PubDH1)
+A_AUTH(RSAPUBLICKEY, PubRSA, PubDH2, SIGN(PrivRSA, (PubRSA, PubDH2))
+S_CNXN(&lt;version , &lt;maxp>, &lt;system str? , HASH(seq, PrivDH, header, payload))
+In the previous sections we evaluated the ADB security model used in the recent Android versions and discovered vulnerabilities related not only to implementation but also to serious issues in the ADB protocol design. In-depth analysis of the vulnerabilities allowed us to identify two root causes.
+
+First of them is the absence of mechanism which would provide integrity in the ADB protocol. As stated earlier USB does not provide any integrity solutions which means that USB traffic can be easily modified without raising suspicions. The ADB protocol is also not equipped with integrity mechanisms which effectively allowed us to execute the attacks described in this paper.
+
+Second root cause is an automated session authorization and the lack of the private key protection. ADB server owns an RSA private key which is used to authorize host to the device. Unfortunately this key is automatically used to authorize host to any new ADB-capable device even when the machine is locked.
+
+Below we propose improvements to the ADB protocol which can be incorporated to protect against discovered security flaws.
+
+# 7. ADB protocol extension
+To protect against attacks presented in this paper applying modifications to the ADB protocol is required. Thankfully, the CONNECT message which initiates the communication contains protocol version which can be increased to notify communication peer about the changes. The main goal of the introduced modifications is to provide state-of-the-art integrity mechanism to prevent MitM attacks. One of the major introduced modifications is that when the device receives the CONNECT command it should generate first D–H public-private key pair and it should send the public key to the host instead of random 20 bytes in the AUTH TOKEN message. When the host receives this message it should...
+
+# Computers & Security 82 (2019) 80–98
+original protocol does). Therefore, the user is responsible for verification that he or she connected to the desired device.
+
+The evaluation of the modified protocol proved that it is resistant to all attacks described in this paper apart from the host key replacement attack. The main vulnerability exploited by this attack is the lack of public key fingerprint verification by most users. Thus this depends mostly on a human factor which cannot be completely eliminated. Additionally, it must also be noted that, in general, we can distinguish three groups of users. The first group is fully aware of security risk and has enough competence and determination to verify the fingerprint even in the current design. The second group consists of users who are aware of security risk but do not have enough knowledge or skills to verify the correctness of the fingerprint when this procedure is user unfriendly. Finally, the last group consists of users who are unaware of security risk and just always accepts the fingerprint. In order to mitigate the risk and help users from the second group become more secure a suitable command should be added to the adb command line tool. Future improvement may incorporate some user-friendly verification methods like QR code presentation and verification using automatic camera from the mobile device. This could increase the overall level of security even for the users who are unaware but are forced to perform fingerprint validation through the user interface.
+
+The proposed ADB protocol modification not only ensures data integrity but also solves the problem of the automatic private RSA key usage. Thanks to the D–H key exchange and its utilization in HMAC the attacker cannot effectively reuse once generated response. It is also worth mentioning that in our evaluation we assume that both the device and the host side are trustworthy and that there is no kernel-level malicious code involved as this kind of malware would be able to read or modify ADB process memory and still perform MitM attacks in the kernel driver. One of possible mitigation for that could be implementing all the security-related parts of ADB in the Trusted Execution Environment like ARM TrustZone.
+
+# 7. Overhead
+Typically providing improved security features comes at a cost. The proposed modifications not only increase the length of the ADB message header but also add additional operation (HMAC computation) for both sides of the communication. To estimate the imposed overhead we decided to focus on file copy operations (push and pull). To this aim we performed experiments and measured the time required to copy files of a different size. We started with a very small file of only two bytes and increased the size by multiplying it by two up to 1 GB. All the measurements have been done using Google Nexus 9 device and Lenovo T470 running Ubuntu 16 with 4 kernel. The obtained experimental results are presented in Figs. 16 and 17 (in the logarithmic scale). As it can be observed with an increase in the file size the overhead related to the introduced modifications to the ADB protocol increases linearly (red line) and the trend is similar as for the original ADB realization (blue line). Additionally, the increase in delay is stable and it does not depend on the file size.
+
+Moreover, in order to clearly illustrate the “cost” of the improved security features we decided to present the resulting overhead by calculating it as a percentage of the time.
+
+# Computers & Security 82 (2019) 80–98
+# 8. Conclusion and future work
+In this paper we evaluated ADB protocol security which is utilized in the recent Android versions. In order to achieve this we first classified USB-related attacks to show gaps of knowledge in the USB device related security research. We also presented a novel approach to compromise Android devices by exploiting the ADB protocol in a Man in the Middle attacks.
+
+The obtained results are in line with our intuition. We expected that our modification should have a linear performance penalty due to the hash calculation and this is confirmed by our measurements. The measured average overhead is around 65% for the push and around 75% for the pull operation. As percentage results may be misleading it is also important to consider the absolute values as presented in Fig. 19. This plot clearly confirms that the introduced overhead (measured in ms) is practically equal for both: push and pull operations. This almost 10% difference is related to the difference of disk write performance on the host and on the device sides. The host in our case is equipped with the SSD drive which is faster than Nexus 9 flash memory. This means that the pull operation is generally faster than push for both original and modified ADB versions. So if we added the same overhead (in ms) to both operations it has more significant impact (when expressed in percents) for the faster one.

@@ -1,0 +1,49 @@
+It is worth emphasizing that USB can be used not only to take over the control over the host machine but also to exfiltrate data. Many machines which store valuable data (for example BitCoins) are disconnected from the Internet but still provide USB host capabilities. Obviously in this case the attacker can just use a simple pendrive to store the data but this may be monitored or even restricted by OS policy. That is why there is a need to create a secret communication channel which allows stealthier data exfiltration.
+
+# 4. USB traffic analysis, modification and injection attacks
+This type of attacks aims at discovering user password or at modification of the USB traffic to abuse functionality expected by the user. The first subgroup of these attacks includes passive keyboard keystrokes listeners. Such attacks typically consist of utilizing libusb for communication with the attached USB.
+
+devices and GadgetFS to communicate with the USB host. The
+# 4. Paper’s contribution
+The main limitation of both projects is that they allow to interact only with a single USB device. This is because of a hardware limitation of UDC which can be found in single board computers. Finally, there is also a Daisho project (dai, 2013; Dominic Spill and Kershaw, 2013). It is an FPGA platform capable of Super Speed USB communication in the USB device mode. Its main design goal was to provide a platform for intercepting the most popular wired protocols. It is extendable with hats which are designed separately for each protocol like Ethernet, HDMI or USB. Unfortunately, this project seems to be still in its infancy and not much development has been observed during last year.
+
+The threat model considered here is focused on using malicious USB hubs that can manipulate data which is being exchanged between the host and the device. Modern computers are shipped with a very small number of available USB ports. In contrast to that Android developers often require to connect multiple USB devices so obviously they need to use USB hubs.
+
+# 4. USB device-focused attacks
+Nowadays, mobile device security frameworks are much more sophisticated than the ones on PCs. Application isolation, dedicated application permissions – all these concepts show that there is a huge need to protect user private data from the unauthorized access. One of the typical ways to access user private data is to use USB connectivity in the device mode. By default all Android devices provide access to the internal memory using Media Transfer Protocol (MTP) (spe, 2011). However, it is not possible to access the device memory without unlocking the screen and accepting the MTP connection. In addition, since Android version 5 it is possible to put a mobile device in the charging only mode which prevents access to the device resources even after screen unlocking.
+
+It is also worth noting that the MTP is not the only way of accessing mobile device. There is also Android Debug Bridge which provides many more features than just multimedia file transfer. Fortunately, it is disabled by default and has to be explicitly enabled in the Developer Options. To prevent unauthorized access via ADB protocol, when it is enabled, Secure USB Debugging has been introduced from Android version 4.
+
+Unfortunately, to authors’ best knowledge there is no comprehensive evaluation of the introduced security model and the ADB protocol itself. There has been also not much research related to the assessment and potential improvements of the ADB security. Our work resulted in the identification of five, previously unpublished, security vulnerabilities. They have been reported to both Samsung Mobile Security team  and to the Android Security Team . Unfortunately, Android Security Team decided that the reported vulnerabilities are not an issue because they are exploitable only in developer’s mode and Android Team never claimed that this mode is safe. This means that Android apps developers security is effectively on their own. Therefore, by publishing discovered vulnerabilities we would like to rise awareness across ADB community and increase mobile devices’ security.
+
+The paper also discusses the root causes of these bugs which can help developers to avoid the same mistakes in their protocols. Finally, this paper introduces a novel tool adb-mitm which exploits identified vulnerabilities and which can be used to assess ADB security improvements. To the authors’ best knowledge this is the first tool that uses USBProxy framework to find and exploit security bugs in the USB devices.
+
+# 5. Experimental test-bed
+Exploiting USB smartphone connectivity may be achieved in various ways. Nevertheless, we decided to focus our research on the MitM attacks because this allows to find bugs which are hardware independent and present in most Android devices on the market. For our experiments as the target devices we chose Samsung Galaxy S7 (SM-G930F) and HTC Nexus 9 (OP82100). The former is a very popular Samsung flagship model which has been sold in very large quantities. Using a flagship model guarantees that its vendor invested a lot of efforts in its development and that (most probably) it has been well tested. Thus finding a bug in such device is a challenging task but on the other hand it, additionally, confirms that our experimental approach is novel.
+
+During our tests the device was running Android 8 with the build number R16NW.G930FXXS2ERG7. The latter is a HTC device officially supported by Google and it runs pure Android OS. Using a pure Android device enables to confirm that the bug has not been introduced due to manufacturer’s modification of the ADB source code but is
+# Computers & Security 82 (2019) 80–98
+also present in the Android mainline. For our tests we used Android ROM marked as LRX22C.
+
+PacketFilter functionality allows to monitor and to modify ADB traffic while Injector enables injection of custom messages. The block diagram of the created tool is presented in Fig. 10.
+
+Apart from the target devices it is also necessary to utilize a suitable hardware to interfere with the USB communication. As described in Section 4 there were several options to consider and we chose the one which fits our needs best.
+
+Both Android devices used in our test-bed support USB communication in the high speed mode. That is why, we decided not to follow Facedancer MitM design as it is limited only to the full speed mode. A perfect solution would be to use a hardware which can be placed in any part of the USB tree and is able to play with multiple USB devices at the same time. From this perspective it seems that Daisho board with a suitable HAT would be the best choice. Unfortunately, as already mentioned earlier it seems that this solution is still not mature enough to be easily applied to our scenario.
+
+We did not want to build our own hardware from scratch so after resigning from the Facedancer and Daisho approaches we decided to use one of the available SBCs. In terms of software, in order to start our work, we could utilize USBProxy or USBiquitous. After inspecting both solutions we decided to select USBProxy because it uses standard Linux interfaces instead of some custom drivers. This makes it significantly more portable and easier to perform debugging.
+
+# 6. Security analysis, discovered vulnerabilities, and lessons learned
+During our experiments we have discovered five novel vulnerabilities in the ADB protocol. All vulnerabilities have been confirmed on both 1 and 1 ADB versions on a host side and on both 6 and 7 versions of Android OS. They turned out to be independent also from the host side OS (Windows and Linux).
+
+From the security perspective, discovered vulnerabilities may be divided into three categories based on the attack type that they enable:
+- Session hijacking,
+- Data modification,
+- Data injection.
+
+Below we describe identified vulnerabilities using the above mentioned ad-hoc classification. It is worth noting that all described attacks can be easily reproduced using the introduced in this paper adb-mitm tool.
+
+# 6. Session hijacking
+In our setup BBB is running microSD card image prepared by Dominic Spill for 2014-03-R1 USBProxy release (USB, 2014). After some updates it was running Debian GNU/Linux 7 (wheezy) with 3 Linux kernel.
+
+In our experimental test-bed we also utilized two PC machines. One of them was used as a victim PC and the second one as an attacker machine. Victim machine was running both Windows 7 and Ubuntu Linux 14 to confirm that the discovered issues are host OS-independent. ADB version on a host was initially 1 and then also the most recent (in the time of writing this paper) version 1 during the final stage of our research in order to confirm that all vulnerabilities are still present. The attacker machine was running Ubuntu Linux 14 with ADB 1.
