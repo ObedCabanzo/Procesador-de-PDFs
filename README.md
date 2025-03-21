@@ -125,4 +125,4 @@ Este archivo ejecuta todos los scripts en el orden correcto para completar el pi
 
 ## Conclusión
 
-Este proyecto es una herramienta poderosa para procesar documentos PDF, limpiar su contenido y prepararlo para su uso en aplicaciones de procesamiento de lenguaje natural (NLP). Siguiendo los pasos descritos, puedes ejecutar el pipeline completo y obtener archivos de texto limpios y divididos en chunks para su posterior análisis.
+Este proyecto es una herramienta para procesar documentos PDF, limpiar su contenido y prepararlo para su uso en aplicaciones de procesamiento de lenguaje natural (NLP). Siguiendo los pasos descritos, puedes ejecutar el pipeline completo y obtener archivos de texto limpios y divididos en chunks para su posterior análisis.
