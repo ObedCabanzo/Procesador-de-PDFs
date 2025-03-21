@@ -1,5 +1,7 @@
 # Proyecto de Procesamiento de Documentos PDF 
 
+A continuación se detalla la descripción de la aplicación, cómo ejecutarla y qué hace cada archivo.
+
 ## Descripción de la Aplicación
 
 La aplicación está compuesta por varios scripts que trabajan en conjunto para procesar documentos PDF. El flujo de trabajo es el siguiente:
