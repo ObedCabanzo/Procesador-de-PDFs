@@ -1,7 +1,5 @@
 # Proyecto de Procesamiento de Documentos PDF 
 
-Este proyecto es una aplicación diseñada para procesar archivos PDF, convertirlos a formato Markdown, limpiar el contenido, analizar la salida y dividir el texto en chunks más pequeños para su posterior uso. A continuación se detalla la descripción de la aplicación, cómo ejecutarla y qué hace cada archivo.
-
 ## Descripción de la Aplicación
 
 La aplicación está compuesta por varios scripts que trabajan en conjunto para procesar documentos PDF. El flujo de trabajo es el siguiente:
