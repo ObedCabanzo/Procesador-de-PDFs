@@ -1,0 +1,69 @@
+**Identifying vulnerabilities of SSL/TLS certificate verification in Android apps with static and dynamic analysis**
+Many Android developers fail to properly implement SSL/TLS during the development of an app, which may result in Man-In-The-Middle (MITM) attacks or phishing attacks. In this work, we design and implement a tool called DCDroid to detect these vulnerabilities with the combination of static and dynamic analysis. In static analysis, we focus on four types of vulnerable schema and locate the potential vulnerable code snippets in apps. In dynamic analysis, we prioritize the triggering of User Interface (UI) components based on the results obtained with static analysis to confirm the misuse of SSL/TLS.
+
+With DCDroid, we analyze 2213 apps from Google Play and 360app. The experimental results show that 457 (20%) apps contain potential vulnerable code. We run apps with DCDroid on two Android smartphones and confirm that 245 (11%) of 2213 apps are truly vulnerable to MITM and phishing attacks. We propose several strategies to reduce the number of crashes and shorten the execution time in dynamic analysis. Comparing with our previous work, DCDroid decreases 57% of the number of apps’ crash and 32% of the execution time on average. It also outperforms other three tools, namely, AndroBugs, kingkong, and appscan, in terms of detection accuracy.
+
+**1. Introduction**
+SSL/TLS certificates can lead to Man-In-The-Middle (MITM) attacks and phishing attacks. In the process of MITM attack or phishing attack, attackers impersonate the server to intercept and even modify app traffic to obtain sensitive data. In general, an attacker is not able to decrypt Google’s network traffic. However, if the client blindly trusts any certificate without checking the signatures, or does not verify the host name, or ignores the verification error prompts, the attacker can impersonate the server to gain the trust of the client using a fake certificate, and then decrypt the traffic to obtain sensitive data during the attack.
+
+Existing efforts have been made on the detection of malicious apps. Our previous work detected malicious apps, analyzed privacy leakage, and detected or prevented various vulnerabilities in Android applications.
+
+The text discusses the detection of SSL/TLS vulnerabilities in Android applications, highlighting the limitations of existing methods and introducing a new tool called DCDroid. The authors note that previous approaches often required manual analysis and focused primarily on detecting malicious apps rather than vulnerabilities. They identify several issues with existing methods, such as app crashes during detection and a high number of false positives.
+
+To address these challenges, the authors redesigned their detection tool, DCDroid, which combines static and dynamic analysis along with traffic analysis. The static analysis involves disassembling the app to locate vulnerable code, while dynamic analysis runs the app to ensure stable detection. The tool also captures traffic to reduce false positives.
+
+The authors present their contributions, including the automated detection of SSL/TLS vulnerabilities in 2213 apps, identifying 457 as vulnerable through static analysis and confirming 245 as truly vulnerable through dynamic analysis. They emphasize the importance of starting the activity of vulnerable code from the main activity to enhance stability and reduce crashes.
+
+The background section explains the role of SSL/TLS in protecting against MITM attacks and the importance of certificate verification. It outlines the correct verification process and discusses the vulnerabilities that can arise when developers implement their own certificate verification methods, often leading to insecure practices.
+
+Overall, the text provides insights into the development of a more effective tool for detecting vulnerabilities in Android applications, emphasizing the need for robust security measures in app development.
+
+The text discusses various aspects of Android UI and network interactions, particularly focusing on vulnerabilities related to SSL/TLS implementations. It outlines the structure of Android applications, including Activities and Views, and explains how these components interact with each other. The text also introduces DCDroid, an automated tool designed to simulate human operations on UI elements, emphasizing its ability to identify and trigger potential vulnerabilities in apps.
+
+Key points include:
+1. **Android UI Structure**: The UI is represented as a directed graph where Activities and Services are nodes, and intents are edges. The Main Activity serves as the starting point for traversing this graph.
+
+2. **Human Operation Simulation**: DCDroid analyzes UI elements to perform actions like inputting text or clicking buttons, aiming to trigger vulnerable code effectively.
+
+3. **MITM Attacks**: The text explains how a Man-in-the-Middle (MITM) attack can intercept communications between a client and server, highlighting the importance of certificate verification to prevent such attacks.
+
+4. **Challenges in Vulnerability Detection**: The text identifies challenges in defining and triggering potential vulnerable code, including the need for effective static and dynamic detection methods to ensure comprehensive coverage of vulnerable apps.
+
+5. **Traffic Analysis**: It discusses the difficulty in accurately identifying traffic generated by specific apps, especially when multiple apps are running simultaneously.
+
+6. **Method Framework**: The section concludes by outlining the framework for the proposed method, which includes both static and dynamic detection processes to identify vulnerabilities in Android applications.
+
+4. System overview
+An overview of DCDroid is presented. Given an app, we first conduct static analysis. We disassemble the app to get the Smali file and then locate the vulnerable points according to the characteristics of the vulnerable code. By analyzing the method call relationships, we get the vulnerable entry Activity. We then start dynamic detection, install the app into the smartphone with the ADB management tool, and start to run the app to trigger the potential vulnerable code. We intercept traffic with MITM attack tools and use VPNService to capture traffic on smartphones. Finally, we confirm those true vulnerable apps by comparing the traffic between the smartphone and the attack tool.
+
+4. Static analysis
+4. Disassembling apps
+Android apps can be decompiled into Java code or disassembled into Smali code directly. We choose to disassemble an app into Smali code because we only need to analyze the call relationship of the code without knowing its design. Smali code can be disassembled faster and is less affected by confusion technology. It can be done with apktool. Androguard can analyze its call relationships.
+
+4. Vulnerable code analysis
+Based on existing related work and disassembling 100 typical vulnerable apps manually, we propose 4 types of vulnerable code. A typical vulnerable code is characterized by methods that return void directly without any check. The types of vulnerabilities include:
+- **X509TrustManager**: We check if the code extends the X509TrustManager class. If it happens, we check the checkClientTrusted and checkServerTrusted methods to see if the method has only one instruction which is return-void. If so, we consider the method vulnerable.
+
+- **HostNameVerifier**: We check whether the HostnameVerifier interface is implemented in the code. If it exists, we check the verify method. If the method has only two instructions, and the first instruction begins with const and the second instruction is return, we then consider the method vulnerable.
+
+- **WebViewClient sslError**: We check whether the code extends the WebViewClient class. If that happens, we check the onReceivedSslError method. If this method has only two instructions, and the first instruction starts with invoke-virtual and ends with Landroid/webkit/SslErrorHandler;->proceed()V, and the second instruction is return void, we then consider this method vulnerable.
+
+- **X509HostnameVerifier**: We check whether there is an instruction named sget-object in the class which extends X509TrustManager class. If that happens, we check the relevant methods for vulnerabilities.
+
+The text appears to be an excerpt from a research paper discussing methods for analyzing vulnerabilities in Android applications. It outlines algorithms for identifying entry points associated with vulnerable methods and describes the construction of Activity Call Graphs (ACGs) to trace method call relationships.
+
+Key points include:
+1. **Vulnerability Analysis**: The text describes a process for identifying vulnerable methods in an application and analyzing their call relationships to determine entry points.
+
+2. **Method Call Graph (MCG)**: The MCG is used to trace the relationships between methods, helping to identify how vulnerable methods are called within the application.
+
+3. **Entry Points**: The algorithms aim to find entry points (like Activities and Services) where vulnerable methods are executed, which is crucial for dynamic detection during security assessments.
+
+4. **Algorithm Descriptions**: Two algorithms are presented:
+- **Find Final Caller of Vulnerable Method**: This algorithm identifies the final caller of a vulnerable method by traversing the MCG.
+
+- **Build Activity Call Graph (ACG)**: This algorithm constructs the ACG based on potential vulnerable views defined in the Android manifest.
+
+5. **Dynamic Analysis**: The text emphasizes the importance of dynamic analysis, where the identified entry points are executed to test for vulnerabilities in real-time.
+
+Overall, the excerpt provides insights into the methodologies used for vulnerability detection in Android applications, focusing on the relationship between methods and their execution paths.
