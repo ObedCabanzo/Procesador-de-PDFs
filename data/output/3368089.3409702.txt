@@ -1,0 +1,285 @@
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+Yutian Tang
+ShanghaiTech University
+Shanghai, China
+csytang@ieee.org
+Yulei Sui
+University of Technology Sydney
+Sydney, Australia
+yulei.sui@uts.edu.au
+Haoyu Wang
+Beijing University of Posts and Telecommunications
+Beijing, China
+haoyuwang@bupt.edu.cn
+Xiapu Luo∗
+The Hong Kong Polytechnic University
+Hong Kong, China
+csxluo@comp.polyu.edu.hk
+Hao Zhou
+The Hong Kong Polytechnic University
+Hong Kong, China
+sunmoonsky0001@gmail.com
+Zhou Xu∗
+Chongqing University
+Chongqing, China
+zhouxullx@cqu.edu.cn
+# ABSTRACT
+Android deep link is a URL that takes users to a specific page of a mobile app, enabling seamless user experience from a webpage to an app. Android app link, a new type of deep link introduced in Android 6, is claimed to offer more benefits, such as supporting instant apps and providing more secure verification to protect against hijacking attacks that previous deep links cannot. However, we find that the app link is not as secure as claimed, because the verification process can be bypassed by exploiting instant apps.
+In this paper, we explore the weakness of the existing app link mechanism and propose three feasible hijacking attacks. Our findings show that even popular apps are subject to these attacks, such as Twitter, Whatsapp, Facebook Message. Our observation is confirmed by Google. To measure the severity of these vulnerabilities, we develop an automatic tool to detect vulnerable apps, and perform a large-scale empirical study on 400,000 Android apps.
+Experiment results suggest that app link hijacking vulnerabilities are prevalent in the ecosystem. Specifically, 27% apps are vulnerable to link hijacking with smart text selection (STS); 30% apps are vulnerable to link hijacking without STS, and all instant apps are vulnerable to instant app attack. We provide an in-depth understanding of the mechanisms behind these types of attacks. Furthermore, we propose the corresponding detection and defense methods that can successfully prevent the proposed hijackings for all the evaluated apps, thus raising the bar against the attacks on Android app links. Our insights and findings demonstrate the urgency to identify and prevent app link hijacking attacks.
+# 1 INTRODUCTION
+Mobile apps are pervasive. Android, as the dominant mobile operating system, supports a wide variety and a large number of mobile apps. To provide integrated service to users, Android integrates various functionalities from different apps. The deep link is a mechanism in Android to allow such seamless web-to-app communications. A deep link is a universal resource identifier (URI) for app content, such as a specific Activity. For example, clicking a deep link (e.g., yelp:///career/home) on a webpage in the mobile Chrome, a user is automatically redirected to the Yelp app by Android. Here, Chrome hands over the control to the Yelp app as the latter is more suitable for the task.
+App Link. Despite the convenience, researchers also identified serious security issues in deep links. A most significant hijacking example is an app can register another app’s scheme with a deep link and deceive users into opening the malicious app. To prevent this, Android promotes a new type of deep link called app link since Android 6.
+The target of the app link is taking users directly to a link’s specific content in an app. App links are different from deep links in two aspects: first, app links only support links with HTTP(S) (e.g., http(s)://...). However, deep links support customized schemes (e.g., yelp://...); second, the app link verification is enforced for enabling app links. Whereas, such verification is not enforced for deep links. To pass the app link verification, a developer must do the followings: first, a user has to claim the app link in the app’s.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA © 2020 Association for Computing Machinery. ACM ISBN 978-1-4503-7043-1/20/11. . . $15 https://doi.org/10/3368089
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+# Yutian Tang, Yulei Sui, Haoyu Wang, Xiapu Luo, Hao Zhou, and Zhou Xu
+manifest file (AndroidManifest.xml); second, the user has to publish a digital asset link (DAL) on their domain. The rules and syntax for constructing DAL are presented in the official tutorial .
+# Instant App
+Despite the efforts made by the Android security team and researchers , app links are still not as secure as expected, especially when it is under the context of instant apps . Instant apps are recently promoted by Android to enable on-demand use of modules in an app without the installation of the entire app. To build an instant app, developers must split an app into modules and associate URLs with these modules. These modules are named as features in an instant app.
+Each instant app consists of one base feature module and zero or more feature modules. The feature modules can access all public functions in the base feature module. Inside each module, there is at least one Activity that serves as an entrance to the module. This Activity is always associated with a URI, through which users can access the Activity and other services in the module. When a user clicks the URI, the module is downloaded and its Activity is launched to the user.
+If a user accesses a feature module, an Android Package (a.k.a. APK, the binary format of an app) that contains the base feature module and the feature module is downloaded to the device. Otherwise, an APK that only contains the base feature module is downloaded  to the device. Fig. 1 shows an example of Google Trips instant app (com.google.android.apps.travel.onthego), which only contains the base module.
+In Google Trips, there are two Activities that are associated with URLs. To be exact, InstantHomeActivity and ExploreActivity are bound to links google.com/tripsapp and google.com/tripsapp/trip/em, respectively. Once the link (i.e., google.com/tripsapp) is clicked, the module (base module in this case) is downloaded to the device. Then InstantHomeActivity is shown to users.
+Compared with normal apps, instant apps have the following unique features: first, an instant app does not require any installation; and second, an instant app can provide on-demand modules for app users. A module is downloaded to the target device if and only if a user attempts to access certain functions inside that module.
+# Attacks
+However, we find that app link verification can be easily bypassed by exploiting instant apps (detailed in Section 4). Attackers can manipulate a malicious instant app (MIA) to launch three types of attacks, including link hijacking with STS (§4), link hijacking without STS (§4), and instant app hijacking (§4). STS is a novel feature introduced in Android 8 .
+With STS, Android can recognize the text selected or tapped and recommend the next logical step. For example, if a user selects a sequence of numbers, STS recognizes them as a possible phone number and recommends the user to make a phone call. In this attack, the STS is spoofed to recommend our MIA for users. If a user select our MIA, they can be hijacked.
+We validate these attacks on the latest Android versions (both Android 9 and 10). The attacks can be launched successfully on a Pixel device. We already reported the weakness of the app link mechanism to Google through its Vulnerability Reward Program (VRP). Google confirmed the vulnerability we reported. Our Android Id is 128919672.
+To further measure the severity of these attacks, we develop a tool called MIAFinder to detect apps that are vulnerable to the aforementioned three types of attacks (detailed in Section 4). We then apply MIAFinder to 400,000 Android apps in the wild. Experiment results suggest that app link vulnerabilities are prevalent in Android’s ecosystem, with over 30% of apps are fragile to these attacks (detailed in Section 6). To defense the app link attacks, we propose a novel API named verifyDomainPackage and generate a patch that integrates the verifyDomainPackage API for the latest Android (10). The experiments show that verifyDomainPackage can successfully prevent all the three types of attacks (detailed in Section 7).
+# Contributions
+The major contributions as follow:
+- New Vulnerabilities and Attacks. We present the weakness of the app link mechanism in Android and present three kinds of attacks accordingly. These attacks are demonstrated to be practical and reproducible. For example, we demonstrate that our attacks can even hijack some popular apps, such as Gmail, Facebook Message, system SMS, and Whatsapp. To the best of our knowledge, this is the first end-to-end study of the security issues in the app link mechanism. Our observation is acknowledged by Google.
+- Detection and Defense Techniques. We develop a static analysis tool named MIAFinder to automatically detect apps that are vulnerable to the three types of attacks. To defence these attacks, we further propose a defense mechanism and generate a patch for the latest Android 10. Experiment results show that our defense mechanism can successfully protect against these attacks.
+- Large-Scale Study. We have conducted a large-scale empirical study on 200,000 apps from Google Play and 200,000 apps from Tencent Myapp, the largest third-party app market in China. Our results demonstrate that 53,619 Google Play apps and 54,650 Tencent-Myapp apps are vulnerable to link hijacking with smart text selection (STS) attack; 57,442 Google Play apps and 62,496 Tencent-Myapp apps are vulnerable to link hijacking without smart text selection attack; and all instant apps are vulnerable to instant app hijacking attack.
+We hope that our efforts can raise awareness among relevant stakeholders (including smartphone vendors, app markets, app developers and mobile users). Hence, we have made our MIAFinder and all the experiments publicly available at: https://sites.google.com/view/instant-app-attacks.
+# 2 MOTIVATING EXAMPLES
+# Architecture of MIA
+We illustrate a malicious instant app (MIA) as shown in Fig. 3, which contains two parts, a phishing module and a benign module. When users use the MIA, only the functions in the benign module can be accessed. The benign module does not contain any harmful content, which makes users hard to recognize.
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+# Assumption & Setup
+We assume that a user installs a MIA from Google Play. For three different attacks, the settings for the MIAs are shown in Sec, Sec, and Sec respectively.
+# Attack Overview
+When a user selects a text whose content is a URL, Android suggests the MIA to respond to it. For example, if a user selects *www.yelp.com/biz/...* in an app (e.g, SMS app), the STS suggests our MIA to the user.
+When a user clicks a link (e.g. *www.yelp.com/biz/...*), (s)he is redirected to the MIA. For example, if a user clicks the link in an app (e.g, SMS app), the STS suggests our MIA to the user.
+To launch an instant app, Android launches the MIA. For example, if a user clicks *google.com/tripsapp* to launch Google Trip instant app, (s)he is redirected to our MIA.
+# Countermeasures
+To prevent this attack, developers can prevent users from selecting a text or stopping the STS. We propose 4 solutions for developers to prevent this attack (§5).
+# 1Pass:
+app link verification passed; Fail: app link verification failed; Nil: this field is unavailable; MIA: malicious instant app;
+that the instant app is malicious. Thus the MIA hides itself as a non-MIA. However, once users access the victim URL, the phishing module becomes active and hijacks the URL. As Android hands over the control to the phishing module without notifying users, the users are not aware that they are interacting with a malicious app. As we successfully upload our MIA to Google Play (see demo videos on the project page), our MIA can bypass the security checking from Google Play and launch attacks without users’ consent.
+# Link hijacking with STS
+As shown in Table 1, the attack relies on a novel feature, smart text selection (STS), which is introduced in Android 8. Once a user selects a piece of text, Android can recognize the text selected and then recommend the next logical step for the user. For example, when a user selects a sequence of numbers, STS may suggest the user make a phone call with the numbers selected. In STS, there are five functional texts for recommendations, including email address, phone number, physical address (in a longitude and latitude format), URL and date-time.
+As shown in Fig. 2 (1-1), once a Yelp URL (e.g., *www.yelp.com/biz/brunch-y-ckae-barcelona-2*) is selected, the STS recommends MIA as a possible solution for the URL. If a user launches the URL with the MIA, his/her privacy data can be collected by the MIA. Once the MIA collects the data from a user, the MIA then broadcasts the Intent to make the victim app (Yelp) to respond to the URL again.
+# Link hijacking without STS
+We assume that a user intends to open the Yelp app via a browser (e.g., Chrome). As shown in Fig (2-2), when a user clicks the URL (*www.yelp.com/biz/brunch-y-ckae-barcelona-2*) to launch the Yelp app, Android ranks all possible apps that can respond to this URL. Android always gives a higher priority to an instant app comparing to a none instant app to respond to a URL. Therefore, the MIA rather than the Yelp app is launched by Android.
+# Instant app hijacking
+If a user intends to launch an instant app, the process can also be hijacked. As shown in Fig. 2 (3-3), when a user clicks the URL *google.com/tripsapp to launch the Google Trips instant app; As both our MIA and the victim instant app (Google Trips) are instant apps, Android ranks them based on their package names. In this case, we set a “smaller” package name (a.example.instantappurlauto) comparing to the Google Trips (com.google.android.apps.travel.onthego*). The MIA is then ranked higher than the Google Trips instant app by Android for responding to the URL. As a result, the MIA rather than the Google Trips is launched by Android.
+# Differences in three attacks
+We compare the differences in the three attacks from the following aspects:
+- The victim apps. As shown in Table 1, only the instant app hijacking targets at attacking instant apps. Other attacks only work on typical apps (none instant app);
+# Link Hijacking with STS
+# 1
+yelp} 1/2 MIA collects privacy data from users and hides itself by re-broadcasting the URL with an Intent
+# 1
+www.yelp.com/biz/brunch-y-cake-barcelona-2
+# 1 Android
+recommends our MIA as a candidate for processing the URL
+# 2
+www.yelp.com/biz/brunch-y-cake-barcelona-2
+# 2
+Click a Yelp URL in an app
+# 2
+Android always uses our MIA to open the URL without users’ consent
+# 3
+google.com/tripsapp
+# 3
+Click an URL to open an instant app
+# 3
+Android always uses MIA to respond to the URL without users’ consent
+Google Trip (victim instant app)
+# Victim Apps
+# 3 BACKGROUND
+Recall our motivating examples, we highlight that our attacks can be launched no matter the app links are correctly configured or not. Therefore, in this section, we first present the background of app links, then introduce how Android verifies app links, and finally show the cases that can fail the app link verification process.
+# Google Play
+# Benign Module
+# Phishing Module
+During Installation
+1. get DAL (www.yelp.com/.well-known/assetlinks.json)
+2. return & verify
+3. registerWWW-yelp comdiz www.yelp.com/biz/* <->www.yelp.com assetlinks.json
+• Approaches to launch the attack. As shown in Fig and Table 1, only link hijacking with STS relies on the STS to launch the attack. Other attacks do not rely on the STS.
+Remarks. We emphasize that two extra points for these attacks.
+- We demonstrate that these attacks can hijack app links (URLs that are mapped to an app). If a URL does not map to any app, it also can be hijacked by link hijacking with/without STS.
+- The attacks proposed can be launched regardless of the correctness of app link configurations. That is, even if an app link is not correctly configured or the app link verification fails, attacks also can be launched.
+Based on the above two points, we can conclude that the attacks proposed are practical with high risks. On the one hand, all URLs can be hijacked by proposed attacks. On the other hand, all apps that define app links can be affected by our attacks.
+www.yelp.com/biz/brunch-y-cake-barcelona-2
+After Installation
+1. App link configuration and release. To use app links, a developer must register them (in the HTTP(S) scheme) in the app’s manifest file. Then, the developer publishes the DAL on the web. For example, in order to use app links in the Yelp app, the Yelp app developers need to register the Yelp domain (www.yelp.com) in the app, and also publish the DAL on Yelp’s server at www.yelp.com/.well-known/assetlinks.json.
+2. Verify app links. Once a user installs the Yelp app, the verification of app links in the Yelp happens. As shown in Fig. 4, the
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+The app registers its app links to Android. To verify these app links, Android extracts the DAL file (assetlinks.json) from the remote server (i.e., www.yelp.com). As the DAL file defines the authorized app, Android can check whether the package name, scheme, and certificate fingerprint of the app  match with a record on the DAL. If and only if the verification of app links passed, the app links become valid.
+❹ Use app links. Once users click app links, they are redirected to the Yelp app by the Android system. Invalid app link verification. However, incorrect configuration from either app-end or web-end can fail the link verification process. For the app-end, the incorrect configurations, such as missing the “autoVerify=true” field or invalid domain names can result in a failure. For the web-end, the incorrect JSON format, invalid fields in a DAL or invalid namespaces can also be the reasons.
+Intent and Intent Filter. Once a user clicks a URL in an app, an Intent is sent by the app. In Android, an Intent is a messaging object that can be used to request an action from another app component. For example, one Activity can start a Service (e.g., playing background music) with an Intent. There are two types of intents: explicit Intent and implicit Intent. The explicit Intent defines an app to respond to the Intent by specifying the app’s package name. Whereas, the implicit Intent only defines a general action to perform in an Intent. For example, an app can use an implicit Intent to request the Google Map app to show a location. Apps that can perform the action defined in an implicit Intent get the chance to respond to the Intent. To hijack a URL, the MIA must claim that it has the capability to process the link to Android. Only the MIA claims to process a link, Android can consider it as a candidate for the link.
+# 4 ATTACK MODELS
+# 4 Overview
+In this section, we provide a bird’s-eye view of all attack models. We demonstrate an MIA can be exploited as an attack vector for three types of attacks, including link hijacking with STS (§4), link hijacking without STS (§4), and instant app hijacking attack (§4). Even though we launch these attacks with instant apps, the settings of them can be different.
+- Attack vector: For all attacks, we exploit MIAs as the attack vector.
+- The MIA: The MIA can either be installed from Google Play or by clicking the MIA’s launching URL in another app (e.g., Android’s SMS app). The reason that attacks can be launched without users’ consent is presented in Sec. 2.
+# 4 Link Hijacking with Smart Text Selection
+The link hijacking with STS aims at preventing users from accessing URLs via STS. When (s)he selects a URL text (e.g. google.com) with STS, Android suggests the MIA for handling the URL. The URL text can come from the app itself or input by users.
+The attack steps. In the MIA, for simplicity, we build two Activities: MainActivity and LoginActivity. Recall the architecture of our MIA (see. Fig. 3), the MainActivity belongs to the benign module, while the LoginActivity belongs to the phishing module. The intent filters associated with them are shown in Fig. 5. The MainActivity is the launcher for the MIA and it is bound with.
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+# 4 Link Hijacking without Smart Text
+The link hijacking aims at preventing users or apps from accessing certain URLs/apps with the MIA. For example, once users click a URL (e.g., www.yelp.com/biz/brunch-y-cake-barcelon-2) in the SMS app, they are redirected to our MIA rather than the Yelp app.
+The attack steps. The setting for the MIA follows the same step in §4. We also build two Activities: MainActivity and LoginActivity. The intent filters associated with them are shown in Fig. 5. The only difference is the way of launching this attack. In link hijacking without STS, by clicking a URL, link hijacking occurs. Whereas in link hijacking with STS, users have to select a piece of URL, then STS recommends the MIA to users.
+The victim apps. This attack can be launched on apps that access a URL. For example, some apps contain rate-us buttons. Once the button is clicked, users are redirected to the MIA. It worth mentioning that this attack cannot work on browsers or in-app browser apps (apps that implement browsers for opening URLs, for example, Wechat). The reason is that browsers or in-app browser apps can handle the URL themselves rather than asking Android to handle the URL.
+The root cause. If a URL is clicked, Android looks up all apps that can handle the URL. As our instant app can handle the Intent (see §4), Android suggests our MIA to respond to the Intent. Typically, Android asks users to select one app from all candidates to respond to the given link. However, with the instant app, we can successfully escape such prompt. To illustrate this attack, we start from introducing how Android processes a URL click. Once a URL is tapped, the startActivity method is called. Android checks whether there is a locally installed app that can resolve this Intent. If multiple apps that can resolve the Intent, Android ranks them based on their package names. Then, Android finds a suitable activity to respond to the Intent with chooseBestActivity method (PackageManagerService.java).
+Inside method chooseBestActivity, the system performs the following checking: (1) check whether the first Activity has a higher priority (or default). If so, the first Activity is used to respond to the Intent; (2) if (1) returns false, Android checks whether there is a preferred app for handling the Intent. If so, the preferred app (a.k.a. saved preference) replies to the Intent; (3) if the checking (2) returns false, Android loops all Activities to find whether there is an instant app that can cope with the Intent. If so, the instant app responds to the Intent; (4) if no instant app and no saved preferred app to cope with the Intent, Android shows a list of candidate apps to allow users to select from. The candidate apps are selected based on whether they can handle the Intent. For example, a user can have 5 different apps that can play audios. All these 5 apps are.
+# 4 Instant App Hijacking
+The instant app hijacking aims at preventing users from accessing an instant app even if it is installed. Here, we assume that both the MIA and the victim instant app are installed from Google Play. If multiple apps that can resolve the Intent, Android ranks them based on their package names. Then, Android finds a suitable activity to respond to the Intent with chooseBestActivity method (PackageManagerService.java).
+The attack steps. We assume that users download both the victim instant app (e.g., Google Trip instant app com.google.android.apps.travel.onthego) and the MIA from Google Play. Once users intend to access the Google Trip instant app, they are redirected to our MIA. As shown in Fig. 8, we set the MainActivity same as link hijacking (see Fig. 5) and the malicious LogActivity is set to respond the URL google.com/tripsapp.
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+URL is associated with Google Trip instant app (com.google.android.apps.travel.onthego). That is, the LogActivity is designed for hijacking the Google Trips instant app. The key factor of launching this attack is setting the package name to be one “smaller” than Google Trips’ package name based on the dictionary order. Here, we set the package name of our MIA to a.example.instantappurlauto (a.example.instantappurlauto &lt; com.google.android.apps.travel.onthego).
+The victim apps. All instant apps are vulnerable to this attack. If the malicious app is installed prior to the victim instant app, the app user is blocked for downloading and using the victim instant app unless (s)he uninstalls the MIA. If the MIA is installed after the installation of the victim instant app, the app user is blocked for accessing the victim instant app even though the victim instant app is installed on the phone. For both cases, the services from the victim instant app are blocked.
+The root cause. By setting the intent filters of LogActivity as Fig. 8, both the MIA and Google Trip instant app can respond to the URL. If multiple instant apps and apps can resolve one URL, Android ranks them based on package names. Then, Android leverages chooseBestActivity method for locating the target app for the Intent. Recall the functionality of chooseBestActivity introduced in §4, if there is no saved preferred app and no app with a higher priority for the given Intent, Android checks whether there is an instant app can resolve the Intent.
+We assign a package name to the MIA with a lower dictionary rank comparing to the victim instant app. As all apps are ranked based on package names, the MIA is ranked higher than the victim app (a.example.instantappurlauto &lt; com.google.android.apps.travel.onthego). Based on the background presented in §4 and Fig. 7, the chooseBestActivity is incorrectly chosen the MIA to respond to the URL rather than the victim instant app.
+# 5 DETECTION
+In this section, we present our method to detect vulnerable apps that can be attacked.
+# 5 Static Analysis
+To detect whether an app is vulnerable to proposed attacks, we construct a program dependence graph (PDG) of the app . The PDG consists of the control flow dependencies and the data flow dependencies of the app. To construct a PDG, we collect possible entry points in the app. As Android apps do not specify the entry points (e.g., main method for Java application) for execution, we collect the entry points of an app from two parts : (1) lifecycle methods in Android components (e.g., Activity). We focus on lifecycle methods of components as they are the standard entry points to the app. Through them, developers can manage the app’s components and their behaviors; and (2) UI callbacks. Android allows developers to register UI callbacks for monitoring certain events. For example, the method onClickListener is invoked once a button is clicked. In practice, we leverage EdgeMiner  to collect all possible entries for a given app. If the app employs obfuscations or packer to protect its bytecode, we will use deobfuscators (e.g., TIRO ) and unpackers (e.g., PackerGrind ) to recover the hidden bytecode for analysis.
+Next, we build the app’s PDG by using FlowDroid , and further extend the PDG to a UI-oriented PDG named UPDG, which models the dependencies and transitions  through UI elements (e.g. TextView). A node in UPDG is defined as:
+𝑛 = {𝑢𝑖𝑑, 𝑢𝑡𝑦𝑝𝑒, 𝑎, 𝑐, 𝑜},
+in which the 𝑢𝑖𝑑 represents the UI element’s id. The UI id can be retrieved from the layout files. 𝑢𝑡𝑦𝑝𝑒 represents the type (e.g., TextView) of the UI element. 𝑎 represents the Activity context, which means the UI element 𝑢𝑖𝑑 is used in the Activity 𝑎. 𝑐 represents the callback method with the element. 𝑜 represents the node in PDG.
+To construct the UPDG, we first parse all layout files and the manifest file in the app. From layout files, we extract all UI elements, including text content, name, id (𝑢𝑖𝑑), and type (𝑢𝑡𝑦𝑝𝑒). Then, we match the UI elements with the original PDG nodes. To realize this, we search the statements that are related to UI reference or initialization with findViewById. For example, the statement findViewById(R.id.btn) can be used to refer to the UI element with id btn. Next, we analyze the UI callbacks (e.g., onClickListener) that are associated with these UI elements. Then, we retrieve the Activity context (𝑎) and the corresponding callback (𝑐) for a node 𝑛 in UPDG. Last, we append data flows introduced by the inter-component communication (ICC) via implicit Intents  to the UPDG. To capture them, we leverage IC3  to locate the source and sink for all Intents in the app. IC3 transforms the ICC problem into a Multi-Valued Composite (MVC) constant propagation problem (i.e., finding all possible values of objects concerned at a particular program point). IC3 specifies the MVC constant propagating problem with the COnstant propAgation (COAL) language and then employs a COAL solver to solve the problem. IC3 infers the arguments in an Intent and then finds the target component. We append the data flows introduced by Intents to the UPDG.
+# 5 Detecting Link Hijacking with STS
+In practice, we leverage the workflow defined in Fig. 9 to check whether an app is vulnerable to this attack. To be exact,
+- If an app contains EditTexts (the text can be edited in an EditText), we check the followings: 1) if the text is a password, phone number,
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+# Yutian Tang, Yulei Sui, Haoyu Wang, Xiapu Luo, Hao Zhou, and Zhou Xu
+time, or date, the text cannot be visible or cannot be a valid URL. For example, the text in an EditText whose input type is password can not be visible (all characters are presented by “•”); 2) some approaches can be used for preventing users from using STS (e.g., use setMovementMethod(null)). These approaches are introduced in §7 in detail. We exclude all these cases as they prohibit users from using STS.
+• If an app contains TextViews (a.k.a labels), we check the followings: 1) whether the TextViews can be selected by tracking the setTextIsSelectable(true). If and only if the method setTextIsSelectable(true) is invoked, the text on a TextView can be selected. If the text on the TextView cannot be selected, the attack cannot be launched. It is worth mentioning that by default the text on a TextView cannot be selected; 2) if the content in a TextView is a URL, it can be hijacked with STS; and 3) if the content in a TextView can be changed to a URL, it can be hijacked with STS. For 3), we check all the onClickListeners on TextViews in the app to evaluate whether the content on TextViews can be changed to URLs. Besides, we also check all callbacks and onClickListeners in the app to evaluate whether the content on TextViews can be changed to URLs.
+# Implementation
+In practice, we transverse the UPDG to find whether any UPDG node that invokes the APIs mentioned above. For a node in the UPDG that is associated with a UI element, we track the node through the UPDG graph to collect all operations performed and allowed on the node. Then, we check whether the node satisfies the conditions in Fig. 9. For example, the expression writtentext=(EditText)findViewById(R.id.editText1); defines a EditText object writtentext. The writtentext is also associated with a UI element whose id is editText1. We track the usage of this node (i.e., writtentext for simplicity) on the UPDG to find other settings for this object. All settings and operations defined on writtentext are then collected. We leverage the workflow in Fig. 9 to evaluate whether attacks can be launched with this node. If so, the app is considered to be vulnerable.
+# 5 Detecting Link Hijacking without STS
+To determine whether an app is fragile to link hijacking without STS, we use the checking diagram in Fig. 10.
+• First, we check whether the app uses any Intent in the code. • Second, if the app launches a URL with the Intent, we then check whether the app is a browser or contains an in-app browser. • Third, if the app is not a browser or does not implement any in-app browser, the app is vulnerable to the link hijacking attack without STS.
+# Implementation
+We first iterate the UPDG to check whether the app launches any Intent. First, we track and locate all Intent objects in an app. There are two types of Intents: explicit and implicit Intent. For explicit Intent, the target of the Intent is defined in the Intent object by specifying the package name. However, to launch a URL, the type of the Intent must be implicit. To launch a URL with an Intent, the data field is set to the target URL. Therefore, we first locate the Intent objects in the given app. Next, we leverage the taint analysis  to track the setting of the data field of these Intent objects. If the data field is set to a URI (by tracking the type), then we can confirm the app uses an Intent to open a URL.
+The next step is to detect whether the app is a browser or contains an in-app browser. To do this, we traverse the UPDG to detect whether there is an instance of WebView or an instance of type A where A is a subclass of WebView. If an app is a browser or implements an in-app browser, the attack cannot be launched.
+# 5 Detecting Instant App Hijacking
+As presented in Sec. 4, the malicious instant app can hijack other instant apps that have larger package names in terms of dictionary comparison. Therefore, all instant apps are vulnerable to this attack, as long as the malicious instant app has a deliberately designed package name.
+# 6 EVALUATION
+# 6 Evaluation Overview
+Apps & DALs To evaluate whether real-world apps are vulnerable to three types of attacks, we crawled 200,000 apps from Google Play and 200,000 apps from Tencent Myapp (the largest third-party app market in China).
+To determine whether app links are valid, besides checking the correctness of app links claimed, we also need to check the correctness of the DAL. If and only if both the app itself and the DAL are successfully configured, the app links are valid. To obtain the app links claimed by an app, we plan the following steps:
+• Step 1: Exploring reachable Activities. We extract all intent filters from all Activities, whose “categories” contain BROWSABLE and DEFAULT fields. With these fields, these Activities are reachable from a browser;
+• Step 2: Verifying the app link. For the all intent filters extracted from Step 1, we extract intent filters whose “action” fields contain VIEW. It returns intent filters either with app links or with customized URLs. Then, we extract intent filters with HTTP(s) schemes as they represent the app links;
+After Step 2, we obtain all app links claimed by the app. For each app link, we extract the domain from the app link. Then, we leverage OpenWPM  to visit the domain. We set the loading interval to 15 seconds to allow page loading and URL redirection. Then, we download the corresponding DAL files from remote servers. For a given domain X, its DAL file is located at X/.well-known/asset-links.json.
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+# Evaluation Roadmap
+In Research Question (RQ) 1, we discuss the incorrect configurations of app links. Note that, incorrect configurations can make app link verification fails. Apps that fail to pass app link verification are fragile to various attacks , such as link hijacking, man-in-the-middle (MITM) attack. They are also vulnerable to attacks proposed in this paper.
+In RQ 2 and RQ 3, we evaluate whether real-world apps are robust to link hijacking attacks (with and without STS). In RQ 4, we discuss whether instant apps are robust to instant app hijacking. Last, in RQ 5, we evaluate the accuracy of our MIAFinder tool.
+# 6 RQ1: Are real-world apps correctly configure app links?
+# Motivation
+In this RQ, we aim at finding the incorrect configurations of app links. The incorrectness implies that app links are not valid, and it leaves room for attackers.
+# Methodology
+The correctness of app links requires the following checking:
+1. the “autoVerify” attribute must be set to be TRUE in the app’s manifest file. This attribute triggers the verification process of app links declared. Without this attribute, Android does not verify the link;
+2. if the domain declared is not valid (i.e., the domain not exists or cannot be visited), the verification of app links cannot be passed;
+3. if the domain declared does not contain any DAL, the verification of app links fails as well. For example, if an app claims to associate a domain www.example.com and the domain does not publish any DAL, the verification fails. As the assetlinks.json must be published under a fixed path (&lt;domain&gt;/.well-known/assetlinks.json), if the assetlinks.json cannot be found at the path, we consider there is no DAL published;
+4. if the DAL file exists, we check whether the DAL file subjects to its syntax. If and only if the DAL is corrected built, the app links are valid.
+Given a DAL, we perform the following steps for evaluating it.
+- Step 1: Checking DAL existences. We check whether a domain hosts a DAL file. It can be achieved by checking whether the path of the DAL file is reachable. It is possible that a domain does not contain a DAL, and it does not support any app link.
+- Step 2: Verifying the syntax. As Android forces the syntax of a DAL file, the valid DAL must pass the syntax checking. For example, if a DAL file adds a field that is not supported by the syntax, the verification of the DAL cannot pass.
+- Step 3: Checking fields. Next, we check the fields and values in the DAL to explore all possible violations in the DAL. For the relation field, there are two standard relations (§4). For the target field, there are two possible targets, android_app and web. If a DAL has an invalid field or sets an invalid value, the verification of the DAL fails.
+- Step 4: Include statement checking. It is also possible to claim statement indirectly by referring an existing DAL with the include statement . Therefore, for this type of DAL, we check the included file with Step 1 to Step 3.
+# Results
+As a result, the incorrect configurations of app links belong to the following categories:
+- Missing “autoVerify=true” field: To allow Android verifies the app link, the field “autoVerify=true” must be set. Therefore, if an app link lacks such a field, the verification fails.
+- Invalid host format: The host must be a correct URL in format; otherwise the app link cannot be verified.
+- Inaccessible host: Even a given host a URL in format, if the URL cannot be accessed, the app link verification can not pass as the DAL cannot be retrieved.
+- Missing fields in Intent-filters: The valid app link requires the intent-filter to specify: a ACTION_VIEW action, one or more data tags, and two categories (BROWSABLE and DEFAULT). Missing any field makes the app link invalid.
+In addition, we find that the incorrect configurations of DALs belong to the following categories:
+- Incorrect JSON formatting errors: This type of error is that the DAL is not with a valid JSON format. The errors can be unmatched brackets, unexpected symbols, unknown symbols, and duplicate entities.
+- Incorrect fields: Some incorrect DALs have field errors, including using undefined fields, missing required fields (e.g., namespace), typo in fields. All these make them invalid.
+- Incorrect Namespace: The syntax of the DAL requires its namespace to be “android_app” or “web”. If a DAL uses invalid namespaces, the app link verification fails.
+# Answer to RQ1
+Among all 200,000 Google Play apps, 8,682 apps use app links. There are only 18% of them configure the app links correctly. Among all 200,000 Tencent-Myapp apps, 4,035 apps use app links. There are only 3% of them configure the app links correctly.
+# Implications
+This experiment suggests that developers must check the configurations of app links carefully. As for app markets, we suggest app markets for forcing apps to verify domains claimed by apps.
+# 6 RQ2: Are real-world apps robust to the general link hijacking attack with STS?
+# Motivation
+In this research question, we intend to evaluate whether real-world apps robust to link hijacking with STS.
+# Methodology
+See Sec. 5 for details.
+# Answer to RQ2
+As a result, there are 53,619 Google Play apps (26%) that are vulnerable to link hijacking with STS attack. There are 54,650 Tencent-Myapp apps (27%) that are vulnerable to this attack.
+# Implications
+For this type of attack, it is the defect introduced by Android. Even if the victim is a browser or contains an in-app browser, the attack can be launched successfully. It is because that STS first obtains the URL selected and then broadcasts an Intent to find the target candidate for the URL. In Sec, we proposed four solutions for protecting this attack by either stopping users from selecting any text or customizing the suggestions returned by STS.
+# 6 RQ3: Are real-world apps robust to the link hijacking attack without STS?
+# Motivation
+In this research question, we intend to evaluate whether real-world apps are robust to link hijacking without STS. This evaluation aims at finding the risks of this attack.
+# Methodology
+See Section 5 for details.
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+Yutian Tang, Yulei Sui, Haoyu Wang, Xiapu Luo, Hao Zhou, and Zhou Xu
+# Answer to RQ3:
+As a result, there are 57,442 Google Play apps (28%) that are vulnerable to link hijacking without STS attack. There are 62,496 Tencent-Myapp apps (31%) that are vulnerable to this attack.
+# Implications.
+As the results show, there is a large number of apps that are vulnerable to the link hijacking attack. To prevent from being attacked, an app can implement an in-app browser rather than broadcast the Intent. Except for this approach, an app cannot prevent this attack. The reason is that it is Android rather than the victim app to select the target app to respond to the URL. Therefore, the defect must be fixed from the system layer. Nothing can be done by the victim app to prevent this attack.
+# 6 RQ4: Are Instant Apps robust to Instant App Hijacking?
+We relax the evaluation of instant app hijacking attack based on the following concerns: first, in §4, we illustrate the vulnerability by investigating Android source code. The vulnerability is verified by providing evidence from Android source code; second, the subtlety of this attack is using certain settings in the MIA and exploiting the platform (a.k.a. Android) defects. It means that all instant apps are vulnerable to instant app hijacking.
+Though we find the clue that instant apps are not robust to the hijacking from the Android source code, we still test instant app hijacking on all 36 real-world instant apps out of 200,000 apps from Google Play. The instant app hijacking can attack all these instant apps. Note that instant apps can only be published with Google Play rather than other app stores as they require Google Play for installing the victim instant apps . Therefore, we do not consider the apps from Tencent Myapp market for this attack.
+# Answer to RQ4:
+All instant apps are vulnerable to instant app hijacking attack.
+# Implications.
+This defect implies that Android must carefully select the instant app to respond to a URL if there are more than one instant apps can respond to a link. First, if a link is associated with an instant app, only the instant app that passes the app link verification can respond to the link (in our attack, our malicious instant app claims the app via a deep link rather than an app link. Therefore, Google does not force our malicious instant app to verify the link claimed). Second, Android has to ask users to select an instant app to handle if there are multiple instant apps can respond to the URL. Note that, if two instant apps from the same developer/company, it is possible that they can process the same link. Therefore, asking users for their preferences is the solution for this case. Moreover, allowing multiple instant apps for the same URL is an anti-pattern in design.
+# 6 RQ5: What is the accuracy of MIAFinder?
+# Motivation.
+In this paper, we develop MIAFinder to find apps that are vulnerable to proposed attacks. In this RQ, we evaluate the accuracy of the MIAFinder.
+# Methodology.
+To evaluate the accuracy of MIAFinder, we randomly select 800 apps from Google Play and then manually checked whether they can be attacked successfully in order to build a benchmark for evaluating our tool. Next, we run the MIAFinder to find vulnerable apps. Note that, for an app, if it can be attacked by at least one attack (out of three proposed attacks), we consider it as vulnerable.
+# Results.
+As a result, our tool reports 276 vulnerable apps and all of them can be exploited. Therefore, the precision of our tool is 100%.
+The recall of our tool is 87%. There are 2 main reasons why our tool misses some vulnerable apps:
+- Since the current version of our tool cannot handle native code, it may miss vulnerable apps that define and handle the UI elements through native code. For example, if a vulnerable game app is based on Unity, the UI elements can be defined and handled through C code, and thus our tool misses it;
+- Since our tool currently focuses on the default Android UI framework, it misses vulnerable apps that use third-party UI frameworks.
+# Answer to RQ5:
+Based on the experiments of 800 apps, we find that the precision of our tool is 100% and the recall is 87%.
+# 7 COUNTERMEASURE
+# Preventing Link Hijacking with STS.
+To prevent link hijacking with STS attack, we propose 4 solutions.
+- Solution 1. If a developer plans to use TextView (a.k.a, label) in an app, (s)he can use the setTextSelectable(false) to prevent users from selecting any text in a label;
+- Solution 2. If a developer plans to use EditText (users can edit text in EditText), (s)he can use setMovementMethod(null) to prevent users from selecting any text in an EditText.
+- Solution 3. Developers can override the isSuggestionsEnabled() method in default TextView or EditText. The isSuggestionsEnabled() returns a Boolean value to indicate whether or not suggestions are enabled on this TextView or EditText.
+- Solution 4. Another solution is using the setCustomSelectionActionModeCallback API. This API allows developers to customize the popup menu if a piece of text is selected.
+All these approaches aim at preventing users from selecting any text in UIs or customizing the popup menu for STS. Once users cannot select any text in UIs, the STS cannot work.
+# Preventing Link Hijacking without STS.
+To address this, we propose a novel API named verifyDomainPackage. As shown in Fig. 11, Android can invoke verifyDomainPackage, whose arguments are the received an Intent and an Activity. The Intent contains the target URL to open. The Activity represents a candidate component to respond to the Intent. First, it retrieves the package name of the candidate app (e.g., the MIA) that can respond to the Intent (Fig. 11: 1). Second, it extracts the candidate app’s signature stored in Android (Fig. 11: 1-1). Third, it downloads the DAL for the URL given in the Intent (Fig. 11: 1-1). Last, it exams whether the candidate app can respond to the URL by checking the package name, signature with the DAL downloaded (Fig. 11: 1). The verifyDomainPackage can be used to check whether there is an MIA that intends to hijack URLs.
+With the verifyDomainPackage API, Android can check whether a candidate app (i.e., Activity) can be used to respond to a URL.
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+It worth mentioning that using verifyDomainPackage can prevent the link hijacking attack with STS.
+# Preventing Instant App Hijacking Attack
+To prevent the instant app hijacking attack, Android can scan all instant apps installed. If Android finds an instant app that claims a URL that is not owned by the instant app, Android must inform app users about this case. To check whether an instant app owns all URLs claimed, Android can use the verifyDomainPackage API. If an instant app claims a URL that it does not own, the instant app can be a malicious one. Android can notify users of the potential risk of this MIA.
+To wrap up, the novel API verifyDomainPackage proposed can be leveraged to prevent all three attacks aforementioned. We also build our patch and verify it with Android 10.
+# 8 RELATED WORK
+# Deep Links
+Ma et al. ’s work Aladdin helps developers automatically release deep links for an app. Aladdin first computes the paths to reach each Activity and Fragment in a given app. Then, it constructs a proxy Activity to bind all deep links to the proxy Activity. The proxy Activity is also in charge of managing all deep links. Hu et al.  proposed a framework called Elix, which aims at extracting all valid deep links that are defined in an app. Elix extracts app links with a path-selective taint analysis. It leverages a taint analysis that starts from the Activity.getIntent() for taint analysis and prunes infeasible paths with the symbolic execution. Liu et al.  conduct an empirical measurement on various mobile deep links across apps and websites to explore the incorrect configurations for deep links. Different from all these works, our work aims at revealing the defects in app links rather than leveraging (or constructing) app links (or deep links).
+# Instant App
+The only work that related to instant apps is proposed by Aonzo et al. . In , Aonzo et al. reported the design defects in password manager apps and mentioned the misuse of accessibility service can result in security problems. Even though work  leverages instant app as an attack vector, our work has different research targets and unique contributions:  aims at using instant apps for phishing rather than uncovering defects in the app link schemes. Whereas, our work targets at exploring the defects rooted in Android, including link verification, access control, and priority ranking.
+# App Browser Security
+Some works aim at attacking mobile browsers and in-app browsers . Chin et al.  reveal two WebView vulnerabilities, including excess authorization and file-based cross-zone scripting. Tuncay et al.  present that Draco, which enables developers to specify a set of policies to only allow desired access. Wang et al.  reveal the cross-origin risk in Android and iOS browsers and in-app browser apps. With the cross-origin attack, malicious apps can obtain a mobile user’s authentication credentials and record users’ behavior. Different from all these works, our work targets at measuring the vulnerability of app links in terms of using an instant app as an attack vector.
+# App-to-app Communication
+The works on the app to app communication leverage both static and dynamic analysis. On the one hand, researchers leverage static analysis to detect privacy leakage from the victim app to the malicious app [5–7, 19, 26–28, 30, 37, 39, 50–53, 56] using the call graph and taint analysis . On the other hand, some works explore privacy leakage issues with dynamic analysis . Different from all these works, our work highlights the deep link vulnerability introduced with instant apps.
+# 9 CONCLUSION
+In this paper, we revisit app links defined by Android and reveal three attack models that can be exploited. Our attacks showed strong evidence that existing limitations in verifying instant apps and drawbacks in launching instant apps (e.g., an instant app should not be given a higher priority comparing to a typical app). To evaluate whether existing Android apps are fragile to these attacks, we conduct a large-scale empirical study on 200,000 Android apps on Google Play and 200,000 apps on Tencent Myapp. As a result, there are 53,619 Google Play apps and 54,650 Tencent-Myapp apps that vulnerable to link hijacking with smart text selection; 57,442 Google Play apps and 62,496 Tencent-Myapp apps that vulnerable to link hijacking without smart text selection; and all instant apps are vulnerable to instant app hijacking. Finally, we make a series of suggestions to countermeasure the attacks we proposed.
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA
+Yutian Tang, Yulei Sui, Haoyu Wang, Xiapu Luo, Hao Zhou, and Zhou Xu
+# All Your App Links Are Belong to Us: Understanding the Threats of Instant Apps Based Attacks
+# ESEC/FSE ’20, November 8–13, 2020, Virtual Event, USA

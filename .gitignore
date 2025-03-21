@@ -1,0 +1,35 @@
+# Archivos de entorno virtual
+venv/
+.env
+
+# Archivos de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Configuración de editores de código
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Archivos de dependencias
+requirements.txt
+Pipfile
+Pipfile.lock
+
+# Archivos de logs y bases de datos temporales
+logs/
+*.log
+db.sqlite3
+
+# Archivos de compilación
+build/
+dist/
+*.egg-info/
+
+# Ignorar Jupyter Notebooks outputs
+.ipynb_checkpoints/
+
+# Archivos de Docker
+.dockerignore

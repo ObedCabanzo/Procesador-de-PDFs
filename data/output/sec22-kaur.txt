@@ -1,0 +1,361 @@
+# Where to Recruit for Security Development Studies:
+# Comparing Six Software Developer Samples
+Harjot Kaur, Leibniz University Hannover; Sabrina Amft, CISPA Helmholtz Center for Information Security; Daniel Votipka, Tufts University; Yasemin Acar, Max Planck Institute for Security and Privacy and George Washington University; Sascha Fahl, CISPA Helmholtz Center for Information Security and Leibniz University Hannover
+https://www.usenix.org/conference/usenixsecurity22/presentation/kaur
+This paper is included in the Proceedings of the 31st USENIX Security Symposium.
+August 10–12, 2022 • Boston, MA, USA
+978-1-939133-31-1
+Open access to the Proceedings of the 31st USENIX Security Symposium is sponsored by USENIX.
+# Where to Recruit for Security Development Studies:
+# Comparing Six Software Developer Samples
+Harjot Kaur: kaur@sec.uni-hannover.de
+Sabrina Amft: sabrina.amft@cispa.de
+Daniel Votipka: dvotipka@cs.tufts.edu
+Yasemin Acar: acar@gwu.edu
+Sascha Fahl: sascha.fahl@cispa.de
+Leibniz University Hannover, CISPA Helmholtz Center for Information Security, Tufts University, George Washington University, Max Planck Institute for Security and Privacy
+# Abstract
+Studying developers is an important aspect of usable security and privacy research. In particular, studying security development challenges such as the usability of security APIs, the secure use of information sources during development or the effectiveness of IDE security plugins raised interest in recent years. However, recruiting skilled participants with software development experience is particularly challenging, and it is often not clear what security researchers can expect from certain participant samples, which can make research results hard to compare and interpret. Hence, in this work, we study for the first time opportunities and challenges of different platforms to recruit participants with software development experience for security development studies. First, we identify popular recruitment platforms in 59 papers. Then, we conduct a comparative online study with 706 participants based on self-reported software development experience across six recruitment platforms. Using an online questionnaire, we investigate participants’ programming and security experiences, skills and knowledge. We find that participants across all samples report rich general software development and security experience, skills, and knowledge. Based on our results, we recommend developer recruitment from Upwork for practical coding studies and Amazon MTurk along with a pre-screening survey to reduce additional noise for larger studies. Both of these, along with Freelancer, are also recommended for security studies. We conclude the paper by discussing the impact of our results on future security development studies.
+# 1 Introduction
+Human factors research is essential for improving overall computer security and privacy. In particular, developers have increasingly received research attention in the community in recent years. Previous work investigated varying research questions, recruiting participant samples from different populations and platforms. Participants had varying levels of experience, skills, and knowledge from the domains of software development, reverse engineering, vulnerability scanning, or software testing. While some previous studies discussed their recruitment experiences, to the best of our knowledge, we are the first to systematically compare participant samples with software development experience across the popular recruitment platforms used in previous work. To do so, we analyzed 59 papers studying security expert work published in the last five years and identified common recruitment platforms.
+experiences, skills and knowledge researchers required from their participants. While only 24 of these papers included secure development studies and recruited experienced developers, we used the entire set of papers as ground truth to build our online questionnaire. Therefore, we used surveys from previous work to develop a survey that includes questions about general and specific job experience, software development background, security experience, skills, and knowledge and demographic information. We pre-tested this survey and distributed the final version across six samples with 706 participants total. The samples we recruited include CS students, Google Play developers, members of both the Upwork and Freelancer platforms as well as Prolific and Amazon MTurk users.
+The goal of our comparative online study was to answer the following research questions:
+# RQ1.
+Which general software development and specific security development experiences, skills and knowledge can researchers expect from the common recruitment platforms we identified in previous work?
+# RQ2.
+How well do samples compare, and what are the differences between them?
+# RQ3.
+What should researchers take into account when considering sampling for a security development study?
+To answer these questions, we make the following contributions in the course of this paper:
+# Identify Common Recruitment Platforms:
+We analyzed previous work that included security studies with participants with software development experience, to identify common recruitment platforms. Most commonly, studies used networking or regional methods such as recruitment by flyers or at events, despite the drawbacks such as effort to recruit large numbers and regional biases. However, for the scope of this work, we decided against using them to avoid non-generalizable results that could vary between research teams. We further find a multitude of different other approaches, both online and offline. Among the platforms we used in this work, recruiting computer science students and Google Play participants was the most common in related previous research.
+# Survey Design:
+Based on survey questions used in previous work, we design, test and provide a questionnaire to collect information about programming and security experience, knowledge and skills and information about job roles and organizational structures.
+# Comparing Six Samples:
+We survey 706 participants from six samples and compare their survey responses. We find that Google Play, Freelancer, Upwork, and MTurk participants reported the most professional software development experience. Experience performing security tasks was similar across all platforms, with MTurk participants reporting the most security experience overall, and Upwork and Freelancer often performing high as well. We see especially Google Play, Upwork, and Freelancer participants reporting the most experience with specific security tasks such as authorization/authentication, input validation and using API keys. CS students and Prolific users reporting the least experience performing security tasks. Our in-depth review of each platform also identifies several differences that may be important depending on the specific study design, such as vastly different ethnic backgrounds and expertise in particular programming languages and specific areas of security.
+# Recruitment Advice:
+We use our experiences and results to give recruitment advice for future work. For example, studies that only need a small number of experienced developers to complete complex tasks should consider Upwork, which was more time consuming for recruitment, but was easier to filter for specific security skills. Conversely, MTurk is likely a better choice when a larger sample is needed as recruitment is quicker. However, MTurk participants are likely to introduce noise due to fraudulent responses; we recommend to use a pre-screening survey for improved data quality.
+# Replication Package:
+To support reproducibility of our work, we provide the following materials in a replication package : the screening and final survey questions we used, formatted collection of questions we found in our literature evaluation, text used in the recruitment emails and the job posts, additional figures and tables, and the consent forms.
+The remainder of this paper is organized as follows: In Section 2 we discuss previous works that compared and analyzed recruitment platforms in developer research. In Sections 3, 4, and 5 we present the methodology of our studies as well as their results. Following this, we address the limitations of our work in Section 6 and interpret our results in Section 7. We draw a conclusion as well as address topics for future work in Section 8.
+# 2 Related Work
+We describe and discuss related work in two key areas: Comparisons of different recruitment platforms or strategies for user studies with end-users and user studies with developers with a focus on participants with development experience.
+# Comparing Recruitment Platforms and Strategies:
+The impact of recruitment platforms has been widely discussed for participant recruitment. In 2017, Peer et al. empirically evaluated CrowdFlower and Prolific Academic as alternatives for MTurk. They report higher participant naivety, honesty and diversity on CrowdFlower and Prolific as compared to MTurk, but the data quality differed. Prolific performed similar to MTurk, but CrowdFlower offered the lowest data quality . A 2017 case study by Bentley et al. compared MTurk and SurveyMonkey to a sample recruited by a market research.
+1 You will also find the paper’s replication package in its accompanying website .
+4042 31st USENIX Security Symposium USENIX Association
+company in the context of product design. They found that most results fall into a 10% margin of error, which fits their sample sizes of 150 per survey platform . In 2014, Schnorf et al. compared six survey sample providers and panels (e. g., Google Consumer Surveys). They distributed a survey regarding end-user privacy comfort to investigate potential differences between the survey providers by recruiting between 835 and, 1115 participants per sample. They found that the results differed based on platforms because some recruit random users while others use probabilistic methods or opt-ins . In 2019, Redmiles et al. compared Amazon MTurk with a census-representative sample from a web panel and probabilistic sample via telephone. They found that the results from MTurk were closer to the probabilistic sample and therefore the general US public than the web panel, suggesting that the choice of platform has an impact on results . A 2019 work by Chandler et al. compared MTurk and Prime Panels (an online research panel aggregate). They find similar data quality but more diverse participants on Prime Panels than on MTurk with more direct access to lesser represented user groups, albeit with inevitable trade-offs . While the above studies focused on the recruitment of end-users, our work is the first to compare six samples of expert users with a focus on participants’ software development experience.
+# 3 Security Studies with Software Developers
+In the following section, we investigate recruitment strategies and survey questions in security studies with experienced software developers. We aim to gain insights into common recruitment strategies and the experiences, skills and knowledge previous studies required from their participants. Therefore, we collected and reviewed five years of relevant research published at important security, privacy and HCI venues. We did not aim for an exhaustive literature review across all potential venues from the beginning of studying developers. Instead, our goal was to learn recent common practices. The literature review is the foundation of the comparative studies we conducted in Section 4. Figure 1 gives an overview of our overall methodology.
+# Literature Analysis
+Literature Selection informs and motivates Comparative Online Study
+Survey Design + Piloting + Survey Distribution + Data Analysis
+# 3 Literature Selection
+We broadly selected publications in the field of usable security and privacy that conducted user studies with security experts. Although we only survey developers, studies with different types of experts are often related and similar in nature, and therefore including them gives us a wider net, which helped us design a fitting survey questionnaire. We focused on works published between 2016 and 2020 at the top (usable) security and privacy, and human computer interaction venues: the USENIX Security Symposium (SEC) , the ACM Conference on Computer and Communications Security (CCS) , the IEEE Symposium on Security and Privacy (S&P) , the Network and Distributed System Security Symposium (NDSS) , the Symposium on Usable Privacy and Security (SOUPS) , the Human Factors in Computing
+USENIX Association 31st USENIX Security Symposium 4043
+# 3 Literature Survey
+For the remaining set of papers, we collected information about participant recruitment and survey questions if available. We extracted the following information: type of participants (e. g. software developers or system administrators), recruitment platform (e. g. MTurk or CS students), number of participants, and compensation amount and type. Two authors independently reviewed each paper for the above information in detail. Disagreements were immediately discussed and resolved. In the course of the detailed analysis, we removed 15 more papers for either a missing security focus or not recruiting expert users, leaving us with 59 papers in the final set (cf. Table 3 and 4 in Appendix A).
+For papers that included studies with both end-users and expert users, we only considered expert user information. To collect all information from each paper, we first checked if it was included and available as part of the paper, the appendix, or a replication package. For questions, we decided to focus purely on surveys and excluded questions from interview studies. Interviewers often use open-ended questions and encourage participants to elaborate their answers, which works well for explorative interviews, but might not translate well to quantitative survey questionnaires.
+Overall, we found participant recruitment information in 58 papers and 363 questions in 45 papers. In ten cases we could not find the information in the paper and contacted the authors. All but one acknowledged our request and provided us with the necessary information. One research team did not retain the original survey questions and could only provide us with rough estimates of the used questions. We assigned all extracted survey questions and answer options to one of the following categories:
+- General. Demographics such as age, gender, or education.
+- Experiences, Skills, and Knowledge. Security and programming experiences, skills and knowledge.
+- Scales. Established scales such as the System Usability Score (SUS) or the Secure Software Development Self-Efficacy Score (SSD-SES).
+- Specific. Specific questions for studies, e. g. self-assessment of task success or failure.
+We excluded specific questions from our survey if they were narrowly focused on e. g. a specific tool or area of development. In case multiple papers included questions with identical or similar phrasing, we merged them while keeping track of their origin.
+# 3 Results
+Below, we present and discuss the results of our literature survey used to inform and motivate the comparative studies in Section 4. However, we do not intend to systematize previous work (cf.  and  for respective systematizations).
+24 of the analyzed papers recruited participants with software development experience, ten recruited system administrators or operators, and another 24 recruited security experts. While these security experts all had computer science and security backgrounds, they differed from each other, e. g. in terms of experience in a certain job role, skills, or security certifications. In seven papers, we could not find sufficient details to determine the participants’ job role. One paper did not provide exact participant numbers. 23 papers offered fixed payments of varying amounts, some using gift cards. One paper used performance-based payments, and six raffled a prize among all participants. For the other papers, 21 did not mention any reward, and 11 stated that they did not reimburse participants. Overall, we identified 25 recruitment platforms.
+In 12 papers, recruitment was described at a superficial level, such as e. g. social media ads  or online cold calling . We assigned all 25 strategies to six categories (number of papers in parentheses):
+- Unsolicited Emailing (10): Papers in these categories sent unsolicited emails by collecting participants’ contact information. Example email collection platforms are GitHub (5) and Google Play (5).
+- Social or Regional Contacts (75): Strategies based on some form of professional or personal network (29), snowball sampling (10), as well as recruiting through security related events (13) or regional expert meetups (4). Also includes the distribution of flyers (6), Craigslist (2), and the recruitment of computer science students (11).
+- Social Media (10): Posting study information on social media platforms such as Twitter (5), Facebook Groups (1) and
+# 4     Comparative Study of Recruitment Platforms for Security Developer Studies
+Based on the results in Section 3 we designed, pre-tested and conducted a comparative online survey study with six samples of developers. We collected their demographic information, as well as data about participants’ security and programming knowledge, skills and experience with an online questionnaire.
+Before we recruited participants and conducted the surveys, we pre-tested our survey with cognitive interviews  with members of our research group who were not part of this project. This allowed us to gather insights into how participants interpret and answer questions. During our cognitive interviews, participants shared their thoughts as they answered each survey question. We used our findings to iteratively revise and adapt the survey questions and answer options to minimize bias and maximize validity.
+In a second pre-test, we refined our survey with two rounds of pilot studies on Prolific with 20 users each, similar to approaches in other works . To screen, we used Prolific filters based on self-reported computer programming and software development experience. We slightly adjusted and improved our phrasings for the final survey based on the results of our pilots.
+For recruitment purposes, we created a short screening survey (cf. replication package ), that inquired about software development experience, current job role and gender to be able to filter eligible participants wherever necessary. For our final survey, we exclusively invited participants who claimed to have experience as a software developer in our screening survey. As we could not confirm the self-reported development experience of Prolific and MTurk users, we used two additional programming questions from Danilova et al.  in a new screener and repeated these samples. Finally, we conducted a priori power analysis to determine the number of required participants for our statistical tests. We used standard assumed effect sizes gathered from literature (0 for Kruskal-Wallis, a medium 0 effect size for Chi-square, and 0 for Mann-Whitney-U). All analysis suggested that at most 325 overall and 29 participants per group would be required, which we exceeded by far in our recruitment.
+# I. Introduction
+What job roles do participants have?
+# II. Developer Demographics
+How experienced or skilled are participants as developers?
+# III. Organizational Demographics
+Questions about participants' workplace and team.
+# IV. Coding
+How did participants learn how to code, how long have they been coding?
+# V. General Demographics
+General Demographics such as age, gender, or education.
+The survey structure is outlined in Figure 2. Overall, the survey consisted of five sections with 46 questions. The sections ranged from general to specific job experience, to organizational, to coding and finally demographic questions. The complete survey is listed in the replication package . We distributed the survey in English, but translated the survey for German students.
+# I. Introduction
+In the first section, we asked participants about their experiences in different job roles (cf. Q1 - Q2).
+# II. Software Development Background
+We asked participants specific questions about their experience as software developers, such as how they learned about programming, how proficient they were in prominent programming areas, how much experience they had in these areas and if it included the integration or deployment of security mechanisms (cf. Q3 - Q12).
+# III. Organizational
+This section contained questions addressing participants’ workplace, including number of employees at their organization, size of their team, and if their work included security-relevant tasks and decisions (cf. Q13 - Q19).
+# IV. Programming
+This section had questions concerning programming experience, including the expertise with dif-
+USENIX Association 31st USENIX Security Symposium 4045
+# 4 Survey Distribution
+We distributed our survey on six different recruitment platforms we identified in Section 3: MTurk, Prolific, Upwork, Freelancer, Google Play and computer science students. Table 1 summarizes the recruitment platforms we used and illustrates their unique deployment characteristics, including options to filter participants. Although we are not aware of previous work that recruited participants with software development experience from Amazon MTurk, we chose to include it because of its general popularity in usable security and privacy research and to investigate to what extent it can be used in future security developer studies.
+For MTurk participants, we required an approval rate of at least 95% and 100 or more jobs completed. On Prolific, we filtered for participants who had self-reported computer programming or software development experience. As we were unable to confirm the self-reported programming knowledge of Prolific or MTurk participants, we additionally added two programming skill questions from Danilova et al.  designed to test development skills (cf. replication package ) to these screening surveys and redid both platforms. On Upwork, we focused the recruitment on freelancers who had at least entry-level experience, a job success rate of 90% and were conversational in English. For participants on Freelancer.com, we used the built-in search and filtered for users based on the term ’Software Development’. On both freelancing platforms, we used user profiles to confirm participants’ experience. We extracted public contact email addresses from Google Play Store applications and contacted 76,978 developers. To recruit computer science students, we contacted ten U.S. and five German universities that offered a CS degree program and kindly asked colleagues to distribute the survey between their students. We assumed that both CS students and Google Play developers have programming skills on at least a beginners level due to their professions.
+# Excluded Platforms
+We did not recruit participants from all platforms we identified in previous work (cf. Table 1). Although previous studies used GitHub to recruit participants , we decided against it, as extracting emails from GitHub commit messages violates their terms of service and might also constitute a violation of the European GDPR. We also excluded platforms that vary significantly between research teams, making it unlikely to produce generalizable results. This includes platforms that depend on the authors’ contacts, such as Twitter or other social networks. Similarly, we excluded platforms requiring exclusive access to small or local groups, such as specialized companies or developer meetups. Additionally, our own experience and feedback from some of the authors of papers in our review who used, e. g., social media or security events for recruitment (Table 3) illustrates that recruiting from these platforms usually resulted in smaller samples and higher effort (e. g., contact 20 mailing lists for 15 participants).
+# 4 Data Analysis and Quality
+Our results only include quantitative data points. We use Kruskal-Wallis (KW) as a non-parametric equivalent to the one-way ANOVA to compare multiple independent groups and for ranked categories (e. g. Likert scales). For unranked categorical questions, we use the Chi-square test (χ2). In case of the SSD-SES, we used a more appropriate Mann-Whitney U test. Procedurally, we first performed omnibus tests, which were then followed by pairwise comparisons. We assume an alpha level of α =  for significance in hypothesis tests and corrected our results using the Benjamini-Hochberg procedure.
+To improve data quality, we removed invalid participants, including 68 participants who reported a contradicting lack of experience as a developer in the final survey despite reporting otherwise in the screening survey. We further excluded 168 participants who did not finish the survey and five who gave identical answers or wrote nonsensical comments in free-text responses. We checked completion times, but did not find anyone who finished the entire survey in less than three minutes (we used estimated completion times identical to the Stack Overflow 2020 developer survey ). In total, we excluded 241 participants, leaving us with 706 valid responses.
+# 4 Ethics
+None of the involved institutions required a formal IRB approval. However, we only used previously established questions that always included options to decline to answer. Furthermore, every participant agreed to our consent form with detailed information about the study, responsible researchers and contact information, risks, benefits as well as privacy and participant rights. At the end of the survey, participants had the chance to not submit their answers to exclude them from our analysis. Our survey did not collect any PII except for the email addresses of participants interested in the raffle, which were deleted after the raffle was done. We stored the collected data on our encrypted cloud server, which only involved authorized personnel.
+# Survey Distribution Details
+Additionally, we used random six-digit numbers to identify valid submissions for compensation, but they were not stored and processed further in any other way. Compensation depended on the platform, but we aimed to award at least US federal minimum wage. For the screening surveys on Prolific and MTurk we paid $0 for one minute of work which was increased to $0 for three minutes in the rerun, while we awarded $5 for the full survey. Although we do not have data on the exact survey completion times, Prolific reported rates well above the US federal minimum wage. Participants we needed to contact via email had the chance to take part in a raffle for 20 $50 gift cards.
+# 5 Results
+In the following section, we report and discuss the results for our survey across all six samples. As we could not find significant differences between them, we merged the English and German student samples and refer to them as students collectively to mitigate the regional bias when examining samples from different countries. Since some of our questions allowed multiple response selections, the percentages we report may not always add up to 100%. Due to the high amount of information, we provide detailed numbers on all questions in Tables 5, 6, 7, and 8 in the replication package .
+# 5 Participants’ Demographics
+Overall, a total of 947 participants started our survey. Of those, we considered 706 complete and valid responses on Amazon MTurk (101), Prolific (122), Upwork (72), Freelancer (100), Google Play (103), and in the student sample (208) for our analysis. We report the details on the recruitment and participants per platform in Table 1.
+Across all platforms, we find that participants reported experience in areas besides development, however, the extent of this varied. Most commonly, developers also had experience as software testers (58-70%). We found networking skills the most common on Google Play (45%) and the least common for Upwork (22%) and Prolific participants (21%). Reverse engineering knowledge was overall less common, with at most 22% on Freelancer. It was least common on Prolific (10%) or for students (13%). We report the most relevant general demographics in Table 2. Across all samples, our participants predominantly identified themselves as male (83%), with CS students (μ: 24) followed by Upwork (μ: 27) and Prolific (μ: 28) being the youngest groups and participants from Google Play (μ: 37) the oldest. Most participants (74%) studied computer science. However, except for MTurk, where 21% self-reported a computer security focus in their studies, at most 4% reported this on the other platforms. Furthermore, only a minority of participant reported a disability and only on Freelancer (45%) and MTurk (41%) we found a large portion to be a primary caregiver for children, elderly or disabled.
+Cultural background and language proficiency: Participants across all samples reported a wide variety of ethnicities (cf. Figure 9 in replication package ). Overall, we find that on Prolific (86%), Google Play (76%), MTurk (71%), and in the CS student sample (59%) most participants reported to be white or of European descent.
+English (US) was reported as the native language for a majority of participants on MTurk (78%) which is likely due to most of them being located in the U. S. (71%), whereas a plurality of participants on Google Play (40%) and in the student sample (40%) reported German as their native language. Participants on Prolific, Upwork and Freelancer reported a variety of native languages with none of them standing out. Despite only MTurk users being the only sample with a majority of native English speakers, a majority (89%) across all platforms reported being very comfortable in answering the survey in English on a five-point Likert scale.
+Education and employment: A majority of participants on MTurk (76%), Upwork (63%) and Freelancer (53%) reported having a Bachelor’s degree, while the most common degree on Google Play (27%) was a master’s degree. While not a majority, a Bachelor’s degree was most common for students (32%) and on Prolific (38%). Additionally, a majority within the student sample reported to be students (60%) or part-time employees (22%) as opposed to other samples.
+# 5 Participants’ Demographics
+where most were full-time employees or self-employed. An exception here was Prolific, where 26% of the participants reported to be students, the second-largest group after full-time employees (45%). Overall, most participants reported to work as a software developer (78%). No other job roles particularly stood out, but overall 34% of participants reported to work as an Engineer as a second most common job role. Job role distribution did not vary much between platforms with only students reporting to have roles like data science or ML specialist (20%) and academic researcher or scientist (20%) more than other platforms.
+Workplace size and working hours: Across all platforms, the majority of participants (70%) reported working in a small company with less than 500 employees. Additionally, students (μ: 22) reported the lowest overall working hours per week. Participants on Freelancer (μ: 39) followed by Google Play (μ: 37) and MTurk (μ: 36) reporting the highest working hours. This stresses how most participants, except for students, who more commonly work part-time, are full-time developers.
+Key Points | Participants’ Demographics: Software development experience is by far most common. Participants are also (less) experienced with security-relevant areas such as reverse engineering or vulnerability research. Current job roles encompass mostly development. The majority of our participants studied computer science with no security focus, and many participants work full-time in smaller companies. Disabilities are very rare. Caregiving (for children) was only common on MTurk and Freelancer. We find a wide variety of ethnicity and native languages between platforms. Bachelor/Master degrees are common.
+# 5 General Programming Experience and Knowledge
+In this section, we report our participants’ general programming experience and knowledge across all samples.
+Development experience: We asked participants to report their total and professional development experience in years (cf. Figure 3). Google Play participants reported both the highest overall (μ: 17) and professional development experience (μ: 11). In contrast, students were least experienced regarding both overall (μ: 7) and professional experience (μ: 2). For total programming experience, we find no significant difference, while the professional experience on Google Play is significantly higher than on Upwork (KW, H = 7, p ă 0) or for students (KW, H = 11, p = 0) after correction.
+Development tasks per week: Furthermore, we asked participants how many hours they spent on software development tasks per week. The majority of Freelancer (79%), Google Play (61%) and Upwork (63%) participants reported working more than 20 hours per week, confirming the previous findings of their commonly reported full-time status. Conversely, the majority on Prolific (60%) and in the student sample (65%) and a bit more than half of MTurk participants (54%) report that they work 20 hours or less.
+# 5 Security Experiences, Knowledge, and Skills
+In this section, we provide details on security experience, knowledge and skills our participants reported.
+# General security experience, knowledge and skills:
+We asked participants to report their general computer security experience in years, including studying or working (cf. Figure 3). Google Play participants self-reported the highest security experience (μ: 4) and Prolific users the lowest (μ: 1). However, we found no statistically significant differences between samples.
+Based on the SSD-SES scale  we found that participants across samples reported different confidence in their secure development skills (Freelancer.com: μ: 26; MTurk: μ: 26; Upwork: μ: 24; GPlay: μ: 22; CS Students μ: 21; Prolific: μ: 18), and the students’ confidence to be significantly lower than the other samples (Mann-Whitney U, U = 370–1107, p < 0).
+# Implementing specific security features:
+We were interested in learning our participants’ experiences with implementing specific security features, e.g., encryption or storing user credentials (cf. Figure 5). Our participants reported most experience with implementing input validation, authorization and authentication features, using API keys, using encryption.
+# Proficiency in programming, scripting and markup languages:
+An essential recruitment criteria for developer studies, especially those with practical tasks, is the proficiency with specific programming languages  or development areas . Hence, we asked them to rate their proficiencies with the top 15 programming, scripting, or markup languages (cf. Figure 4a), and different development areas.
+# Input validation
+42
+66
+79
+83
+83
+72
+# While working
+54
+23
+41
+48
+53
+38
+# Authorization / Authentication
+42
+59
+81
+86
+83
+69
+80
+# API keys
+40
+65
+79
+88
+86
+68
+70
+# Event by employer
+30
+12
+18
+21
+13
+12
+50
+# Encryption / Decryption
+63
+52
+56
+77
+75
+61
+60
+# Store user and password
+38
+50
+72
+65
+62
+52
+# School/college/university
+44
+40
+38
+33
+29
+62
+40
+# Secure network/comm.
+33
+25
+40
+41
+60
+35
+50
+# Transfer files securely
+28
+25
+43
+43
+35
+33
+40
+# Online courses
+16
+11
+26
+25
+19
+11
+# Key management
+30
+30
+26
+40
+42
+28
+# Signatures
+18
+12
+22
+30
+30
+22
+30
+# Fraud prevention
+10
+4
+9
+19
+18
+8
+20
+# None
+1
+11
+0
+1
+4
+6
+# Other
+1
+0
+2
+2
+0
+1
+# No training
+3
+31
+20
+15
+25
+17
+and storing user credentials. They reported the least experience with cryptographic key management, digital signatures and fraud prevention features. We also found that participants from Upwork, Freelancer and Google Play reported most experience with implementing specific security features. In contrast, participants from MTurk and Prolific reported the lowest experience. CS students were in the middle.
+Finding security problems in code: Furthermore, we asked participants how often they used specific techniques to find security problems in their code, including automated or manual code reviews, tools to scan their code for vulnerable libraries and penetration testing. Overall, we found the usage frequency for these techniques does not differ much between samples (cf. Figure 8 in replication package ). For most techniques, participants state to have used them once or occasionally (20-47%) or not at all (16-65%). Within all techniques, penetration tests are the least frequent (37-65% stated to not use or consider them), most likely due to their massive overhead. We find MTurk participants report generally higher frequencies, with 25-45% stating they use every technique for at least all builds or releases. We find that in general, code reviews are more frequent than other techniques, both manual reviews by other developers (32-47% at every build or release) or automated code scanning tools (22-45%).
+# Receiving security training:
+We asked participants which security training they received in the past, including training on the job, at school or university, online and self-taught training (cf. Figure 6). In almost all samples except Prolific, more than one third of participants received a security related training at work, with Google Play (53%) and MTurk (54%) participants reporting extraordinarily high numbers. In contrast, only 10 to 20% of all participants except for MTurk (30%) participated in a dedicated security training event organized by their employer. Across all samples, at least roughly a third (29% on Google Play) of participants received a security training at educational institutions, the highest being students (62%). Online courses were similarly popular across all samples, except for CS students and Prolific, who took them only about half as often as others. While 24% of MTurk participants reported to have participated in dedicated workshops or seminars, only 6% of Prolific participants and roughly 15% of the remaining participants did. A majority of Google Play participants reported that they were self-taught (58%), with similar high numbers on Upwork (40%) and Freelancer (48%), which fits to the culture of freelancing or self-employment. This is in stark contrast to MTurk participants, where only 16% report to be self-taught.
+# Security-related activities and events:
+We asked participants about security certifications, participation in security events or CTF contests, software vulnerability disclosure, and submissions to bug bounty programs (cf. Figure 7), as we found these as recruitment criteria or methods in our literature review. Overall, we found that participants most commonly attended security related events or had previously disclosed vulnerabilities. However, this did not apply to Google Play participants.
+# Certificates
+29
+8
+5
+22
+2
+5
+40
+# Sec. Events
+45
+24
+37
+37
+20
+42
+30
+# CTF contests
+23
+3
+6
+11
+11
+19
+25
+# Disclosed vuln.
+28
+28
+45
+40
+22
+26
+15
+# Bug Bounty
+25
+16
+22
+25
+9
+8
+10
+# 4050
+# 31st USENIX Security Symposium
+# USENIX Association
+# Key Points | Security Demographics
+MTurk along with Freelancer and Upwork participants reported the highest values for most security related questions. CS students and partially Prolific participants reported the lowest. Secure development features were used, but not by a majority. Most common features included input validation, authorization and authentication, API keys, encryption and storing passwords. More than a third of all participants reported security training at work. Security activities were not common in most samples. We found a security focus and tasks more common in teams than for solo workers.
+# 6 Limitations
+Both the literature survey and the online study have limitations. First, the literature survey is limited to the proceedings listed in Section 3. We cross-checked with literature reviews from 2018  and 2021 , which also included workshops and lower-ranked venues, finding no significant oversights and believe to have identified and included all relevant papers.
+Due to the diverse nature of screening questions, payment types and filtering criteria, we were unable to perfectly replicate all previous work on all tested platforms. We furthermore decided against certain recruitment strategies that were too easily influenced by research team location (e. g., security events or meetups) or personal/professional contacts (e. g., social media, LinkedIn), or that would not allow us to recruit sufficient sample sizes. An exception to this was the student sample. While these are also influenced by location, we argue that they are easy to reach for university researchers, and in our sample, decided to merge several student samples to mitigate the biases.
+Participants on Upwork and Freelancer were able to directly communicate with us, and were often interested in additional jobs, which might have been an incentive to report higher scores to leave a better impression, although we do not find both platforms to perform visibly better than others.
+For some platforms, we required multiple runs or stops in between due to bureaucratic reasons (i. e., resolving payments with our institutions), resulting in longer data collection time frames for these samples. Furthermore, there may have been instances of the same person participating multiple times through different platforms. However, we asked participants on which recruitment platforms they are active, to which participants reported up to three additional platforms on average (cf. Figure 10 in replication package ). We argue that due to other differences in, e. g., ethnic backgrounds, it is unlikely that participants responded multiple times on a large scale.
+USENIX Association 31st USENIX Security Symposium 4051
+For the German student sample, due to translations and differing cultural and societal circumstances, participants were able to select a different number of answers for the gender, primary study field and caregiving question. We found no significant impact in the data due to this. Lastly, as recruitment channels change, we believe that this kind of study should be repeated from time to time.
+# 7 Discussion
+In this section, we discuss our experiences with the recruitment platforms used in this research and provide recommendations for platforms suitable for certain security study types. As researchers need to consider their target population when deciding for or against recruitment platforms, we discuss insights from results below that can be helpful for recruitment decisions.
+# 7 Participant Characteristics
+Development experience, skills and knowledge: Development experience and skills are common selection criteria for secure development studies. Our results offer insights to researchers considering a variety of points along the experience spectrum, depending on their study’s needs. We found students to have the least experience while Google Play developers have the highest overall and professional development experience. This finding is also backed up by the fact that most students reported working part-time or studying as their main occupation. In contrast, participants on Google Play and other platforms are older and report more years of experience as well as working full-time, which positively influence their experience. MTurk and Freelancer participants report the second-highest overall and professional development experience, respectively and can be considered reasonable developer recruitment alternatives to Google Play, with the benefit of offering faster recruitment.
+Another relevant set of criteria for developer recruitment is the specific skill set participants may have, such as knowledge of a certain programming language or development area which could be useful for studies that want to research, e. g., a security aspect of Python programming. We found MTurk to be the most diverse as participants reported high proficiency levels for most development areas and languages. Google Play developers reported to be more proficient with Java and Kotlin, CS students with Java and Python, while participants on Freelancer and Upwork reported high proficiency with SQL and HTML/CSS. While some of these might be coincidental, it seems sensible to find Android developers to be skilled in Java, and that Java and Python are popular teaching languages for students.
+Researchers also often need to balance their experience and skill needs with the amount of recruitment effort required. While we were able to recruit developers on all platforms we sampled, we found that on some, the recruitment was faster or easier. This was especially the case on Prolific and MTurk, as researchers can screen and hire developers in batches, while Upwork and Freelancer are focused on contract-work and therefore require researchers to hire one participant at a time.
+Security experience, skills and knowledge: Overall, we found our participants to have experience in various areas of secure development. Regarding experience with security features, we found usage of input validation, authentication, API keys, encryption and password storage most common, especially widespread on Upwork, Freelancer and Google Play, suggesting a wider range of experience with secure development than within other samples. Regarding the frequency of secure development tools to find code problems, MTurk participants reported deploying them on a much more frequent basis than all other samples; we found no meaningful differences between the other samples. While we only regarded participants with development background in our analysis, we asked for experience with several other areas and find security-relevant job roles present in our samples, making recruitment of e. g. reverse engineers on Freelancer a more viable option than on Prolific or Google Play.
+Overall, MTurk participants reported the highest values for most security-related questions, suggesting it is easier to recruit developers there. This includes job role diversity, especially in security-related disciplines such as reverse engineering or vulnerability research, as well as years of security experience and their security knowledge confidence, which was rated with the SSD-SES. While MTurk looks promising, we encountered a high number of invalid and very similar answers, likely due to multi-accounting, in our initial run. This required us to redo the sample with an adjusted screening that included programming skill questions from Danilova et al. . We therefore recommend to use MTurk with caution and similar strict screening requirements to increase data quality. While we did not observe this problem on Prolific, we also could only rely on self-reported skill, and decided to redo this platform with the same screener. Future work should investigate our findings in more detail to better assess the recruitment of MTurk users for security development studies. As an alternative, Freelancer and Upwork participants also often reported high values (more than MTurk at some instances) on security-related questions. They are further viable options when researchers are trying to reach a diverse sample. On the other hand, we find students as well as Prolific participants to be less experienced with security, as they reported the least years of security experience, use security features least often, and had the lowest SSD-SES scores. We further found that participants who work in teams are more likely to have a security focus in their job or work on security-relevant tasks when compared to those who work alone. This is another pointer towards using platforms like MTurk, where comparatively more participants work in teams, to recruit security experts.
+4052 31st USENIX Security Symposium USENIX Association
+# Sample Diversity
+While participant experiences, skills and knowledge are important aspects of recruitment, diversity of demographics might also be essential for research projects. In our survey, Google Play developers report the highest average age and the widest age range, correlating with their high number of working years. CS students are the youngest. Regarding gender, we find an overwhelming majority of male participants over all platforms, which is sadly usual in security research. Only on Prolific (26%) and in the student sample (20%) we found a comparatively high number of female participants. Regarding ethnicity, we found Freelancer and MTurk to be the most diverse, while Google Play and Prolific resulted in very euro-centric samples. We argue that due to these findings, MTurk and Freelancer offer the widest degree of diversity within their samples.
+# 7 Specific Recruitment Strategies
+# Crowdsourcing
+The crowdsourcing platforms MTurk and Prolific offer a straightforward recruitment process. Although both did not offer screening opportunities besides pre-existing and potentially lacking filters, setting up additional screening surveys to find suitable participants is simple. However, we found cases of multi-accounting on MTurk that required us to use specific skill-based screening questions. On both the platforms, it is easy to quickly collect a large number of participants, but control over the sample is limited and dependent on the available filters, which can be insufficient when targeting a specific population. This can also lead to skewed populations, e.g. in case of the very euro-centric Prolific, or influenced by online trends . We recommend MTurk for larger studies with more participants where some noise (i.e. fraud) in the data could be acceptable. Studies with a smaller number of required participants should use platforms like Freelancer or Upwork, where the data is less likely to be noisy. Besides, the slower recruitment should be less of an issue for smaller studies, and researchers can gather more information about the participants’ experience via their profiles.
+# Freelancers
+It was more complex to create job postings on Freelancer and Upwork, as these platforms are tailored towards recruiting only a few freelancers for more complex practical tasks such as programming a website, leading to comparatively high minimum wages per job of $10 or $5. Therefore, we needed to provide more information in the setup process about both the job, and our expectations for participants, but were able to directly communicate and sufficiently filter for qualified participants. However, this led to some users trying to bargain with us which was much more time-consuming than the crowdsourcing platforms. On Upwork, it was possible to include screening questions into the job post. Between the two, we found recruiting on Upwork to be less complex and more intuitive, as well as having benefits such as easier and faster payment options. Additionally, we received only two applications on Freelancer, which forced us to manually contact participants. Therefore, we specifically recommend Upwork to recruit experienced developers for practical coding studies or similarly larger tasks.
+# Email Invites
+We contacted both Google Play developers and students via email. While CS students can be reached using university mailing lists, access to these cannot be taken for granted for all research institutions or unaffiliated researchers. Although we only used public contact information from Google Play, the common practice of harvesting email addresses from GitHub commits is a legal gray area that researchers should be aware of . Additionally, we found that many developer addresses are inactive or lead to ticket systems that might never reach a developer. Overall, distributing a survey via email is the fastest and cheapest, but also offers the worst response rates. As there is no platform for handling payments, offering compensation is more complex. Finally, sending unsolicited email invites is increasingly perceived as spam and the collection and use of non-public contact information is inhibited by emerging privacy laws such as the GDPR in the EU.
+# Key Points | Recruitment Advice
+Developers were present on all platforms. Google Play developers are the most experienced, but focused on Java and Android. Students are less experienced than other platforms. While there are developers on Prolific, they are less experienced in security topics. Crowdsourcing platforms should only be used with filtering via screening questions, especially MTurk. Freelancing platforms require a lot of manual work and are more expensive. While emails are cheaper, they have low response rates.
+# 8 Conclusion
+In this work, we first identified common recruitment strategies for user studies with participants with software development experience. We extracted relevant survey questions from these papers, and designed and tested a questionnaire to study the general and security programming, knowledge, skills, and experience of participants. Finally, we surveyed 706 participants across six samples, and provide detailed insights into their survey responses. Overall, we found that participants across samples varied significantly, and that the characteristics of different recruitment strategies highly influenced their suitability for different study types. In future work, more recruitment platforms we excluded in our work should be investigated for a broader picture of viable recruitment methods for security development studies. Similarly, future work could investigate developer samples with a different focus such as system administrators or security engineers. Finally, while we found that MTurk participants self-reported high overall and security experience, skills and knowledge at most instances, this particular finding should be further investigated.
+USENIX Association 31st USENIX Security Symposium 4053
+# Appendix: Literature survey tables
+# Recruitment Strategies
+Participants: O = Other, D = Dev, A = Admin, E = Expert; Compensation: P = Payment, PP = Performance based, R = Raffle, - = None, N = Not Explicitly Mentioned
+USENIX Association
+31st USENIX Security Symposium 4057
+# Venue
+# CCS
+# HIE
+# EuroUSEC
+# NDSS
+# SSS
+# &
+# PSO
+# UPS
+# USEC
+# USENIX
+# Cite
+# 31st USENIX Security Symposium
+# USENIX Association

@@ -1,0 +1,33 @@
+# VI. Conclusion
+The open-source feature of Android system makes it easy that any people can release the App developed by himself. Due to the absence of strict development specifications, Android Apps usually declare extra permissions which have nothing to do with their function. We call this issue permission overprivilege. The dangerous permissions defined by Android are related to user’s private information, therefore the overprivileged dangerous permission may lead to the leakage of user privacy. To address this problem, in this paper, we present a tool based on frequent item set mining to detect the overprivileged dangerous permission of an App. The tool have two kinds of work modes, one is online mode and another is offline mode.
+
+Online mode needs user to input correct App name and offline mode requires user to select a local APK file and specify its category. Finally, we test 1000 Apps crawled from Google Play and find 479 of them are overprivileged. The testing results comparison between our tool and previous research indicates that Apps’ permission overprivilege becomes more serious.
+
+# References
+1. Market share alert: Preliminary, mobile phones, worldwide, 2q18. [Online]. Available: https://www.gartner.com/doc/3881811/market-share-alert-preliminary-mobile
+2. R. Johnson, Z. Wang, C. Gagnon, and A. Stavrou, “Analysis of Android Applications’ Permissions,” in IEEE International Conference on Software Security and Reliability Companion, 2012, pp. 45–46.
+
+3. A. P. Felt, E. Chin, S. Hanna, D. Song, and D. Wagner, “Android Permissions Demystified,” in ACM conference on Computer and communications security, 2011, pp. 627–638.
+
+4. K. W. Y. Au, Y. F. Zhou, Z. Huang, and D. Lie, “PScout: Analyzing the Android Permission Specification,” in ACM conference on Computer and communications security, 2012, pp. 217–228.
+
+5. A. Bartel, J. Klein, M. Monperrus, and Y. L. Traon, “Static Analysis for Extracting Permission Checks of a Large Scale Framework: The Challenges and Solutions for Analyzing Android,” IEEE Transactions on Software Engineering, vol. 40, no. 6, pp. 617–632, 2014.
+
+6. P. Chester, C. Jones, M. W. Mkaouer, and D. E. Krutz, “M-Perm: A Lightweight Detector for Android Permission Gaps,” in IEEE/ACM 4th International Conference on Mobile Software Engineering and Systems (MOBILESoft), 2017, pp. 217–218.
+
+7. W. Shin, S. Kiyomoto, K. Fukushima, and T. Tanka, “A Formal Model to Analyze the Permission Authorization and Enforcement in the Android Framework,” in IEEE Second International Conference on Social Computing, 2010, pp. 944–951.
+
+8. K. W. Y. Au, Y. Zhou, Z. Huang, P. Gill, and D. Lie, “Short Paper: A Look at SmartPhone Permission Models,” in ACM Workshop on Security and Privacy in Smartphones and Mobile Devices, 2011, pp. 63–68.
+
+9. P. Faruki, A. Bharmal, V. Laxmi, V. Ganmoor, M. S. Gaur, and M. Conti, “Android Security: A Survey of Issues, Malware Penetration and Defenses,” IEEE Communications Surveys & Tutorials, vol. 17, no. 2, pp. 998–1022, 2015.
+
+10. Android permissions overview. [Online]. Available: https://developer.android.com/guide/topics/permissions/overview
+11. C. Borgelt, “Frequent Item Set Mining,” Data Mining Knowledge Discovery, vol. 2, no. 6, pp. 437–456, 2012.
+
+12. S. Pramod and O. P. Vyas, “Survey on Frequent Itemset Mining Algorithms,” International Journal of Computer Applications, vol. 1, no. 15, pp. 86–91, 2010.
+
+13. J. Han, J. Pei, and Y. Yin, “Mining Frequent Patterns without Candidate Generation,” ACM SIGMOD Record, vol. 29, no. 2, pp. 1–12, 2000.
+
+14. C. Peng, R. Zhao, S. Zheng, J. Xun, and L. Yan, “Android Malware of Static Analysis Technology Based on Data Mining,” DEStech Transactions on Computer Science and Engineering, 2016.
+
+15. J. Huang, F. Xu, Y. Lin, and Y. Li, “On the Understanding of Interdependency of Mobile App Usage,” in IEEE International Conference on Mobile Ad Hoc and Sensor Systems (MASS), 2017, pp. 471–475..

@@ -1,0 +1,137 @@
+# AndroVul: a repository for Android security vulnerabilities
+Zakeya Namrud
+Sègla Kpodjedo
+Chamseddine Talhi
+zakeya.namrud@ens.etsmtl.ca
+segla.kpodjedo@etsmtl.ca
+chamseddine.talhi@etsmtl.ca
+ETS Montreal
+Montreal, Quebec, Canada
+ABSTRACT
+Security issues in mobile apps are increasingly relevant as these software have become part of the daily life for billions. As the dominant OS, Android is a primary target for ill-intentioned programmers willing to exploit vulnerabilities and spread malwares. Significant research has been devoted to the identification of these malwares. The current paper aims to contribute to that research effort, with a focus on providing an additional benchmark of Android vulnerabilities to be used in the detection of malwares. Our proposal is AndroVul, a repository for Android security vulnerabilities, including dangerous permissions, security code smells and dangerous shell commands. Our work builds on AndroZoo, a well known Android app dataset, and proposes data on vulnerabilities for a representative sample of about 16,000 Android apps. Moreover, we briefly describe and make available the scripts we wrote to automate the extraction of security vulnerabilities, given a list of apps; this allows any researcher to readily recreate a custom repository build from his or her apps of interest. Finally, we propose preliminary findings on the effectiveness of the vulnerability metrics present in our dataset, with respect to the detection of malicious apps. Our results show that the collected metrics, as input to even basic classifiers, are enough to achieve competitive results with respect to some recent malware detection works. Overall, Androvul, with its scripts and datasets, is intended as a starting package for mobile security researchers interested in jump-starting their investigations.
+# 1 INTRODUCTION
+With a market share of about 75%1, Android is without doubt the leading mobile Operating System (OS), and is well positioned to become the default OS for new applications centered on the Internet Of Things. Security aspects are thus increasingly relevant as there are more incentives for malware developers to target Android devices. Android security has been extensively researched and that effort has been helped by the AndroZoo2 dataset put together by Allix et al in 2016. The AndroZoo dataset is a very useful resource for Android researchers in general but security researchers still have many hurdles to pass from the moment they discover AndroZoo to the moment they can effectively get actionable data from it. We propose in this paper AndroVul3, a repository aiming to provide researchers working on anomaly detection of Android applications with i) a benchmark readily usable (to test hypotheses) and ii) scripts that will jumpstart their data collection. Our dataset includes data on 16,180 applications from Google Play store as well as third party stores. Our scripts extracted from these apps’ binaries (called APKs) 1) permissions classified as dangerous by the Android permission system, 2) data collected via AndroBugs, a popular Android vulnerability scanner4, and 3) security code smells, as recently defined by. Furthermore, we propose in this paper, preliminary experiments aimed at probing the predictive power of these various sources of vulnerability. The rest of the paper is organized as follows. Section 2 and 3 propose some background and related work. Section 4 and Section 5 present our scripts and datasets. In Section 6, we propose a preliminary empirical study based on the datasets. Then, Section 7 proposes a short discussion and Section 8, the conclusion.
+# CCS CONCEPTS
+• Security and privacy → Intrusion/anomaly detection and malware mitigation; Mobile platform security;
+# KEYWORDS
+Mobile security, static analysis, reverse engineering, mobile computing
+# ACM Reference Format:
+Zakeya Namrud, Sègla Kpodjedo, and Chamseddine Talhi. 2019. AndroVul: a repository for Android security vulnerabilities. In Proceedings of CASCON Conference (CASCON '19). Toronto, ON, Canada, 8 pages.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for third-party components of this work must be honored. For all other uses, contact the owner/author(s).
+1 http://gs.statcounter.com/os-market-share/mobile/worldwide
+2 https://AndroZoo.uni.lu/
+3 https://github.com/Zakeya/AndroVul
+4 https://www.androbugs.com/
+# 2 BACKGROUND
+In this section, we briefly present the possible security vulnerabilities our dataset is focused on: dangerous permissions (as defined by the Android system), troubling code attributes (as collected by AndroBugs) and security code smells (as proposed in ).
+# 2 Dangerous Permissions
+A key security mechanism of Android is its permission system, which controls the privileges of apps, making it so that apps must request specific permissions in order to perform specific functions. This mechanism requires that app developers declare which sensitive resources will be used by their apps. App users have to agree with the requests when installing or using the apps. Android defines several categories of permissions, among which "dangerous" ones, deemed more critical and privacy sensitive since they provide.
+# CASCON ’19, November 2019, Markham, Ontario, Canada
+# Z. Namrud, S. Kpodjedo, C. Talhi
+access to system features such as the camera, Internet, personal contacts, SMS etc. Table 3 in the appendix proposes a list of the various dangerous permissions as defined by the official Android developer resource5.
+# 2 AndroBugs
+Androbugs is a popular security testing tool that checks Android apps for vulnerabilities and potentially critical security issues. The tool reverse engineers APKs and looks for various issues, from failures to adhere to best practices to the use of dangerous shell commands or exposure to vulnerabilities from third party libraries. AndroBugs has a proven track record of discovering security vulnerabilities in some of the most popular apps or SDKs. It is a command line tool that issues reports with four severity levels: Critical6, Warning7, Notice8 and Info9.
+# 2 Security Code Smells
+“Code smells” refer to code source elements that may indicate deeper problems. In , Ghafari et al. introduce security code smells in Android apps as "symptoms in the code that signal the prospect of a security vulnerability". After reviewing the literature, they identified 28 security code smells that they regrouped into five categories, such as Insufficient Attack Protection, Security Invalidation, Broken Access Control, Sensitive Data Exposure, and Lax Input Validation.
+# 3 RELATED WORK
+# 3 Dataset
+Dataset availability is a key issue when it comes to getting insights about a topic or evaluating approaches or hypotheses. We briefly present below some of the most notable efforts related to this issue in the context of Android apps and more specifically their possible security concerns.
+A number of repositories have been proposed over the years for the study of mobile apps. F-Droid10 is such an effort; it is a repository of free open source Android apps that have been used in an impressive number of studies. Recently, Allix et al.  have proposed and continued to maintain AndroZoo, certainly the largest Android app repository, with millions of apps (and APKs) from the Google Play store and other third party markets. Even more recently, Geiger et al. made available a graph–based database with information (metadata, commit and code history) on 8,431 open-source Android apps available on GitHub and the Google Play Store. Also notable, although slightly older, is Krutz et al. , with a public dataset centered on the lifecycle of 1,179 Android apps from F-Droid. Complementary to these research initiatives, there are a number of websites such as AppAnnie and Koodous that gather Android apps and perform various types of analyses, including downloads over time and advertising analytics.
+When it comes to security aspects, there have been a number of papers proposing empirical studies on large numbers of Android apps but few propose publicly available datasets. Among those, we can cite Munaiah et al. which proposes data (app category, permissions etc.) on reverse engineered benign applications from Google Play store and malware applications from several sources.
+Our dataset on vulnerabilities of Android apps shares some similarity with the work of Gkortzis et al., which also proposes a dataset of security vulnerabilities but for open source systems (8,694). Similar to , we propose a subset of a well known mobile app repository; we start with AndroZoo while  builds on F-Droid. Similar to , we also propose scripts that interface with well known reverse engineering and static analysis tools, but we do so with a focus on security vulnerabilities and use a different set of tools. Overall, our dataset and scripts propose a unique offering for Android security researchers.
+# 3 Classification
+A primary use of our dataset will be as input for malware detection techniques. As announced in the introduction, we propose in this paper preliminary investigations into the usefulness of the vulnerability metrics present in our dataset when it comes to detect malwares. Malware detection approaches generally use some form of machine learning to classify candidate apps as malicious or not. The existing literature is quite extensive on that subject. In this section, we will focus on the works that are the most recent and the closest to our experiments. Permissions, especially dangerous ones, have been used extensively as inputs to various classification approaches. A particular recent work of interest is Bhattacharya et al., which proposed a framework that gathered permissions from apps’ manifest files and applied advanced feature selection techniques. The features obtained from such process were organised into 4 groups and used as input for 15 different machine learning classifiers from Weka. The authors evaluated their approach on a sample of 170 apps and reported the highest accuracy to be 77%.
+Many other research works investigated features other than permissions for malware detection purposes. For instance, Sharma et al., which tried to leverage Dalvik11 opcode occurrences for malware classification purposes. They selected 5531 android malwares from the DREBIN repository  and 2691 benign apps from the Google Play Store. They applied different machine learning techniques and reported the best detection accuracy obtained to be 79%. Also of interest is the work of Sachdeva S et al., which focused on features extracted through Mobile Security Framework, an open source tool dedicated to mobile app security12. The approach proposed in  aimed at classifying apps with respect to three levels (Safe, Suspicious, Highly Suspicious). The reported experiments involved many refined machine learning classifiers applied on a corpus of 13,850 Android apps, with accuracy results up to 81% when considering the three proposed levels and up to 93% when considering a binary benign / malicious decision.
+11Dalvik is a now discontinued process virtual machine in Google’s Android OS
+12https://github.com/MobSF/Mobile-Security-Framework-MobSF
+# AndroVul: a repository for Android security vulnerabilities
+# CASCON ’19, November 2019, Markham, Ontario, Canada
+# 4 ANDROVUL-T: THE TOOL
+Our repository proposes scripts that allow, given a directory of APKs, the automatic generation of a CSV file with information on the apps vulnerabilities. To accommodate statistical analysis, each vulnerability corresponds to a column, to which we attach some quantitative data indicating its presence (dangerous permission), the certainty behind it (Androbugs vulnerability), or its weight (security code smell).
+Once we get these three artefacts from AndroBugs and Apktool, our tool proceeds on parsing dangerous permissions from the Android Manifest, various vulnerabilities from AndroBugs and security code smells from the Smali code.
+Extracting dangerous permissions is a relatively straightforward process, after which we fill in the csv file information about the presence (1) or absence (0) of any dangerous permission.
+As for the AndroBugs report, we parse it to extract vulnerabilities tagged Critical or Warning (see Section 2). To quantify the collected information for every vulnerability, we give a weight of 1 to Critical, 0 to Warning, and 0 otherwise.
+We used regular expressions to parse the Smali code and extract security code smells defined in . After which, we compute, for each vulnerability posed by a security code smell, a ratio indicating the relative presence of that vulnerability. We do so by dividing the number of identified instances of the code smell by the number of lines of codes in the Smali format.
+For each of the extracted artifacts, Figure 2 illustrates the flow of our scripts.
+# 5 ANDROVUL-D: THE DATASET
+Androvul-D is our dataset of 73 vulnerability metrics collected on a sample of Android apps from AndroZoo. Figure 3 illustrates the process through which AndroVul-D was generated and can serve as a blueprint for other researchers willing to generate vulnerability datasets for their own sample of AndroZoo apps. The figure starts with a researcher (carefully) selecting the Android apps he wants in his study or preliminary tests, and follows up with the application of the scripts of AndroVul-T to generate csv files filled with vulnerability metrics about each app of the dataset. Furthermore, since AndroZoo does not have all the information related to the apps it archived, the researcher may, as we did, have to go fetch some metadata (category, etc.) about an app from its store.
+# 5 Data Selection
+For our data selection, we resorted to the AndroZoo dataset which contained, at the time we considered it, 5,848,157 apps. The AndroZoo dataset proposes data on the APKs it archived in a main CSV file containing important information for each application, including hash keys (such as sha256, sha1, md5), size information (for APKs and DEX), date of the binary, package name, version code, market place as well as information about how well the app fared on the Virus Total website (number of antiviruses that flag the app as a malware, scan date). Using a very simple sample size calculator, we computed that to get a representative sample with very high confidence level (99%) and confidence interval (1%), we ought to consider 16,586 apps. After removing duplicates and some entries that are not actual apps, we ended up with 16,180 apks that were downloaded and used as input for the AndroVul-T scripts.
+# 5 Dataset Structure
+The dataset we propose consists in a simple CSV file containing information about around 16K apps, one app per line. There are 78 columns in the file, each with a header clearly indicating the information it provides. There are four types of information in the CSV:
+1. Information from the AndroZoo dataset, as described in Section 5
+2. The nine (9) code smells extracted from the reverse engineered Smali code
+3. The twenty four (24) dangerous permissions, as parsed from the app’s manifest file
+4. The forty (40) metrics derived from the six types of vulnerabilities provided by AndroBugs
+Overall, the file contains 73 metrics about dangerous permissions, Smali code smells and AndroBug-tagged vulnerabilities.
+# 5 Dataset description
+In this subsection, we provide some descriptive stats on our datasets, relatively to the date, the category, the store, APK size and number of antivirus flags. With respect to the binary dates, 3% of the apps display an unreliable date (1980). About 1 out of 4 apps are within the last 3 years (2016-2018), 2 out of 3 within the last 5 years (2014-2018). The APK sizes range between 7 KB and 330 MB, with an average of 9 MB and a standard deviation of 12 MB. Marketplace-wise, the most dominant stores are the Google Play Store (74%).
+# AndroBugs Report
+# Manifest files
+# Parse for Critical and Warning levels
+# Parse for Dangerous permissions
+Z. Namrud, S. Kpodjedo, C. Talhi
+# Smali code
+# Parse for security code smells
+# Researcher
+# Random Sample CSV file info
+# AndroidAppStores
+appchina (10%), mi.com (2%) and anzhi (1%). When it comes to information from the antiviruses of TotalVirus18, the apps in the Apk files dataset have between 0 (74% of the apps) and 40 flags, out of the 63 antiviruses; the average is 2 flags and the standard deviation is 5.
+Table presents some data related to the apps’ categories. A sizable part of the apps (about 43%) could not be mapped to a category, mainly because they are no longer available on the market stores. Another 14% of the apps are only available in Chinese markets. Overall, we could find the category information for only 43% of the apps. Table 1 lists all the categories that make for at least 1% of the dataset.
+# PRELIMINARY EMPIRICAL STUDY
+In this section, we propose, as an example of the kind of uses that can be made of the AndroVul dataset, a preliminary investigation of said dataset when it comes to the detection of malwares. Androzoo does not explicitly tag apps as malwares. Rather, it provides the number of antivirus from TotalVirus that flag the app. For the purpose of this preliminary study, we will use, in accordance to the standard set by the DREBIN project  and used in other studies [19, 23–25], three (antivirus flags) as a threshold on which an app will be considered a malware.
+18 https://www.virustotal.com/
+# 6 Datasets groups considered
+To evaluate the dataset and the contribution of the 3 different categories to a classifier, we consider the following seven subsets:
+1. P: Permissions only
+2. S: Smell Code only
+3. A: AndroBugs only
+4. P+S: Permissions and Smell Code
+5. P+A: Permissions and AndroBugs
+6. S+A: Smell Code and AndroBugs
+7. All: Permissions and Smell Code and AndroBugs
+# 6 Correlation Analysis
+To get a quick initial sense of how much the collected metrics can contribute to malware detection, we first proceeded to some statistical correlation analysis of the metrics to i) the number of antivirus
+# AndroVul: a repository for Android security vulnerabilities
+# CASCON ’19, November 2019, Markham, Ontario, Canada
+# App.apk
+# AndroBugs
+- AndroZoo
+- Smali Files
+- Manifest.xml
+# Vulnerability
+flags and ii) a binary value representing the benign / malicious classification : 0 for benign or 1 for malware. We computed Pearson correlations for all metrics and found some interesting values in all 3 categories:
+- for permissions, READ_PHONE_STATE returns the highest correlations with respectively 0 for the number of antivirus flags and 0 for the benign/malware decision;
+- for code smells, the Dynamic Code Loading metric yields 0 for the number of flags and 0 for the binary decision;
+- and for Androbugs, the vulnerability Using critical function returns 0 (number of flags) and 0 (binary decision) as correlation values.
+All three metrics mentioned above returned p-values way lower than 0 (the commonly accepted statistical significance threshold), as is the case for all but a few metrics in the dataset.
+# 6 Classifiers used
+For this limited experiment, we selected four different classifiers representing 4 types of machine learning algorithms commonly used in the Android malware community. More precisely, we used the well known machine learning software Weka and selected Naive-Bayes (NB) from its bayes category, RBF classifier from its function category, JRip from its rules category, and J48 from its tree category.
+Using these classifiers, we proceeded to the commonly used statistical method that is the K-fold cross-validation. In short, it consists in splitting, after random shuffling, the dataset in K groups; after which, each group is used as a test group while the other K-1 groups are used for training. More specifically, we chose, in accordance to many similar studies, K = 10 for a 10-fold cross validation study, in which 90% of the data is used for training and 10% for testing (prediction).
+# 6 Performance Indicators
+The application of classifiers result in decisions about individual apps that can be quantitatively evaluated through various measures. As it relates to the detection of malwares, we refer to True Positive (TP) as the number of malwares actually classified as such, True Negative (TN) as the number of benign apps classified as such, False Positive (FP) as the number of benign apps wrongly classified as malwares and finally False Negative (FN) the number of malwares wrongly classified as benign. From these basic measures are derived more insightful measures commonly used in malware detection papers such as:
+- Precision: It is the ratio of actual malwares in the set of apps classified as such : TP/(TP+FP)
+- Recall: It is the ratio of malwares that were detected as such : TP/(TP+FN)
+- Accuracy: It is the percentage of correctly classified apps : (TP+TN)/(TP+TN+FP+FN)
+- F1-Measure: It is a performance indicator that takes into account both precision and recall of the obtained classification : 2*(Recall * Precision) / (Recall + Precision)
+- Area under ROC Curve (AUROC): It is a measure of the predictive power of the classifier that basically informs on how much the model is capable of distinguishing between classes (here benign apps vs malwares).
+For all these measures, the higher, the better, with 1 being a perfect value.
+# 6 Results
+Figures 5 to 9 present the results obtained by the 4 classifiers on the seven dataset groups defined in Section 6.
+Figures 5 and 6 respectively present data about precision and recall. When it comes to precision, the dataset P+S (Permissions +
+# CASCON ’19, November 2019, Markham, Ontario, Canada
+# Z. Namrud, S. Kpodjedo, C. Talhi
+# PrecisionRecall
+Code Smell) gets the highest precision with nearly 0 for JRIP, variations in the results still hold. Not only that, dataset S (Code Smell only) gives some of the worst results, with the classifier RBF going as low as 0. We can also more clearly note that datasets that include Permissions not only are less dependent on which classifiers are used but additionally tend to perform better than other variants. In particular, permissions by themselves (dataset P) yield a F1-measure around 0 while all metrics propose a F1-measure around 0. When it comes to the AUROC (Figure 8), the same.
+A careful look at the data suggests that Code Smells introduce greater variability in the classifiers performances, with datasets S (Code Smells) and S+A (Code Smells + AndroBugs), clearly the ones generating the starkest differences among the classifiers. This is in contrast with permissions, which seem to induce relatively close results for the classifiers: in particular for recall, results from different classifiers on datasets including permissions are remarkably close. Figure 7 displays F1-measures for all datasets and classifiers.
+69
+# AcurracyAndroVul: a repository for Android security vulnerabilities
+# CASCON ’19, November 2019, Markham, Ontario, Canada
+store that info so there is a need to retrieve it from the different stores. This is a tedious and sometimes unfruitful process since i) the apps may no longer be available in those stores, ii) the stores themselves do not offer simple ways to automatically get the info. Thus, HTML parsers have to be written for webpages that could be in other languages or have structures that can and do change. This is the main limitation of our dataset as many of the apps do not have complete metadata. To this effect, we plan some future work that would complement the data through the parsing of various app store clones that keep apps metadata even after they are deleted from the main market places. As it relates to our preliminary empirical study, some threats to validity are worth noting.
+An external threat to validity of our results is that we used only a sample of Androzoo, which itself does not account for all Android Apps. However, Androzoo is a widely used repository and we took pains to extract a random sample large enough to be reasonably representative of Androzoo. Nevertheless, we cannot claim that our results would be generalizable. As for threats to internal validity, the threshold of three for the number of antivirus flags from which an app is considered malware is debatable but as previously said, it is a de facto consensus number among researchers working on Androzoo data. As such, using it, places our preliminary study in previously established grounds. Overall, we believe that the provided dataset can be used to test research ideas for anomaly detection or the mining of safe patterns useful for the identification of malwares.  does report a significantly better accuracy but it should be noted that the framework from which they extract their metrics provides data from dynamic analysis of the apps, which is a significant addition. Also, their experimental setup differs in some significant ways from ours, including a rather sophisticated and unique process to determine the ground truth of their classification, i.e., which apps are considered benign vs malicious. Nevertheless, these preliminary results are encouraging ones, with potential for improvement if we were to enhance the classifiers.
+# 8 CONCLUSION
+The ubiquity of smartphones, and their growing use make the security of these devices arguably as important as that of standard computers. In this paper, we propose a repository for Android vulnerabilities to better support the research community engaged with anomaly detection and security issues for Android apps. Our contributions are threefold. First, we propose scripts that harness well known reverse engineering tools and greatly simplify the generation of diverse vulnerability information (dangerous permissions, vulnerabilities from AndroBugs, and code smells in Smali code) for any app. Second, we propose vulnerability data on a random sample of 16,180 Android apps downloaded from the well established AndroZoo dataset. Our scripts and data made it so that an Android app researcher can start applying statistic analysis and machine learning experiments right away on our benchmark or right after downloading his own set of APKs. Third, we propose a preliminary empirical study that provide some insights into the predictive power of the vulnerability information mined by our scripts. Our scripts and data sample are available on GitHub and we intend to build and extend on that repository, notably by working on recovering more completely apps metadata.
+# 7 DISCUSSION: CHALLENGES, LIMITATIONS AND RESEARCH IDEAS
+The construction of datasets such as the one proposed in this paper faces some challenges, big or small, including the automated downloading of all the selected APKs and the prior allocation of sufficient storage. Most of the effort resides in the coding of the scripts necessary to recover metadata of the app, set up the reverse engineering of the apk and execute the parsing of various artefacts. In particular, when it comes to the metadata, AndroZoo does not.
+# CASCON ’19, November 2019, Markham, Ontario, Canada
+# Z. Namrud, S. Kpodjedo, C. Talhi

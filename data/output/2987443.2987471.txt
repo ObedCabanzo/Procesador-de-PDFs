@@ -1,0 +1,302 @@
+# An Analysis of the Privacy and Security Risks of Android VPN Permission-enabled Apps
+# Muhammad Ikram1,2, Narseo Vallina-Rodriguez3, Suranga Seneviratne1, Mohamed Ali Kaafar1, Vern Paxson3,4
+# 1Data61, CSIRO 2UNSW 3ICSI 4UC Berkeley
+# ABSTRACT
+Millions of users worldwide resort to mobile VPN clients to either circumvent censorship or to access geo-blocked content, and more generally for privacy and security purposes. In practice, however, users have little if any guarantees about the corresponding security and privacy settings, and perhaps no practical knowledge about the entities accessing their mobile traffic.
+In this paper we provide a first comprehensive analysis of 283 Android apps that use the Android VPN permission, which we extracted from a corpus of more than 1 million apps on the Google Play store. We perform a number of passive and active measurements designed to investigate a wide range of security and privacy features and to study the behavior of each VPN-based app. Our analysis includes investigation of possible malware presence, third-party library embedding, and traffic manipulation, as well as gauging user perception of the security and privacy of such apps. Our experiments reveal several instances of VPN apps that expose users to serious privacy and security vulnerabilities, such as use of insecure VPN tunneling protocols, as well as IPv6 and DNS traffic leakage. We also report on a number of apps actively performing TLS interception. Of particular concern are instances of apps that inject JavaScript programs for tracking, advertising, and for redirecting e-commerce traffic to external partners.
+# 1. INTRODUCTION
+Since the release of Android version 4 in October 2011, mobile app developers can use native support to create VPN clients through the Android VPN Service class. As opposed to the desktop context, where an app needs root access to create virtual interfaces, Android app developers only have to request the BIND_VPN_SERVICE permission (for simplicity, the “VPN permission”) to create such clients.
+Android’s official documentation highlights the serious security concerns that the VPN permission raises: it allows an app to intercept and take full control over a user’s traffic. Many apps may legitimately use the VPN permission to offer (some form of) online anonymity or to enable access to censored content. However, malicious app developers may abuse it to harvest users’ personal information. In order to minimize possible misuse, Android alerts users about the inherent risks of the VPN permission by displaying system dialogues and notifications. A large fraction of mobile users may however lack the necessary technical background to fully understand the potential implications.
+The use of the VPN permission by mobile apps, many of which have been installed by millions of users worldwide, remains opaque and undocumented. In this paper, we conduct in-depth analysis of 283 Android VPN apps extracted from a population of 1M Google Play apps. In our efforts to illuminate and characterize the behavior of VPN apps and their impact on user’s privacy and security, we develop a suite of tests that combines passive analysis of the source code with custom-built active network measurements. The main findings of our analysis are summarized as follows:
+- Third-party user tracking and access to sensitive Android permissions: Even though 67% of the identified VPN Android apps offer services to enhance online privacy and security, 75% of them use third-party tracking libraries and 82% request permissions to access sensitive resources including user accounts and text messages.
+- Malware presence: While 37% of the analyzed VPN apps have more than 500K installs and 25% of them receive at least a 4-star rating, over 38% of them contain some malware presence according to VirusTotal. We analyze the public user reviews available on Google Play for all the VPN apps to sense whether their users are aware of possible malicious activities in their apps. Our analysis reveals that only a marginal number of VPN users have publicly raised any security and privacy concerns in their app reviews.
+- Traffic interception modes: The hosting infrastructure of VPN apps, which is heavily concentrated in the USA.
+remains opaque for the end-user. 18% of the apps do not mention the entity hosting the terminating VPN server. Our network measurements also suggest that 16% of the analyzed apps may forward traffic through other participating users in a peer-forwarding fashion rather than using machines hosted in the cloud. This forwarding model raises a number of trust, security and privacy concerns for participating users. Finally, 4% of the analyzed VPN apps use the VPN permission to implement localhost proxies to intercept and inspect user traffic locally, primarily for antivirus and traffic filtering purposes.
+# (Lack of) Encryption and traffic leaks:
+18% of the VPN apps implement tunneling protocols without encryption despite promising online anonymity and security to their users. In fact, approximately 84% and 66% of the analyzed VPN apps do not tunnel IPv6 and DNS traffic through the tunnel interface respectively due to lack of IPv6 support, misconfigurations or developer-induced errors. Both the lack of strong encryption and traffic leakages can ease online tracking activities performed by in-path middleboxes (e.g., commercial WiFi APs harvesting user’s data) and by surveillance agencies.
+# In-path proxies and traffic manipulation:
+16% of the analyzed VPN apps deploy non-transparent proxies that modify user’s HTTP traffic by injecting and removing headers or performing techniques such as image transcoding. However, the artifacts implemented by VPN apps go beyond the typical features present in HTTP proxies. We identified two VPN apps actively injecting JavaScript code on user’s traffic for advertisement and tracking purposes and one of them redirects e-commerce traffic to external advertising partners.
+# TLS interception:
+Four of the analyzed VPN apps compromise users’ root-store and actively perform TLS interception in the flight. Three of these apps claim providing traffic acceleration services and selectively intercept traffic to specific online services like social networks, banking, e-commerce sites, email and IM services and analytics services.
+Our results show that — in spite of the promises for privacy, security and anonymity given by the majority of VPN apps — millions of users may be unawarely subject to poor security guarantees and abusive practices inflicted by VPN apps. However, this study has not answered several interesting research questions such as traffic discrimination  and the detection of side-channels to extract additional private information from user’s phones.
+# 2. ANDROID’S VPN PERMISSION
+Google introduced native platform support for VPN clients through the VPN Service base class and its associated BIND_VPN_SERVICE permission in Android version 4 . For simplicity, we will reference the BIND_VPN_SERVICE permission as the “VPN permission”.
+The BIND_VPN_SERVICE permission is a powerful Android feature that app developers can misuse or abuse. It allows the requesting app to intercept, manipulate and forward all user’s traffic to a remote proxy or VPN server of their choice or to implement proxies in localhost . Android’s VPN API exposes a virtual network interface to the requesting app and — if the developer configures correctly the routing tables — routes all the device’s traffic to it. Likewise, each write operation to the virtual interface injects a packet just like it was received from the external interface. As for any other Android permission, app developers must explicitly declare access to the VPN permission in the app’s AndroidManifest file  but Android limits the creation and ownership of the virtual interface to only one app at a given time.
+Due to the exceptional security and privacy risks of allowing third-party apps to intercept all user’s traffic, Android generates two warnings to notify users whenever an app creates a virtual interface using the VPN permission: (i) a system dialog seeking users approval to create a virtual interface, and (ii) a system-generated notification that informs users as long as the VPN interface remains active . However, average mobile users may not fully understand, possibly due to the lack of technical background, the consequences of allowing a third-party app to read, block and/or modify their traffic.
+Custom VPN permissions: Android’s native VPN support has enabled proprietary VPN solutions for enterprise clients such as Cisco AnyConnect  and Juniper Junos  technologies. Enterprise solutions, also known as Mobile Device Management solutions or MDM, implement their own tunneling protocols on top on Android’s VPN permission to secure and simplify remote access to enterprise or private networks. Samsung’s KNOX SDK  is a different incarnation of proprietary MDM solutions. In that case, Samsung takes advantage from its position as an Android OS vendor to completely replace Android’s VPN implementation at the firmware level with their own solution.
+Android’s permission model allows MDM providers to share their VPN technologies with other apps by defining custom permissions. These are listed in Table 1. The requesting app must declare the associated custom permission on its manifest and the app providing the proprietary technology must be already installed on the device. In the case of Samsung’s KNOX-enabled devices, the app developer wishing to incorporate any KNOX feature in its app must first enroll on Samsung’s KNOX program and then request access to the proprietary SDK . As a result, Android VPN apps without KNOX support may operate incorrectly on many Samsung devices. The security guarantees that ap
+# 3. DISCOVERING VPN APPS ON GOOGLE PLAY
+This section describes our method for identifying and characterizing Android VPN-enabled apps on Google Play.
+# 3 Detection Method
+Identifying VPN-enabled apps on Google Play is not a trivial task. The list of permissions available on a given app’s Google Play profile does not necessarily contain the use of the VPN permission by the app. App developers can request the Android VPN permissions in their app AndroidManifest file in two different ways: they can request the VPN permission within the scope of the whole app or restrict its use to a specific activity or service using the &lt;activity&gt; and &lt;service&gt; tags respectively. This subtle difference has an impact on any method aiming to detect VPN-enabled apps: when a developer declares the permission within the &lt;service&gt; tag, the VPN permission does not show up in the list of Android permissions available on Google Play. Consequently, in order to correctly identify VPN-enabled apps at scale — either those using Android’s official permission or any of the custom VPN permissions listed in Table 1 — we must crawl Google Play to download each app’s executable and then decompile it to inspect their AndroidManifest file in detail.
+Our method has allowed us to identify 283 free Android apps requesting the VPN permission in their AndroidManifest files. 153 of free VPN apps require the user to perform in-app purchases in order to use their online VPN services. We refer to such apps as “premium VPN apps” and they typically offer weekly, monthly, quarterly and yearly subscriptions. In the case of paid apps, we relied on information available on the app description as signals to identify potential paid VPN apps. This is the result of our inability to pay the fee for downloading the executables of each paid app listed on Google Play. This approach has allowed us to find 10 potential VPN paid apps. However, after paying their fee to download their executables, only one of them actually requested the VPN permission. Therefore, we decided to exclude paid VPN apps from this study.
+To increase our app coverage and maximize the number of detected VPN apps, we implemented a Google Play crawler that uses two complementary seeds. First, we obtain the app ID (or package name) from the top 100 apps for four Google Play categories likely to contain VPN and MDM apps: tools, communication, business and productivity. Second, we leverage Google Play’s search feature to find apps containing VPN-related keywords like “vpn”, “virtual private network”, “security”, “censorship”, “anonymity” or “privacy” in their app description. Afterwards, our crawler fetches each app’s metadata and executables. Our crawler follows a breadth-first-search approach for any other app considered as “similar” by Google Play and for other apps.
+# 3 The Rise of VPN Apps
+This section studies the presence of VPN-enabled apps available for download on Google Play over time. Given that Google Play does not report the actual release date of the apps but their last update, we use the date of their first comment as a proxy for their release date. For 9 apps without any user reviews as of this writing, we determine the approximate release date by their last update.
+# 3 VPN App Classification
+VPN apps can provide a wide range of services to the user. Unfortunately, Google Play’s categories (e.g., tools and games) are too broad to capture the actual purpose of the app. In order to identify their actual intended functionality, two co-authors inspected and labeled each VPN app manually according to their Google Play app description into 9 categories that we list in Table 3. In case that an app advertises more than one functionality, we choose the most relevant one. We found no disagreements in the labeling process.
+67% of Android VPN apps claim to provide traditional VPN services (labeled here as “VPN clients”) including enhanced security and privacy, anti-surveillance or tunnels to access geo-filtered or censored content. Note that we consider Tor clients (e.g., Orbot , Globus VPN  and TorGuard VPN client ) as a separate category. The second most common category is enterprise MDM solutions (10% of apps) followed by traffic optimization tools (e.g., DashNet , 4% of apps) and communication tools (3% of apps) for tethering or for creating mesh networks and VLANs (typically for online gaming ).
+Antivirus software apps (Qihoo 360 , Dr.Web Security Space  and TrendMicro’s Mobile Security & Antivirus ) may also leverage the VPN permission to perform traffic analysis (e.g., malware detection), to block malicious traffic and to securely forward user’s traffic through trusted servers when users connect through insecure or questionable WiFi networks. Other uses of the VPN permission are traffic filters and traffic loggers (e.g., NoRoot Firewall ) and even apps for securing online payments (e.g., Fast Secure Payment ).
+# 4. STATIC ANALYSIS
+In this section, we analyze the source code for each VPN Android app using static analysis. In particular, we report on applications requesting sensitive permission analysis, the presence of tracking libraries in app’s decompiled source code and the presence of malware activity according to the online antivirus aggregator, VirusTotal3.
+# 4 Permission Analysis
+We investigate how VPN-enabled apps request other Android permissions to access sensitive system resources. We exclude network-related permissions like Internet access which are inherent to any VPN client.
+There are Android permissions that are more common on VPN apps than in other app categories. For instance, antivirus and MDM solutions request READ_LOGS permission to inspect other apps’ activities . However, we observe that standard VPN clients like DroidVPN  and tigerVPN  also request permission to read system logs. Android documentation  flags this permission as highly sensitive as any app developer may carelessly misuse Android’s logging capabilities and (unintentionally) expose personal information (including passwords) to any other apps requesting it. Similarly, antivirus apps request READ_EXTERNAL_STORAGE permission to check the stored files for possible virus and malware activity.
+Many other permissions listed in Figure 2 may appear unusual requirements for VPN apps. However, VPN apps may provide additional and richer features to their users beyond a typical VPN tunnel. For each case, we manually checked the legitimacy of these requests by inspecting the API calls executed by the apps and checking the description for related functionalities without finding any evidence for deliberate abuse of granted permissions. For instance, we found that antivirus apps as well as spyware VPN apps (which we further investigate in Section 4) request the READ_SMS permission to read text messages and, in the case of antivirus apps, to scan them for possible malware presence. Similarly, apps requesting READ_CONTACTS incorporate functions in
+# 4 Tracking Libraries in VPN Apps
+With the help of ApkTool, we examine the presence of embedded third-party libraries (in the form of external jar files) for analytics, tracking or advertising purposes in the source code of each VPN-enabled app. In order to identify which libraries are associated with tracking services, we use the manually curated list of 127 tracking and advertising libraries compiled by Seneviratne et al. . Therefore, we consider our results as a lower bound of third-party tracking libraries presence in VPN apps.
+# 4 Malware Analysis
+Malware components may be designed to circumvent a specific antivirus (AV) tool . As a result, it is imperative to rely upon multiple AV scanners and datasets to effectively identify the presence of malware on mobile VPN apps. We leverage the capabilities offered by VirusTotal’s public API to automatize our malware detection process. VirusTotal is an online solution which aggregates the scanning capabilities provided by more than 100 AV tools, scanning engines and datasets. It has been commonly used in the academic literature to detect malicious apps, executables, software and domains .
+After completing the scanning process for a given app, VirusTotal generates a report that indicates which of the participating AV scanning tools detected any malware activity in the app and the corresponding malware signature (if any).
+the likes of blocking text and calls from specific phone numbers or sharing features through SMS or email. installs, have the highest number of embedded tracking libraries: 11 and 14 respectively. Figure 3 ranks the top-25 popular trackers in all analyzed VPN apps. Google Ads and Google Analytics are the most popular trackers among our corpus of VPN apps. A closer examination at the long-tail of the distribution reveals however that the least popular third-party tracking libraries in our reference set of 1000 apps are instead more common in VPN apps. For instance, VPN apps like SurfEasy  and Ip-Shield VPN  integrate libraries like NativeX5 and Appflood6 for monetizing their apps with targeted ads.
+38% of the analyzed VPN apps have at least one positive malware report according to VirusTotal but only 4% of them have an “AV-rank” higher than 5. For each app, we include their Google Play rating and the number of installs for reference. The malware signatures for those apps correspond to 5 different types of malware: Adware (43%), Trojan (29%), Malvertising (17%), Riskware (6%) and Spyware (5%).
+# User Awareness Analysis
+The previous subsection identified instances of VPN apps with malware presence. This section takes a user-centric perspective to understand if they publicly report on their Google Play reviews any of the privacy and security issues which could be present on VPN apps.
+Our analysis reveals that VPN apps receive high user ratings: 37% of the VPN apps have more than 500K installs and 25% of them have at least a 4-star rating as shown in Figure 4. We cannot distinguish whether Google Play’s positive installs and reviews are organic or if they were acquired using paid services to promote app installs.
+The increasing number of popular VPN apps available on Google Play and the apparent lack of user-awareness of the potential maliciousness of these apps is concerning.
+Security and privacy risks associated with the VPN permission indicate the urge to analyze in depth this unexplored type of mobile apps. The average mobile user rates VPN apps positively even when they have malware presence. According to our study, only a handful of users has raised any type of security and privacy concern in their reviews. In Section 5 we will complement the insights provided by our static analysis with a comprehensive set of active tests that aim to reveal behavioral aspects of the VPN apps during runtime at the network level.
+# 5. NETWORK MEASUREMENTS
+In this section, we investigate the runtime and network behavior of 150 VPN apps. In particular we are interested in understanding how VPN apps handle user’s traffic.
+We structure our analysis to illuminate the following aspects: (i) the traffic interception mechanisms implemented by each app (i.e., whether the app uses the VPN permission to implement localhost proxies or to forward the traffic through a terminating end-point or another peer); (ii) the tunneling protocols implemented by each app as well as developer-induced misconfigurations which may cause traffic leaks; (iii) the presence of proxies and traffic manipulation techniques such as ad-blocking, JavaScript injection and traffic-redirection; and (iv) identify any possible occurrence of TLS interception.
+We use a dedicated testbed, depicted in Figure 5, composed of a smartphone that connects to the Internet via a computer configured as a WiFi access point (AP) with dual-stack support. The WiFi AP runs tcpdump to intercept all the traffic being transmitted between the mobile device and the Internet. This allows us to observe the traffic generated by each VPN app as seen by an in-path observer.
+We test individually each one of the 150 VPN apps under consideration. We could not fully automate our measurement efforts as one of the goals of our study is to understand and test the options offered by each VPN app in their GUI (e.g., egress point diversity and supported VPN protocols). Prior to each test, we also ensure that the previous app we experimented with has not modified the root certificate store and we reboot the device to enforce the complete renewal of the virtual interface.
+We run a set of purpose-built scripts (not only between the device and a server under our control but also to popular websites) and the ICSI Netalyzr tool for Android  to generate traffic and to analyze the different network- and traffic-related aspects of VPN apps. All the tests were conducted over a proxy-free link at Data61/CSIRO (Australia), thus the observed traffic manipulations and middleboxes can only be attributed to the VPN apps and their online infrastructure. Each subsection will describe in detail the tests used for each aforementioned analysis. The number of tests that we run per app varies with the configurability of the app (e.g., whether the user can select a server in a given country) and the diversity of IP addresses that we observe. Two people executed a total of 5,340 tests manually for three months and connected to all end-points mentioned in the GUI of a given VPN app.
+# 5 Interception and Forwarding Mechanisms
+App developers can leverage the VPN permission to implement localhost proxies (Case 1 in Figure 5) or to forward user’s traffic to an external machine. In the latter case, the egress point could be either a remote server hosted in the cloud (Case 2) or another participating node in a peer-forwarding fashion (Case 3). In this analysis we investigate the forwarding mechanism implemented by each VPN app according to the possible scenarios.
+Our detection method relies on the client opening TCP connections to a remote dual-stack server under our control after enabling the traffic interception mode for each app. Our server records the public IP address for each TCP connection (i.e., the egress point) and obtains its associated complete domain name (FQDN). We leverage MaxMind’s GeoIP services  to identify the geographical location of the egress point. Our geo-location analysis is therefore limited to MaxMind’s accuracy . We also use Spamhaus Policy Block List (PBL)  records to identify which IP addresses are associated with residential ISPs . Note that Spamhaus’ PBL records are populated directly by ISPs.
+# Current Page Analysis
+To improve spam detection so they can be considered as an accurate proxy to identify IP addresses associated with residential end-users.
+After introducing the different datasets that we will leverage to illuminate the forwarding mechanisms for each VPN app, we now define each forwarding mechanism as depicted in Figure 5. An app performs local interception if it operates as a localhost proxy without forwarding user’s traffic to a terminating VPN server (i.e., if the observed public IP address for all the TCP connections generated by our script matches the public IP address of our experimental setup). Otherwise, the VPN app implements external forwarding. For the latter case, we define two sub-categories: cloud forwarding if the VPN app uses a cloud provider to host their “terminating” VPN servers; and peer forwarding if the app leverages other participating users as egress points.
+# Local-Interception
+Only 4% of the analyzed VPN apps use the VPN permission to intercept user’s traffic in localhost or to implement transparent localhost proxies. These VPN apps include antivirus software (e.g., Dr.Web Security Space), tcpdump-like tools that operate on user-space (e.g., tPacketCapture) and privacy and connection firewalls that allow users to generate connection logs or to block traffic at the flow- or app-level (e.g., NoRoot Firewall). Given that the traffic is intercepted locally and not forwarded through a VPN tunnel, our WiFi AP can identify side-connections generated by such apps. Notably, we observed that Dr. Web Security Space (an AV app) opens side-channel HTTPS flows to drweb.com and to 1lt.su. To determine whether they are used to forward a copy of user’s traffic, we correlate the exogenous flow sizes to the flow size (9KB) to our local web server. We observe that for 11KB and 4KB of traffic to 1lt.su and drweb.com, respectively. Unfortunately, given that these flows are encrypted, we could not investigate their payload to identify whether they are legitimate or not. For the remaining apps implementing local interception, we only observe traffic associated with their embedded third-party libraries for analytics and advertisement services.
+# External Forwarding
+# Hosting Provider
+# Premium Apps
+The US hosts egress points for 77% of free and 90% of premium VPN apps respectively. France and the Netherlands are in second and third position for free VPN apps (31% and 27% respectively) whereas the U.K and Germany are second and third for premium VPN apps. Notably, the top 3 countries contribute to 41% and 52% of the total number of VPN end-points for free and premium VPN apps respectively. A significant fraction of VPN apps concentrate all of their egress points in a single country: 16% of free VPN apps locate all of their end-points concentrated in the U.S., whereas 10% of the premium VPN apps have all their egress points concentrated in The Netherlands.
+Since VPN apps can have end-points in multiple countries the percentages do not add up to 100%. For reference, the cost per month of the hosting providers can range from 5 USD/month (Digital Ocean) to almost 200 USD/month (Astute Hosting).
+# 5 VPN Protocols and Traffic Leaks
+Ideally, the traffic forwarded through the VPN tunnel must be opaque to an in-path observer (e.g., Internet service provider, commercial WiFi APs and surveillance agencies). However, there is a wide range of tunneling protocols, each with different security guarantees, that can be used by app developers to forward traffic out of the device: from secure IPSec tunnels to basic TCP tunnels without any encryption.
+In addition to insecure tunneling protocols, developer-induced misconfigurations and errors may also undermine user’s privacy and security. VPN app developers must explicitly forward IPv6 traffic and provide the DNS settings at the time of creating the virtual interface programmatically. If not done carefully, DNS and IPv6 traffic may not be forwarded through the virtual interface. In particular, DNS leakage can reveal user’s networking activity and interests. The VPN API also allows app developers to overwrite user’s DNS resolver with one of their choice.
+All these artifacts can become a serious harm for users trying to circumvent surveillance or seeking online anonymity by using VPN apps. To investigate those crucial aspects of VPN apps, we run a script that performs crafted HTTP requests (both over IPv4 and IPv6) as well as DNS lookups to our dual-stack server under our control. In this section, we analyze the pcaps captured by our in-path WiFi AP to investigate the presence of tunnels without encryption in the wild (i.e., we consider a tunnel implementation as unencrypted if the payload of our custom HTTP requests is seen in the clear by our WiFi AP) and to identify potential IPv6 and DNS leaks. We leverage the complementary features provided by a pcap parser and Bro’s comprehensive protocol analyzers (which provide support to identify some tunneling technologies) to inspect in detail the traffic collected for each app.
+# VPN Tunnel Implementations
+As mentioned earlier, we rely on Bro’s suite of protocol parsers to identify the actual protocol used by each VPN app. Unfortunately, Bro only provides full support for OpenVPN, L2TP/IPSec and SOCKS tunnels. For the remaining cases, we could not identify their application-layer protocol. Instead, we report the transport-layer protocol and the destination port in use. Identifying the actual protocol would have required us to decrypt the channel to inspect the payload.
+# 5 Traffic Manipulation
+In-path proxies allow VPN services to gain control over users traffic and to manipulate traffic on the fly. Moreover, many proxy features can provide an economic benefit for ISPs and network providers as in the case of HTTP header injection or traffic redirection for advertising purposes.
+We leverage the comprehensive network troubleshooting tool Netalyzr for Android to identify in-path flow-terminating proxies at the TCP level and, in the case of HTTP proxies, how they interfere with user’s traffic. In a nutshell, Netalyzr controls both client and server side and crafts packets and HTTP requests in a way that would allow identifying non-transparent proxies along the path. We refer the reader to Netalyzr-related bibliography for further implementation details.
+We extend the insights provided by the Netalyzr tool with custom-built tests that will allow us to identify VPN apps implementing techniques such as ad-blocking, JavaScript-injection for advertising and analytics purposes, and traffic-redirection (i.e., redirecting users traffic to third party advertising partners). In particular, we use two techniques to identify such proxy manipulations: First, we investigate domain mismatches between the DNS request and the service ultimately delivering the content using reverse DNS. Second, we investigate content modifications for a website completely under our control, seven e-commerce websites (alibaba.com, ebay.com, target.com, bestbuy.com, overstock.com, newegg.com, and macys.com) and for the top-30 websites in the US, China, and Europe according to Alexa’s rank.
+As we demonstrate in one of our previous research efforts, the JavaScript code for two or more simultaneously accessed DOM trees’ elements (e.g., ads) belonging to the same website remain identical despite noticeable differences in the DOM tree elements. This feature present in today’s websites allows us to identify possible JavaScript injection by comparing the DOM trees for all selected websites before and after testing each VPN app. We use Selendroid to fetch the rendered HTML source and extract the JavaScript as well as the DOM trees for each site.
+# In-path Proxies
+The Netalyzr tests failed systematically for 34% of the analyzed VPN apps. Unfortunately, we do not have enough information to explain if such failures are caused by VPN app behavior, app bugs or if they are the result of traffic policies implemented by the VPN provider as Netalyzr generates traffic resembling BitTorrent which may be blocked by the VPN provider. We acknowledge it as a limitation of our tests to determine proxies in 34% of the analyzed VPN apps.
+For the remaining 66% of VPN apps, Netalyzr results revealed the presence of flow-terminating proxies for multiple TCP ports as shown in Figure 7. According to the figure, for every port we study, in-path proxies are more common on premium VPN apps than in their free counterpart. We inspect app descriptions on Google Play store and observe that only 18% of the analyzed 66% apps provide such proxying as part of their stated purpose. The rest of the apps implement proxying as additional functionality. Nevertheless, we detected the presence of general-purpose proxies (i.e., proxies listening in all the ports tested) in 8% and 15% of free and premium VPN apps respectively. Given that free VPN apps may implement peer forwarding to redirect user’s traffic and the lower number of free VPN apps with premium services that we actively analyzed, in-path middleboxes and proxies may be less common in such scenarios.
+In-path proxies may have additional negative effects on user’s traffic which are beyond the scope of this study. Many of them may have their own particular or incomplete interpretation of transport-layer protocols. In the case of HTTP proxies, Netalyzr test revealed that 47% and 55% of free and premium VPN apps actively modify HTTP traffic by default. Some proxy artifacts may have a negative impact on data fidelity and user’s browsing experience as in the case of techniques like non-HTTP traffic filters over port TCP:80 (15% of VPN apps), HTTP body or header manipulations.
+(14% of VPN apps), and image transcoding (4% of VPN apps).
+Ad-Blocking and Tracker-Blocking. Two of the analyzed VPN apps actively block ads and analytics traffic by default on our tested websites: Secure Wireless and F-Secure Freedome VPN. The apps did not explicitly mention ad-blocking feature in the Google Play store listings. An analysis of the decompiled source code, using ApkTool, revealed that F-Secure Freedome VPN app blocks any traffic coming from a pre-defined list of domains associated with web and mobile tracking including Google Ads, DoubleClick, and other popular tagging/analytics services such as Google Tag and comScore. However, blacklist-based ad blocking may affect the functionality of the Webpages and impairs user experience.
+Specifically, F-Secure Freedome VPN blocks JavaScript code associated with nytimes.com’s event “TaggingServices” which, as a result, prevents user access and interaction with embedded relevant video content.
+JavaScript Injection. We identified two free VPN apps (VPN Services HotspotShield by AnchorFree and WiFi Protector VPN) actively injecting JavaScript codes using iframes for advertising and tracking purposes. Both apps claim to safeguard user privacy and to provide security and anonymization. However, in the case of AnchorFree, they also provide advertising services. Our static analysis of both apps’ source code revealed that they actively use more than 5 different third-party tracking libraries. The developer team behind WiFi Protector VPN corroborated our observations and stated that the free version of its app injects JavaScript code for tracking and displaying their own ads to the users.
+Traffic Redirection. AnchorFree’s VPN app HotspotShield performs redirection of e-commerce traffic to partnering domains. When a client connects through the VPN to access specific web domains, the app leverages a proxy that intercepts and redirects the HTTP requests to partner websites.
+We validated each server certificate against the ICSI Certificate Notary to identify possible cases of TLS interception: 3% of the TLS sessions provided certificates for which the ICSI notary could not establish a valid chain to a root certificate from the Mozilla root store. By inspecting manually each certificate, we identify 4 free VPN apps (developed by 3 different app developers) that actively intercept TLS traffic by issuing self-signed certificates.
+Contrary to Google Play listings, F-Secure Freedome VPN mentioned its ad-blocking feature on its website, https://www.f-secure.com/. During our experiments redirection happened exclusively for websites categorized as e-commerce sites such as alibaba.com.
+# VPN apps
+In order to expose TLS traffic to its users. Likewise, Neopard, a web acceleration app, also notifies users about the purpose of performing TLS interception in order to optimize traffic. Their privacy policy   informs users about TLS interception and lists “perform mobile usage reviews for market studies” as one of the purposes of their data collection process. In the case of DashVPN and DashNet, none of them inform users about the purpose of performing TLS interception at all.
+# Intercepted domains per VPN app
+We manually inspected the app’s GUI to check if the apps inform users about the purpose of performing TLS interception and what TLS interception implies. Packet Capture supports TLS interception (as an opt-in feature in the app).
+# Summary and takeaways
+Our analysis of VPN apps at the network level has revealed that the majority of VPN apps are not transparent enough about how they handle user’s traffic. Despite the promises for security enhancement and online anonymity, VPN apps may forward user’s traffic through other participating nodes following a peer (e.g., Hola) thus opening interesting questions about the trustworthiness of the egress points and the security guarantees for users forwarding traffic for others.
+Our analysis has also revealed an alarming 18% of VPN apps that implement tunneling technologies without encryption as well as 84% and 66% of apps leaking IPv6 and DNS traffic. As a result, these apps do not protect user’s traffic against in-path agents performing online surveillance or user tracking. We inspect app descriptions on Google Play store and observe that 94% of the IPv6 and DNS leaking apps claim to provide privacy protection. Such traffic leaks may be associated with developer-induced errors, lack of support or even misconfigurations.
+Finally, we have also identified abusive practices in our corpus of VPN apps such as JavaScript injection for tracking and advertising purposes, as well as e-commerce traffic redirection to affiliated partners and TLS interception. Only one of the apps implementing these practices (i.e., Packet Capture performing TLS interception) actually inform the users about the presence of such artifacts.
+# Developers’ responses
+We contacted and shared our findings with the developers of each of the apps we observed as involved in any of the following: JavaScript injection, traffic redirection, ad-blocking and tracker-blocking, exogenous flow, peer-forwarding user traffic, and TLS interception. We also contacted app developers of apps requesting sensitive permissions, apps that are negatively reviewed by users, and apps with embedded third-party tracking libraries. We also contacted apps which our tests revealed as possibly containing malware in their APKs.
+Amongst the two apps (WiFi Protector and HotspotShield VPN) that our tests identified as performing JavaScript injection, WiFi Protector confirmed our findings and stated that the free version of their app injects JavaScript code to track users and to show their own ads. HotspotShield VPN, which we identified as also performing traffic redirection, has not responded to our correspondence.
+The developer behind F-Secure Freedome VPN, we found that it blocks third-party ads and trackers, confirmed our findings and elaborated on how they construct their black-
+# lists for third-party trackers- and ads-blocking. The devel-
+oper did not respond yet to our inquiries about the crite-
+ria used to build the blacklists. We have not received any
+response from Secure WiFi that our tests also identified as
+performing ad-blocking.
+We received responses from only three developers of the
+apps that we observed implementing peer-forwarding of user
+traffic. VyperVPN and VPNSecure confirmed that they have
+some of their end-points located in residential ISPs as they
+may rely on third-party data-centers for hosting their ser-
+vices. Hola’s developer confirmed our findings and explic-
+itly mentioned Hola’s peer-forwarding mechanism. Contacts
+from other apps detailed in Table 9 have not yet, as of the
+time of writing of this paper, responded to our requests for
+comments or feedback.
+Neopard confirmed that they whitelist the domains for
+which they can optimize traffic and asked for feedback about
+how to increase their operational transparency and usability.
+ActMobile, initially, asked for further information about the
+purpose of this study and who has commissioned and later
+on, acknowledged our findings, confirmed that they disable
+the default TLS-interception functionality in both of the apps
+(DashVPN and Dashnet). They also reported that, in the
+new version of the apps, they ask for user consent, explic-
+itly in the apps’ GUIs, to install and to enable the ActMo-
+bile’s certificates for TLS-interception and traffic accelera-
+tion, respectively. We have not received any response from
+the developer behind Packet Capture that our tests identified
+as performing TLS-interception.
+Only one of the apps’ developers, explicitly discussed
+in Section 4, responded to our findings and confirmed
+that tigerVPN requests sensitive READ_LOG permission to
+record and to use it for troubleshooting purposes. They
+also confirmed that, in the connection log collected via
+READ_LOG permission, they collect users’ information such
+as end-points’ IPs, wireless (mobile data connectivity (3G,
+4G, and LTE) or WiFi) connectivity, and error messages.
+The developer behind Ip-shield VPN that we identified as
+embedding less-popular tracking libraries such as Appflood
+for targeted ads argued that the Appflood was the best choice
+to monetize the app. The developer also revealed plans to
+update ad-free version of Ip-shield VPN on Google Play.
+The rest of the developers of the apps with possibly con-
+taining malware (cf. Section 4), apps that are negatively
+reviewed by users (cf. Section 4), apps that are embed-
+ding third-party tracking libraries (cf. Section 4), and the
+one with exogenous traffic flows (cf. Section 5) have not
+yet, as of the time of writing of this paper, responded to our
+findings.
+# 6. LIMITATIONS AND FUTURE WORK
+Our method to identify and characterize VPN apps on
+Google Play presents several limitations, many of which are
+inherent to static and dynamic analysis . The first lim-
+itation is app’s coverage: our study is limited to Android’s
+free Google Play apps and excludes paid apps, iOS apps and
+apps from alternative app stores. We also rely on a Google
+Play crawler to extract our corpus of VPN-enabled apps that
+might restrict the app coverage of our study which may miss
+apps that intentionally (or inadvertently) hide their use of
+the VPN permission. Although our apps crawler aims to
+capture as many VPN-enabled apps as possible, we stress
+that our goal is to provide an analysis of the security and
+privacy issues of a representative sample of VPN-enabled
+apps from the Google play store. Second, this paper does
+not consider Android apps requesting root access on rooted
+phones to intercept user traffic via native commands such as
+tcpdump or OpenVPN. Investigating apps falling in this cat-
+egory would require conducting a computational- and time-
+expensive static analysis. Third, we do consider runtime
+analysis of third-party tracking libraries and all sensitive per-
+missions of VPN apps. Determining what an app do with
+sensitive permissions such as READ_LOG, READ_SMS, and
+SEND_SMS and what type of information will third-party
+tracking libraries collect would require fine-grained system-
+and network-level trace and traffic analysis.
+Moreover, we identify apps implementing peer forward-
+ing from the set of VPN apps with public IP addresses la-
+beled as residential IPs by Spamhaus PBL. Given that VPN
+services can deploy VPN servers in residential ISPs and
+Spamhaus classification is prone to error, our analysis of
+peer forwarding may not be accurate. We consider it as a
+limitation and one possible extension of the work in this pa-
+per would be to strengthen our analysis of peer forwarding
+by (i) extending the tests duration to enable tracking of peers
+(running suspected VPN apps); and (ii) analyzing the traf-
+fic flows of an app simultaneously running on two or more
+mobile phones to determine if they forward traffic for each
+other.
+Likewise, our method falls short to analyze the presence
+of session timeouts and apps’s ability to recover from a loss
+of connectivity. These dynamics may cause user traffic to
+be exposed in the clear to any in-path middlebox for a short
+period of time.
+This paper provides a first detailed analysis of VPN-
+enabled apps but it also leaves many open questions beyond
+the scope of our analysis. Aspects such as possible traffic
+or device-location discrimination practices  or the use
+of VPN apps as honeypots to harvest personal information
+have not been addressed in this study. In addition, reasons
+behind inadequacy of app actual behavior and terms of use
+or the the identification of side-channels for the observed
+data-exfiltration have been left as pending questions.
+# 7. RELATED WORK
+Several studies highlighted the privacy risks associated
+with Android apps over-requesting Android permissions for
+third-party tracking, advertising and analytic services  using techniques like static analysis , taint analysis , and OS modifica-
+tions . Previous research also adapted
+techniques for malware detection such as signature analy-
+sis  and anomaly detection  to
+361
+the mobile context in order to identify potential malicious activity on mobile apps.
+Several research efforts leverage Android’s VPN permission to accurately characterize Android’s traffic and identify private data leakage inflicted by mobile apps . More related to studying VPN apps, the study conducted by Perta et al.  is perhaps the closest one to our analysis. The paper provides a manual analysis of 14 popular VPN services and includes a study of their mobile clients identifying developer-induced bugs and mis-configurations that lead to IPv6 and DNS leaks. Our paper provides a systematic and thorough security and privacy analysis of Android mobile apps employing the VPN permission. The study by Vallina-Rodriguez et al. characterized Android’s root certificate store using data provided by Netalyzr for Android tool . The study revealed how VPN-enabled apps could perform transparent TLS interception after compromising the root certificate store.
+Finally, Appelbaum et al. identified security vulnerabilities on commercial and public online VPN services . A survey conducted by Khattack et al. on VPN usage across Pakistani Internet users reported that 57% of the participants used SSL-based VPN software to access YouTube content . Our paper in turn, presents a method to systematically identify and analyze security and privacy aspects of VPN-enabled apps on Android-based app stores. The implications of our analysis span to other areas such as censorship analysis and network measurements that leverage VPN services to penetrate different countries and ISPs.
+# 8. CONCLUSIONS
+Android app developers benefit from native support to implement VPN clients via the VPN permission to provide censorship circumvention, support enterprise customers and enhanced online security and privacy. However, despite the fact that Android VPN-enabled apps are being installed by millions of mobile users worldwide, their operational transparency and their possible impact on user’s privacy and security remains “terra incognita” even for tech-savvy users.
+In this paper, we presented a number of static and dynamic methods that allowed us to conduct in-depth analysis of VPN-enabled apps on Google Play. We investigate from the presence of tracking services and malware on VPN app binaries to artifacts implemented by these apps at the network level. Our comprehensive tests allowed us to identify instances of VPN apps embed third-party tracking services and implement abusive practices such as JavaScript-injection, ad-redirections and even TLS interception.
+The ability of the BIND_VPN_SERVICE permission to break Android’s sandboxing and the naive perception that most users have about third-party VPN apps suggest that it is urging to re-consider Android’s VPN permission model to increase the control over VPN clients. Our analysis of the user reviews and the ratings for VPN apps suggested that the vast majority of users remain unaware of such practices even when considering relatively popular apps.
+# 9. REFERENCES
+1. Alexa Top 500 Websites. http://www.alexa.com/topsites.
+2. Android Permissions. http://developer.android.com/guide/topics/security/permissions.html.
+3. Application Fundamentals. http://developer.android.com/guide/components/fundamentals.html.
+4. Archie VPN. https://play.google.com/store/apps/details?id=com.lausny.archievpnfree.go.
+5. Cisco AnyConnect. https://play.google.com/store/apps/details?id=com.cisco.anyconnect.vpn.android.avf.
+6. CM Data Manager - Speed Test. https://play.google.com/store/apps/details?id=com.cmcm.flowmonitor.
+7. CrossVpn. https://play.google.com/store/apps/details?id=com.goodyes.vpn.cn.
+8. Cyberghost - free vpn & proxy. https://play.google.com/store/apps/details?id=de.mobileconcepts.cyberghost.
+9. Dash Net Accelerated VPN. https://play.google.com/store/apps/details?id=com.actmobile.dashnet.
+10. Dash VPN | Dash Office - Speed Test. http://dashoffice.com/dash-vpn/.
+11. DNSet. https://play.google.com/store/apps/details?id=com.dnset.
+12. DroidVPN - Android VPN. https://play.google.com/store/apps/details?id=com.aed.droidvpn.
+13. Dr.Web Security Space. https://play.google.com/store/apps/details?id=com.drweb.pro.
+14. EasyOvpn - Plugin for OpenVPN. https://play.google.com/store/apps/details?id=com.easyovpn.easyovpn.
+15. EasyVpn. https://play.google.com/store/apps/details?id=yujia.easyvpn.
+16. F-Secure Freedome Anti-Tracking Feature Explained. https://community.f-secure.com/t5/F-Secure/F-Secure-Freedome-Anti-Tracking/ta-p/52153.
+17. Fast Secure Payment Service. https://play.google.com/store/apps/details?id=com.lausny.ocvpnaio.allpay.
+18. FlashVPN Free VPN Proxy. https://play.google.com/store/apps/details?id=net.flashsoft.flashvpn.activity.
+19. Free VPN Proxy by Betternet. https://play.google.com/store/apps/details?id=com.freevpnintouch.
+20. Good. Mobile Device Management (MDM). https://www1.good.com/secure-mobility-solution/mobile-device-management.html.
+# Google Play Unofficial Python API
+https://github.com/egirault/googleplay-api
+# VPN Applications
+- HatVPN
+- HideMyAss! Pro VPN for Android
+- Hola Free VPN Proxy
+- Hotspot Shield Advertising
+- Hotspot Shield Free VPN Proxy
+- ip-shield VPN
+- Junos Pulse
+- Knox Standard SDK
+- Mobile Security & Antivirus
+- NEOPARD
+- Neopard Privacy Policy
+- NeoRouter VPN Mesh
+- NoRoot Firewall
+- OkVpn
+- One Click VPN
+- Open Gate
+- Orbot: Proxy with Tor
+- Packet Capture
+- pcap-parser (0)
+- Private WiFi
+- Qihoo 360
+- Raccon APK Downloader
+- Rocket VPN - Internet Freedom
+- Samsung KNOX. Partnering with Samsung
+- Security with HTTPS and SSL
+- Selendroid: Selenium for Android
+- sFly Network Booster, Adblocker
+- Spamhaus PBL
+- Spotflux VPN
+- StrongVPN OpenVPN Client
+- SuperVPN
+- SurfEasy Secure Android VPN
+- tigerVPN - Privacy Defender
+- Tigervpns Free VPN and Proxy
+- TorGuard VPN
+- VirusTotal
+- VPN Free
+- VPN Gate
+- VPN Service Documentation
+- VPNSecure OpenVPN VPN Proxy
+- VPN+TOR+Cloud VPN Globus Pro!
+- VyprVPN Free VPN for Privacy
+- WiFi Protector VPN
+#createInstallIntent()
+- J. Appelbaum, M. Ray, I. Finder, and K. Koscher. vpwns: Virtual Pwned Networks. In USENIX FOCI, 2012.
+- D. Arp, M. Spreitzenbarth, H. Gascon, and K. Rieck. Drebin: Effective and Explainable Detection of Android Malware in Your Pocket. In NDSS, 2014.
+- K. W. Y. Au, Y. F. Zhou, Z. Huang, and D. Lie. PScout: Analyzing the Android Permission Specification. In ACM CCS, 2012.
+- T. Bläsing, L. Batyuk, A.-D. Schmidt, S. A. Camtepe, and S. Albayrak. An Android Application Sandbox System for Suspicious Software Detection. In IEEE MALWARE, 2010.
+- A. Bose, X. Hu, K. G. Shin, and T. Park. Behavioral Detection of Malware on Mobile Handsets. In ACM MobiSys, 2008.
+- I. Castro, J. C. Cardona, S. Gorinsky, and P. Francois. Remote Peering: More Peering Without Internet Flattening. In ACM CoNEXT, 2014.
+- T. Chen, I. Ullah, M. A. Kaafar, and R. Boreli. Information

@@ -1,0 +1,296 @@
+# Vulnerabilities in Android webview objects: Still not the end!
+# Mohamed A. El-Zawawya,∗, Eleonora Losioukb, Mauro Conti b
+a Department of Mathematics, Faculty of Science, Cairo University, Giza 12613, Egypt
+b Department of Mathematics, University of Padua, Italy
+# Article information
+Article history:
+- Received 26 January 2021
+- Revised 27 May 2021
+- Accepted 4 July 2021
+- Available online 10 July 2021
+# Keywords:
+Android security, Taint analysis, Hybrid applications, Web view, Java script interfaces, Web view client
+# Abstract
+WebView objects allow Android apps to render web content in the app context. More specifically, in Android hybrid apps (i.e., those having both Android code and web code) the web content can interact with the underlying Android framework through Java interfaces and WebViewClient objects. Thus, while rendering web content a hybrid app can execute malicious Javascript code that can access the sensitive data on the device, bypassing the sandbox model usually adopted by standalone browsers. Researchers already analyzed the security issues of WebView objects, by focusing on Javascript interfaces. However, we believe that there are other aspects related to the rendering of web content in Android apps, such as WebViewClient objects, that could lead to security issues.
+In this paper, we introduce three new types of vulnerabilities related to WebView, that expose new attack surfaces concerning the most well-known vulnerability related to JavaScript interfaces. To detect these new types of vulnerabilities, we designed WebV Sec, a static analysis system that relies on a set of custom inference rules, heuristically formalized. By designing WebV Sec to detect also the vulnerability already described in the state-of-art, we were able to compare WebV Sec with BabelView on a set of 2000 applications. BabelView was found not able to detect our new three types of vulnerabilities and also less precise and efficient in detecting the already known vulnerability. In particular, over the 2000 analyzed apps, WebV Sec and BabelView identified 48 and 18 vulnerable apps, respectively. Among those, WebV Sec found 20 apps having a specific type of vulnerabilities and 36 apps having another type of vulnerabilities, while BabelView found 11 and 0 apps, respectively. In terms of efficiency, WebV Sec took 27 hours to analyze the whole set of 2000 applications against the 63 hours required by BabelView.
+© 2021 Elsevier Ltd. All rights reserved.
+# 1. Introduction
+The use of Android on mobile and tablet devices has grown over the past years. Android covers almost 75% of the mobile market share worldwide, while mobile devices almost 53% motivated by the introduction of hybrid applications, in which core source code is written in HTML and JavaScript through.
+∗ Corresponding author. E-mail addresses: maelzawawy@cu.edu.eg (M.A. El-Zawawy), elosiouk@math.unipd.it (E. Losiouk), conti@math.unipd.it (M. Conti).
+https://doi.org/10/j.cose
+0167-4048/© 2021 Elsevier Ltd. All rights reserved.
+# Computers & Security 109 (2021) 102395
+Cross-platform tools, such as Apache Cordova Apache (0000). Identified 48 and 18 vulnerable apps, respectively. Among those, WebV Sec found 20 apps having a specific type of vulnerabilities and 36 apps having another type of vulnerabilities, while BabelView found 11 and 0 apps, respectively. In terms of efficiency, WebV Sec took 27 hours to analyze the whole set of 2000 applications against the 63 hours required by BabelView.
+The design model of WebView objects highly differs from the one adopted in standalone browsers. The latter adopts a sandbox mechanism that introduces an access control approach to prevent untrusted Javascript code from accessing sensitive data on the mobile device Ferri et al. (2010). Thus, in a standalone browser not only web pages are isolated from each other, but they are also isolated from the system. On the contrary, WebView objects use binding interfaces (through the addJavascriptInterface API) to allow Javascript code to access private data and system resources on the mobile device. Enabling the interaction between Javascript code and the underlying system breaks the security model used in standalone browsers. The malicious JavaScript can be part of any web page loaded in the WebView. Advertisement libraries used in the WebView may also allow malicious JavaScript to access private data. Overall, current WebView technologies are not robust enough to prevent vulnerabilities, such as Cross-Site Request Forgery, Cross-site scripting, and JSON hijacking Li et al. (2017); Luo et al. (2011, 2012); Mutchler et al. (2015). Consequently, attackers can manipulate WebViewClient listeners and access WebView interfaces through the injection of malicious JavaScript Fahl et al. (2012); Mutchler et al. (2015).
+Previous works Rizzo et al. (2018); Yang et al. (2017) addressed the security issues raised by WebView interfaces by mainly focusing on the vulnerabilities involved in the usage of JavaScript interfaces. However, no previous work considered the security issues raised by WebViewClients.
+In this paper, we identify three new types of WebView vulnerabilities, which are somehow related to the one already addressed by the state-of-art, but that introduce new attack surfaces. We heuristically designed seven rules that allow the detection of all such vulnerabilities and developed the WebV Sec system: a static analysis tool that relies on our seven inference rules to detect WebView vulnerabilities. We evaluated precision, efficiency, and effectiveness of WebV Sec over a set of 2000 applications and compared the results with BabelView, a state-of-the-art technique Rizzo et al. (2018). With our study, we prove that the current state-of-art works did not comprehensively address WebView technologies, thus failing in detecting our newly identified vulnerabilities. Moreover, WebV Sec was found to overcome both in terms of precision and efficiency.
+# 2. Background
+A WebView Developers (0000) is an Android system component enabling Android applications to render web pages and interact with web servers. It is possible to write and show HTML code inside an app via WebView. Listing 1 presents an example that embeds a browser in an Android app to display Google search engine. This is done in three steps: defining a WebView object (line 1), enabling the execution of JavaScript within the object (line 2), and using the API loadUrl to load a web page (line 3).
+WebView enables many forms of interaction between Android applications and web pages. Among those, we focus on running Java from Javascript and event monitoring. The running Java from Javascript mode consists of Java code, belonging to the app, being executed by Javascript code, belonging to a web page. The event monitoring form, instead, refers to the events that are registered in callback methods of WebViewClient objects and executed in response to specific events that occur on the web page.
+# 2. Running java from javascript.
+The JavaScript code in a WebView can invoke the Java code of some classes belonging to the Android app where it is executed Developers (0000). In the rest of the paper, we refer to these classes as interface classes. Objects of interface classes can be associated with WebView objects through the addJavascriptInterface API. Then, the Javascript code of the WebView can invoke only the public methods of interface classes that are annotated by @JavaScriptInterface. The annotation prevents attackers from executing arbitrary methods of interfaces by using Java reflection API. The annotations are not necessary for applications targeting Android versions before 4 (SDK17) InfoSecurity (2013). This is so because @JavaScriptInterface annotation did not exist in versions before 4.
+Listing 2 presents an example of interface class usage. In particular, the interface webviewInterface is first instantiated and bound to the webview object (line 1).
+# Computers & Security 109 (2021) 102395
+# Listing 1 – WebView Example.
+# Listing 2 – Interface Example.
+# Listing 3 – Example of Java invocation from JavaScript code.
+previously created in Listing 1. The binding object is called myInterfaceObj. The JavaScript code of a web page loaded in webview can use myInterfaceObj to run the annotated method readDeviceId(), as shown in Listing 3. On the contrary, the method toastDeviceId(String) of webviewInterface can not be invoked since it not annotated. However, the invocation of an annotated method might cause the invocation of a non-annotated one, as shown in the code of readDeviceId().
+Listing 2 clearly shows the extension of Same Origin Policy (SOP) applied to the context of WebView. Generally speaking, SOP refers to the access control policies applied to resources that might be shared between two web pages. In particular, a web page can access the data of another web page if both share the same origin. In the context of Android WebView, such access control policies are not applied to sensitive data stored in the underlying OS. Thus, any Javascript code can access such data. This is justified as follows. Suppose addJavascriptInterface is used to attach an interface I to a WebView W. This has the consequence of allowing all pages loaded in W to call methods of I, and hence access the same sensitive data accessible from I. Therefore, in this case, SOP is defeated as web pages from one origin are allowed to affect those from others.
+# 3. Related work
+# 2. Event monitoring.
+Android provides an important class called WebViewClient. The methods (listeners) of this class enables apps to listen and respond to events occurring within WebView. We will call these methods WVC-listeners all over the paper. Each one of the Android security directions that have been receiving intense research efforts is WebView vulnerabilities Luo et al. (2011). The main cause of existing vulnerabilities over the JavaScript Bridge is the fact that traditional security models of web context Georgiev et al. (2014) conflict with the
+# 4. Threat model
+The threat model studied in this paper focuses on the ways in which Android applications may be attacked by malicious web pages. The applications are assumed to be benign ones that are serving web applications. Our model considers first-party applications (owned by the served web applications) and third-party applications (that are not owned by the served web application injecting malicious JavaScript code). An overview of our attack scenario is presented in Fig. 1. The scenario assumes that the attacker tries to deceive the victim app to load a malicious web page into the app WebView. Then, malicious JavaScript code of the loaded web page launches attacks on app WebView as follows. Once loaded into the WebView, the malicious JavaScript code can run the WebView interface methods (annotated with @JavaScriptInterface) to obtain the sensitive data. Allowing the malicious JavaScript to run the interface methods is visualized in the figure as
+# Listing 4 – WebViewClient Example.
+lack of privilege isolation Jin et al. (2015). This conflict was partially treated by NoFrak Georgiev et al. (2014) that extended SOP to cover local resources. The extension idea was employed again in MobileIFC Singh (2013) to resolve access control between the web and mobile frameworks.
+Many types of possible attacks against Android WebView related to the vulnerabilities treated in our work were presented by Luo et al. Luo et al. (2011). Among the previous works, the two ones that are closer to WebV Sec are BabelView Rizzo et al. (2018) and BridgeScope Yang et al. (2017). Relying on static information analysis, BabelView aims at evaluating the potential impact of JavaScript injection attacks in WebView. The main idea is to instrument applications to introduce possible attacker behaviors. However, BabelView does not cover all the vulnerabilities we will illustrate in this paper. BridgeScope aims at assessing JavaScript interfaces using static analysis. Similar to our work and to BabelView, BridgeScope evaluates possible paths to and from methods of interface classes. BridgeScope relies on a custom flow analysis. The main limitation of BridgeScope is the lack of analysis of listener methods of WebViewClient classes. With respect to BridgeScope and BabelView, WebV Sec focuses on a wider scope concerning the detection of WebView vulnerabilities.
+Chin et al. Chin and Wagner (2013) studied the relationship between file-based cross-zone scripting attacks and excess authorization, on one side, and WebView vulnerabilities, on the other side. JavaScript interface implementations that misuse or do not consider Transport Layer Security (TLS) were considered vulnerable by Neugschwandtner et al. in Neugschwandtner et al. (2013). Their work linked requiring privacy critical permissions to WebView vulnerabilities. Without considering the expose of JavaScript interfaces, unsafe navigation and content retrieval in WebView are treated in Mutchler et al. (2015) by Mutchler et al. Middleware frameworks of third-party hybrid applications are investigated in Georgiev et al. (2014). Yang et al. in Yang et al. (2019) presented a WebView vulnerability related to web iframe/popup, namely the non Differential Context Vulnerabilities (DCVs). These vulnerabilities show that iframe/popup can open holes on Android WebView defense mechanisms to gain privileges. DCV facilitates performing phishing attacks, destroying the integrity of web messaging, and accessing sensitive functionalities. In Hu et al. (2018), Hu et al. introduced Android bugs related to WebView interaction mechanisms. Their work studied the causes and consequences of these bugs. Unlike our current paper, above-reviewed papers did not study security issues related to WebViewClient objects, accompanying WebView.
+Previous works Hassanshahi et al. (2015); Jin et al. (2014) have focused on the techniques for injecting malicious code into WebView. HTML5-based hybrid applications deal with many types of objects. This enables a wide range of cross-site-scripting attacks Jin et al. (2014). These attacks are enabled when the user loads the malicious page within the WebView. The other type, Web-to-Application injection attacks (W2AI) is based on Intent hyperlinks reacting to link clicking in the browser Hassanshahi et al. (2015). Draco Tuncay et al. (2016) is a framework for uniform and fine-grained access control of JavaScript execution in WebView.
+In Li et al. (2017), Li et al. introduced a new type of attacks, namely Cross-App WebView infection, that is caused by the possibility of WebView to send navigation requests to another one via Intents and URL schema. Cross-App WebView infection can result in unauthorized execution of app components and enables multi-app colluding attacks. Origin Stripping Vulnerabilities (OSV) are triggered upon calling the window.postMessage API when the identity of the sender is not distinguishable and source origin is not safely obtainable. This is true as well for Android hybrid applications. A new technique, OSV-Hunter was introduced in Yang et al. (2018) to detect OSV.
+# WebView
+# Mobile Application
+# Sensitive Interface
+Class
+Call from JS
+JavaScript
+Source API
+Sink API
+WebViewClient Class
+Callback from
+Source API
+Malicious JavaScript
+Sink API
+GPS
+Storage
+Legend: Legitimate Data Flow                        Malicious Data Flow
+WebView holes facilitating leakage of sensitive data. Malicious data flow is marked with circles.
+Our model also considers threats resulting from binding WebViewClient classes to WebView ones (through the setWebViewClient API). Via manipulating WVC-listeners, attackers can gain access to sensitive data. One way of this manipulation is by letting the malicious JavaScript code generate webpage events (e.g., page reload) that trigger WVC-listeners. Therefore, it may become possible to read sensitive data via one of WVC-listeners and send this data out via another WVC-listener. It is also possible to design an attack in which an annotated method of an interface cooperates with a WVC-listeners. Up to our knowledge, attacks that involve WVC-listeners are not treated by state-of-the-art techniques, such as BabelView Rizzo et al. (2018) and BridgeScope Yang et al. (2017).
+Our thread model identifies high-impact WebView vulnerabilities in Android applications. This is done via evaluating the privileges that an attacker would gain by:
+- injecting arbitrary JavaScript code into HTML or scripts loaded in a WebView.
+- manipulating the WVC-listeners to abuse the source and/or sink APIs included in them.
+The threat model of this paper assumes that the JavaScript code is arbitrary and fully controlled by the attacker. Hence, we do not need to analyze JavaScript code. We also do not need to worry about the manipulation techniques of WVC-listeners. Abusing methods of JavaScript interfaces and WVC-listeners requires the attacker to know their names. A simple reverse engineering process can provide such information.
+# 5. New webview vulnerabilities
+This paper considers four types of vulnerabilities that attackers can utilize to launch WebView attacks through injected JavaScript code and WVC-listeners manipulation. Here, we first formally present the four types of vulnerabilities and then provide an illustrative example, taken from a testbed Android application we developed.
+Definition 1 and Definition 2 introduce execution paths that play a vital role in vulnerability formalization.
+Definition 1. An interface path is an execution path that is embedded in an annotated interface method. The set of all interface paths in an app is denoted by P.I
+Definition 2. A WebViewClient path is an execution path that is embedded in a WVC-listeners. The set of all WebViewClient paths in an app is denoted by PW.
+# Type 1 Vulnerability (Interface-Interface Vulnerability)
+An Android application has a type 1 vulnerability if it has n execution paths, P1, . . . , Pn, such that:
+1. ∀1 ≤ k ≤ n, Pk ∈ P,I
+2. P1 has a source API that reads a sourced value, s.
+3. ∀1 ≤ k ≤ n, Pk may move the sourced value s to other variables.
+4. Pn has a sink API that leaks one of the variables that has the sourced value s.
+In other words, an Android app has a type 1 vulnerability if it has an ordered sequence of n(n ≥ 1) interface paths such that: the first path reads sensitive data; all paths may move the read data to other containers (registers); the last path leaks the sensitive data from any of its containers.
+# 6 Design of our tool: WebV Sec
+This section presents the design of WebV Sec, our proposed system for detecting WebView vulnerabilities presented in Section 5. WebV Sec relies on two heuristically designed sets of inference rules: the first set abstracts the Dalvik byte code of Android applications, while the second aims to detect the four vulnerabilities addressed in this paper. Table 2 presents semantics of notation used in this section.
+# 6 Decompilation (step 1)
+WebV Sec receives in input an APK file, which corresponds to the app under investigation. The decompilation aims at reverse-engineering the APK file to obtain its manifest and dex files, on top of which WebV Sec works.
+# 6 Identification of interface and webviewclient classes (step 2)
+The objective of this module is to identify MA, Ic, Ic17, Iu, W and Wu. The identification of interface methods needs
+# 5 Examples of vulnerabilities
+In the code example shown in Listing 5, we provide examples of the four vulnerability types. The listing assumes a WebView object ThreatWebview that is associated with a JavaScript Interface (ThreatwebviewInterface) and a WebViewClient objects. Invoking the method f3() using myThreatInterfaceObj.f3() causes the device ID to be read into the global variable id. A following invocation to f4(), using myThreatInterfaceObj.f4(), would leak the device ID into the device memory (via the editor which is Shared-Preferences.Editor editor object).
+# Type 2 Vulnerability (Interface-WebViewClient Vulnerability)
+This type has the same definition as type one, except that the condition (a) above is replaced by
+((P1 ∈ P∧Pn ∈ PW)∨(P1 ∈ PW ∧Pn ∈ P))∧2 ≤ k ≤ n−1, PK ∈ P∪PW.
+In other words, the first or the last path (but not both) has to be a WebViewClient one. Moreover, any of the remaining paths can be an interface or a WebViewClient one.
+# Type 3 Vulnerability (WebViewClient-WebViewClient Vulnerability)
+This type has the same definition as type one, except that the condition (a) above is replaced by
+∀1 ≤ k ≤ n, Pk ∈ PW.
+In other words, all paths have to be WebViewClient ones.
+# Type 4 Vulnerability (Reverse Vulnerability)
+An Android application has this type of vulnerability if it has a path P ∈ PI ∪ PW such that:
+1. P has a sink API (i.e., K) at some program point (i.e., u) that leaks the value of some variable (i.e., v).
+2. P has a source API (i.e., S) at some program point (i.e., w) such that w > u (i.e., the program point w comes before the program point u) and S reads the value stored in v.
+In other words, a type 4 vulnerability occurs if there is an interface or WebViewClient path that has a source API preceded by a sink API. For this vulnerability type, there also must be a data flow path from the source API to the sink API using a global variable. For manipulating this vulnerability type, the attacker should run the path twice: in the first run the source gets the sensitive information and in the second run the sink leaks the information. Therefore, this vulnerability is tricky and, up to our knowledge, has never been revealed in the literature.
+As shown in Table 1, up to our knowledge, the state-of-the-art tools neither illustrate the type 2, type 3, and type 4 vulnerabilities nor propose techniques to detect them in Android applications. One of the contributions of this paper is to fill this gap.
+# 5 Half vulnerabilities
+A WebView vulnerability requires a path that has a source method reading sensitive data into a variable. If this variable keeps its content unchanged till the end of its hosting execution path, we call the variable a sourced variable. This path constitutes half the vulnerability or the leaking process. The other
+# Computers & Security 109 (2021) 1023957
+# Listing 5 – Interface Example.
+# Decompilation of APK file
+# 1. Identification of Interface and WebView classes
+tion is a pair (N, O) where N is the instruction name and O a list of operands. The instruction name belongs to one of the following eight categories: removing_source_ins, read, write, invoke, move, return, and constant instructions. Each element of the operands list belongs to one of the following four categories: register, constant, field, method. Considering, for example, the method category, this encompasses two elements, composed of two pieces. The first piece is a list of pairs [0, integer]*, where the 0 indicates that the integer is a register ID. The other piece is a triple [integer, integer, method signature] that uniquely identifies a method. The first piece represents the arguments of the second piece.
+# Finding vulnerabilities
+# Analysis Report
+to consider both applications with Min Sdk greater than or equal 17 and applications with Min Sdk lower than 17: the former have interface methods annotated with @JavascriptInterface, while the latter does not. However, for the latter, we found out that it is common to include annotated and also non-annotated interface methods.
+# 6. Identification of relevant methods (step 3)
+The objective of this module is to identify the relevant methods (i.e., M) which might contain the vulnerabilities studied in this paper. Algorithm 1 presents the logic of this module. The algorithm starts by collecting all the relevant classes in one list, C (line 1) and all the methods for each of these classes (line 2 − 5). If the number of found methods exceeds a certain threshold thm (line 6), the algorithm reconstructs the list M to reduce its length (line 9 −27). This reduction is done by considering three sets of methods (i.e., M, MW, Ma) to build M. The first set, MI (constructed in the steps 9 − 17), includes annotated methods (MA, step 9) and init and onCreate methods of classes in Ic (line 10–13). If the minSdk of the application is less than 17, MI is augmented with methods of classes in Ic17 (line 14–17). The second set, MW, is the set of WebViewClient methods (line 18–20). The third set, Ma, is the set of access methods of classes C (line 22–25). Finally, the algorithm calculates the number of arguments for methods in M (inline 27).
+# 6. Methods abstraction (step 4)
+Our experiments showed that analyzing abstracted versions of method paths is more efficient and convenient than analyzing the paths in their native Dalvik code. Therefore, this module presents a new technique for abstracting Dalvik instructions related to our studied vulnerabilities. This module starts by building execution paths for methods in M.
+In Table 3, we collected the set of Dalvik instructions that are most related to our studied vulnerabilities. Each instruction is categorized as follows:
+1. register-register - it abstracts instructions that move data between registers.
+2. register-field - it abstracts instructions that move data between registers and class fields.
+3. method call - it abstracts the Dalvik invocation instructions. The abstraction is done in two steps. The first step produces the first instruction form in this category. The second step augments the instruction built in the first step with the component [RESULT, integer] that identifies the register holding the result of the invocation (if any).
+4. sink call - it abstracts the instructions invoking sink methods, where integer* is the set of register IDs including leaked registers.
+5. source call - it abstracts instructions that read sensitive data and store it into the register whose ID is the integer. This particular abstraction is practically done in two steps. The result of the first step is the abstracted instruction [SOURCE] and the second step augments this result with the register ID to produce [SOURCE, integer].
+6. move call - it abstracts the Dalvik instructions that move results of method invocations to other registers.
+7. return - it abstracts the Dalvik return instructions.
+8. constant - it abstracts the instructions that assign constants of different types into registers.
+- def s1 ⇐⇒ O [len(O) − 1], and
+- def s2 ⇐⇒ s1 [len(s1) − 1].
+Below, we illustrate each abstraction rule shown in Table 5 with some reference examples of rule application. All the examples are taken from a testbed Android app and are presented as follows:
+The Dalvik instruction
+The corresponding abstraction.
+Rule 1. This abstracts some of the category of read instructions. In particular, Rule 1 treats the cases of assigning the con-
+# Computers & Security 109 (2021) 102395
+# Algorithm 1 Find_All_Relevant_Methods()
+Input: The Sets of classes I, Ic17, W, Iu, and Wu.
+Output: The list M of all methods relevant to the studied vulnerabilities.
+1. C ← Ic + Ic17 + W + Iu + Wu.
+2. M ← [].
+3. for each c ∈ C do
+4. &nbsp;&nbsp;&nbsp;&nbsp;for each m ∈ c.methods do
+5. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M.append(m).
+6. if len(M) ≤ thm then
+7. &nbsp;&nbsp;&nbsp;&nbsp;return M.
+8. else
+9. &nbsp;&nbsp;&nbsp;&nbsp;MI ← MA.
+10. &nbsp;&nbsp;&nbsp;&nbsp;for each c ∈ Ic do
+11. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for each m ∈ c.methods do
+12. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if m.name ∈ {′init,′ onCreate} then
+13. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M.append(m).
+14. if minSdk ≤ 17 then
+15. &nbsp;&nbsp;&nbsp;&nbsp;for each c ∈ Ic17 do
+16. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for each m ∈ c.methods do
+17. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M.append(m).
+18. for each c ∈ W do
+19. &nbsp;&nbsp;&nbsp;&nbsp;for each m ∈ c.methods do
+20. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MW.append(m).
+21. M ← MI + MW
+22. for each c ∈ C do
+23. &nbsp;&nbsp;&nbsp;&nbsp;for each m ∈ c.methods do
+24. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if′access′ ∈ m.name then
+25. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ma.append(m).
+26. M ← M + Ma
+27. Mr ← Find_Method_Register_Numbers(M).
+28. return M.
+Content of a store (register or a field) into a register. Therefore, the resulting abstracted instruction belongs to the register-register or register-field categories. The first component of the resulting instruction is the destination register and the second component is the source store. Examples of the abstraction applied by Rule 1 are as follows:
+(iget − object, [(0, 0), (0, 0), (258, 3987, MainActivity; − > editor)])
+[0, MainActivity; − > editor].
+# 10
+# computers & security 109 (2021) 102395
+(iget − object, [(0, 0), (0, 0), (258, 3990, MainActivity; − > telephonyManager ))] [0, MainActivity; − > telephonyManager].
+# Rule 2.
+This rule abstracts also some of the category of read instructions. More specifically, Rule 2 treats the cases of assigning the value of an array location into a register. Therefore, the resulting abstracted instruction belongs to the register-register category, where the second component is the register ID holding the array reference.
+# Rule 3.
+This rule abstracts subset of the instructions in the write category. Rule 3 is similar to Rule 1. However, the order of components of the resulting abstracted instruction is reversed. An example of the abstraction applied by Rule 3 is as follows:
+(iput, [(0, 0), (0, 3), (258, 3986, webviewInterface; − > xInter )]) [webviewInterface; − > xInter, 0].
+# Rule 5.
+This abstracts the category of invoke instructions. This rule is effective when the invocation is for a method in M. In this case, the resulting abstracted instruction is a list of the string ’CALL’, the method id, argument registers, and operand list of the Dalvik instruction. An example of the abstraction applied by this rule is as follows:
+(invoke − direct, [(0, 3), (0, 0), (0, 1), (256, 249, f2(String, String))]) [CALL, f2, , [(0, 3), (0, 0), (0, 1), (256, 249, f2(String, String))].
+# Rule 6.
+This abstracts the category of invoke instructions. This rule is effective when the invocation is for a source method. In this case, the resulting abstracted instruction is a pair of the string ’SINK’ and a list of the register arguments including the leaked register. An example of the abstraction applied by this rule is as follows:
+(invoke − interface, [(0, 0), (0, 2), (0, 1), (256, 2, Editor; − > putInt ())]) [SINK, ].
+# Rule 4.
+This rule abstracts subset of the instructions in the write category. More specifically, the rule treats instructions writing into arrays. Rule 4 is similar to Rule 2. However, the order of components of the resulting abstracted instruction is reversed.
+# Computers & Security 109 (2021) 102395
+Instruction. An example of the abstraction applied by this rule is as follows:
+(invoke − virtual , [(0, 0), (256, 5, TelephonyManager; − > getDeviceId ())]) [SOURCE].
+# Path analysis (step 5)
+This module is a recursive one that analyzes abstracted paths (created by the previous module) of methods in M. For an execution path p, this module analyzes the instructions of L(p) one by one and the analysis inputs are (id p, L(p), R(p), Lid(p)), where R(p) = &lt; Rs, R, Rr, Rm, Rc, Rk &gt;.
+- Results of the analysis are built gradually into R(p). Therefore at a program point of p, R(p) would contain the results collected till that program point. The recursive nature of the module causes including this parameter in the module arguments.
+- The set Lid(p) (containing IDs of method called in p till the instruction under analysis) is included in the inputs to avoid infinite loops. Such loops are possible due to the static nature of our analysis.
+- Rm aims at tracing the move of sensitive data among class fields.
+- Rc aims at watching contents of registers relevant to the analysis (not all registers).
+The analysis is based on a heuristically developed set of inference rules that are presented in Table 7. The rules mainly show the effect that instructions have on the entries of the tuple R(p). A primed entry of R(p) represents the new value of the variable after analyzing an instruction.
+# Rules
+Rule 14. The rule shows that the return instruction has effect on Rc and Rs only. The remaining entries of R(p) are unchanged by this instruction. For R, it gets restricted on the register i. For Rs, it gets first restricted on fields, then it may get augmented with the register i or with Rr according to the conditions in the rule.
+Rule 15. The rule treats the CONSTANT instructions, by removing the register i from Rc and Rs. This is so as assigning a constant to the register overwrites any sensitive data in it and hence tracing its content becomes not important.
+# 12
+# c o m p u t e r s & s e c u r i t y 1 0 9 ( 2 0 2 1 ) 1 0 2 3 9 5
+pending the sourced register to Rs . The rule also removes the register from Rc . The reason for this removal is that the register status became evident and hence it is not necessary to trace its content anymore. Derivation 21 provides an example of applying this rule.
+R(p) =< {}, {}, 0, {}, {(0, MainActivity; − > telephonyManager)}, {(MainActivity; − > editor, webviewInterface; − > xInter )} >
+[SOURCE, 0] : R′s → {0} ∧ R′c → {} R = [{0}, {}, _, {}, {(0, telephonyManager )}, {}]
+(21) [CALL, f 2, , [(0, 3), (0, 0), (0, 1), (256, 249, webInterface; − > f 2(Str ))]] :
+Rc ′′= {0, id} ∧ Rl ′= {id f 2 } ∧ Rr ∧ Rk = {editor, telephonyManager} Rs = {(0, telephonyManager )} ′= {} ∧ Rm = {(telephonyManager, id )}∧′ ′
+Rule 17. The rule treats the SINK instruction. In case L∩Rs = ∅ which means that one of the sink registers has sensitive data, then the path leaks data. Therefore the path ID is added to R. For each i ∈ L, the rule adds to Rk all fields along the assignment path that leads to the value in i. This augmentation of Rk is done because, as leaking caused by i, other leaks may be caused by the fields added to Rk.
+Rule 18. The rule treats the register-register and register-field instructions whose first entry is a register. The rule updates Rc to record the data flow from i2 to i1 . The rule also updates Rs by adding or removing i1 depending on whether i2 contains sensitive data. An example of applying Rule 18 is given in derivation 22.
+Rule 19. The rule treats the register-field instructions whose first entry is a field.
+Rule 20. The rule treats the method call category of instructions. In this rule, the recursive side of the module is evident as the module calls itself. The rule builds arguments (R example, Rs m is composed of fields of Rs plus the set of argument registers (denoted by Rgs in the rule) that contain sensitive data (i.e. in Rs ). However, the IDs of these argument registers are translated to their corresponding local registers in the method m. The final result of the rule is derived from the result of the m. This is denoted by the operation arg() in definition of Rs recursive call (denoted by Rn (pm ) in the rule): for instance, R′m = Rm n.
+R = {R(p) =< R s >| p ∈ P} is the set of analysis results for a set of paths P, type 1 vulnerability occurs if one of the following conditions are verified:
+- For some p ∈ P, R p p= ∅ and the method of this path is an interface one.
+- There exist paths p1 , . . . , pn ⊆ P, i ∈ Rs 1, j ∈ Rk n, and fields f1 , . . . , fn such that the methods of p1 and pn are interface ones and (i, d1 ) ∈ Rm 1, . . . , (dn , j) ∈ Rm n.
+# Implementation
+This section illustrates the implementation details of a convenient abstraction rule (among the ones in Table 5) to be applied. This relies on the APIs get_name() and get_nb_instructions(). The instruction name and operands are extracted from each instruction to determine the corresponding path of abstracted instructions which has the form of a list. During instruction iteration, some instructions may not match any rule. In this case, this instruction is not relevant to our analysis and hence gets dropped. For each abstracted path (list), we iterate its elements to analyze its content using convenient rules of Table 7. Applying an analysis rule mainly consists in updating the variables of Table 6, according to the applied rule.
+W ebV Sec is implemented on top of Androguard Desnos (2011), a tool for reverse engineering Android applications. The result of W ebV Sec is implemented as a text file that contains all the information collected in all phases of the system.
+# 7. Decompilation (step 1)
+Androguard (Release 3) Desnos (2011) is used to implement the decompilation phase. Androguard results in three objects. Information about the APK (e.g., manifest content, package name, permissions) is included in the first object (i.e., aA). DEX files of the APK file are included in the second object (i.e., dA). The third object includes information about dex classes (i.e., dxA).
+# 7. Identification of interface and webviewclient classes (step 2)
+The implementation of this module relies on the Androgurad methods get_item_type() of dA and get_method_annotations() that is included in one of the attributes of dA. These methods enable constructing the sets MA and Ic. To analyze applications that target a minSdk less than 17, where annotating interface methods is not necessary, we do as follows: this module searches for all the methods in classes of dxA to find instructions that invoke the APIs addJavascriptInterface and setWebViewClient; the parameters of these instructions enables collecting Ic17, Cw, W, and Wu.
+# 7. Identification of relevant methods (step 3)
+The implementation of Algorithm 1 benefits from the objects produced by our reverse engineering tool. The implementation of steps 4, 11, 16, 19, and 23 uses the Androguard API c.get_methods() to extract methods of a class c. This API is included in the object dxA. The API get_min_sdk_version() (contained in the object aA) is used to implement step 14 of the algorithm, where the minSdk needs to be checked. Each method of the app has an Androguard object that includes an attribute called name. For a method m, this attribute is read via the code m.name to implement the steps 12 and 24.
+# 7. Methods abstraction and path analysis (step 4 and step 5)
+The implementation of these modules uses several Androguard APIs including:
+# 7. Custom thresholds
+Dense calculations in W ebV Sec might lead to large consumption of time and computation resources. Therefore, we heuristically fixed a set of thresholds to limit this consumption with very little effect on the precision of the W ebV Sec results. These thresholds are as follows:
+- An upper bound (denoted by thm) on the number of methods to be analyzed. We heuristically fixed thm to 600. This number is reasonable because it covers almost all methods of interface and webViewClient classes in the apps of our dataset. These are the methods that would include the studied vulnerabilities in most cases. However, increasing this threshold results in studying methods of classes using the webView objects. This makes the analysis more inclusive than using a lower threshold and hence increases the probability of discovering vulnerabilities related to the added methods. However, heuristically, it is rare to find vulnerabilities related to these added methods.
+- The number of paths of WebView interface and WebView-Client methods that are to be analyzed. We heuristically found that it is mostly enough to analyze the longest path. The experiments showed that this longest path in most cases includes key instructions relevant to W ebV Sec. This is so because in most cases the short paths inside the methods of interface and webViewClient represent else branches opting-out using webView objects. Therefore analyzing these short paths mostly does not affect the precision of W ebV Sec.
+For each method, we first build its execution path in the form of lists of instruction blocks using the APIs basic_blocks.gets() and get_next(). Hence each method path is a list of blocks. For each path, we then iterate its blocks to extract the block instructions using the get_nb_instructions() that return the number of instructions in a block. This is useful for finding the longest path of a method.
+# 8. Evaluation
+This section presents the results of our experiments conducted for evaluating W ebV Sec. We got the dataset from a reputable benchmark, namely AndroZoo Allix et al. (2016). All experiments were done on a Dell (Vostro) device with processor: Intel(R) Core(TM) i7-3612 QM CPU @ 2 GHz, 8 GB RAM, and Windows 10 (64-bits) operating system. All implementations were written in Python on top of Androguard Desnos (2011).
+# c o m p u t e r s & s e c u r i t y 1 0 9 ( 2 0 2 1 ) 1 0 2 3 9 5
+# Listing 6 – AndroZoo Command.
+The symbol means that the technique does not provide the statistics.
+the tool we adopted for reverse engineering Android applications. We make all our results and data files available.
+We downloaded a random set of 2000 applications, whose sha256 is available online, in early 2020. The instruction we used to download the dataset is given in Listing 6. We limited the download to applications that Androzoo obtained from the Google Play Store. We also restricted our download to recent apps by specifying the publishing dates of dataset from 2019 onwards. The list after the option “-md” in the instruction is a metadata that AndroZoo provides for each downloaded APK.
+Tables 8 and 9 contain the statistics we collected through our experiments where we compared W ebV Sec against BabelView, answering the following research questions:
+# RQ1. Applicability, effectiveness, and performance:
+How does W ebV Sec compare against alternative approaches in applicability, discovering WebView vulnerabilities and in performance?
+# RQ2. Half vulnerabilities:
+How does W ebV Sec compare with alternative approaches in discovering paths that read a value and paths that send out a value?
+# RQ3. Accuracy:
+What is the accuracy of W ebV Sec and the alternative approaches?
+We also conclude the current state of WebView use by programmers in Android applications with the following question:
+# RQ4. WebView usage in Android ecosystem:
+What is the current usage of all elements that contribute to the vulnerabilities of our threat model (e.g., WebView, interfaces, WebView-Client)?
+# 8. Applicability, effectiveness, and performance
+For a complete evaluation, we compared the applicability, effectiveness, and performance of W ebV Sec with one of the state-of-the-art techniques, BabelView Rizzo et al. (2018), which we selected for the following criteria. First, BabelView is a recent technique that addresses recent versions of Android. Second, the implementation of BabelView is available as a public tool suite. Third, BabelView is one of the most closely related techniques to W ebV Sec. BabelView was implemented using the Soot framework Vallée-Rai et al. (2010). To eliminate bias in favor of W ebV Sec, we used the list of sources and sinks provided by BabelView in our experiments. We also ran W ebV Sec and BabelView on the same dataset.
+Applicability. Running W ebV Sec on the 2000 applications of the data set resulted in only 6 cases that Androguard failed to decompile. The remaining 1994 applications were successfully analyzed by W ebV Sec. Therefore, we ran W ebV Sec and BabelView on these 1994 applications. Out of the 1994 applications, BabelView analyzed and produced reports for only 881 applications. However, W ebV Sec analyzed and produced reports for all 1994 applications. W ebV Sec revealed that almost 94% (1872 applications) of the analyzed sample specifies a minimum SDK that is less than or equal to 17. This confirms the applicability of W ebV Sec to applications that target old versions of Android, where the annotation of interface methods is not required. The annotation details were presented in Section 2.
+Effectiveness. To evaluate whether W ebV Sec can discover vulnerability types presented in Section 4, we developed a toy Android app that includes all types of vulnerabilities. The app includes 30 vulnerabilities that are distributed among the 4 types. While our technique, W ebV Sec, discovered all the 30 vulnerabilities, BabelView did not manage to discover any of these vulnerabilities. The running example of the paper was taken from this application. Files of the toy application and its analysis results are available online.
+1 https://github.com/maelzawawy/WebVSec.git
+2 https://github.com/maelzawawy/WebVSec.git
+4 https://github.com/ClaudioRizzo/BabelView
+3 https://play.google.com/store/
+5 https://github.com/maelzawawy/WebVSec.git
+# Computers & Security 109 (2021) 102395
+The symbol means that the technique does not provide the statistics.
+The total number of vulnerabilities discovered by WebV Sec is 82 in 48 applications. This number is a breakdown into 44 of type 1 vulnerability and 38 of type 3 vulnerability. The number of interface classes which methods contribute to type 1 vulnerability is 21 in 20 applications. The number of WebViewClient classes which methods contribute to type 3 vulnerability is 38 in 36 applications. Table 10 presents the list of 48 vulnerable applications. Fig. 3 shows the number of vulnerabilities found by WebV Sec in each application of the dataset used for the analysis.
+On the other hand, although BabelView reported a total number of 19883 leaks (in 881 applications), only 26 leaks are related to interface classes (in 18 applications). Among the 26 leaks, only 18 leaks (in 11 applications) were of type 1 vulnerability. These leaks were reported by our technique, WebV Sec, as well. The remaining 8 leaks (in 7 applications) were not reported by WebV Sec because their paths include methods that are neither interfaces nor WebViewClient ones, which means they do not follow our threat model and they are not completely WebView vulnerabilities. However, the 8 leaks use interface classes. The full list of applications and analysis results are available online. BabelView did not report any leak related to WebViewClient as WebV Sec did. This is not surprising as BabelView does not target WebViewClient in the first place, which is a drawback of BabelView. These results confirm that WebV Sec is more efficient, precise, and general than BabelView.
+Together with vulnerabilities BabelView reports their types depending on their actions. These types include writing to the File System and violation of the Same Origin Policy. The reports provided by WebV Sec for each analyzed app are rich enough to straightforwardly extract similar vulnerability types. This is so because, for each reported vulnerability, WebV Sec provides its detailed execution path. The path includes the APIs of source and sink methods. Hence, a simple classification of these APIs is enough to obtain vulnerability classification.
+Performance. WebV Sec and BabelView take 27 hours and 63 hours, respectively, for the total sample of 2000 apps. On average, while WebV Sec needed 49 seconds to analyze an application, BabelView needed 114 seconds. Thus, WebV Sec is more efficient than BabelView, as also shown in Fig. 4.
+The Soot tool Vallée-Rai et al. (2010) that BabelView relies on is capable of optimizing the Java byte code during the decompilation of apk files. However, this optimization significantly increases the decompilation time. Although Soot optimization can be disabled, slow performance of the default configuration of Soot in many tools, such as ded Enck et al. (2011) and Dare.
+# 16
+# computers & security 109 (2021) 102395
+# Computers & Security 109 (2021) 102395
+# 8. Half vulnerabilities
+It is interesting to compare the effectiveness of WebV Sec versus BabelView in discovering half vulnerabilities. WebV Sec reported total number of 626 sourced variables, in 443 applications. The paths of WebViewClient classes hosted 472 of these sourced variables in 409 applications. WebV Sec also reported 3403 sinked variables in 744 applications. The paths of WebViewClient classes hosted 2016 of these sinked variables, in 668 applications. Considering the leaking paths reported by BabelView, we counted 564 sinked variables in interface classes of 184 applications and 72 sourced variables in interface classes of 34 applications. Therefore, WebV Sec is more effective and useful in discovering half vulnerabilities than BabelView.
+# 8. Manual validation
+We carried out a manual validation to evaluate the accuracy of WebV Sec which turned out to have no false positives as all reported vulnerabilities are the correct ones. We checked the interface and WebViewClient classes (in Dalvik code format) of randomly selected 50 applications among the ones that were reported OK by WebV Sec. We did not discover any error in the reports of WebV Sec for these applications. We also found that the analysis results of our toy application are in line with the source code we developed ourselves. Our manual verification confirms the high accuracy of WebV Sec.
+WebV Sec is conservative in its nature for two reasons. The first one is that WebV Sec is path-sensitive, which means that it does not approximate collected analysis data to obtain general results for multiple paths. For example, analysis results for each path resulting from conditional program-
+# Figures
+# 18
+# Computers & Security 109 (2021) 102395
+ming commands are built separately rather than approximat- by W ebV Sec occurred in webViewClient classes, these classes are responsible for much less percentages of source and sink APIs invocations.
+These reasons explain the high accuracy in the 50 apps sample. However, we must stress that the precision evaluation is concluded from analyzing results of 50 apps out of the 2000 apps of the dataset.
+# 9. Conclusion and future work
+Vulnerabilities of WebView objects have been widely studied by previous works, which identified the security issues associated with the JavaScript bridge. In particular, enabling the JavaScript code running in a remote webserver to access smartphone local sensitive data has paved the way for several attacks. Despite the solutions proposed by previous works to defend and detect such attacks, there are still new vulnerabilities affecting this feature of the Android ecosystem, which also impacts a large number of Android applications. The attacker’s motivation to design exploits relying on WebView vulnerabilities concerns the opportunity to access sensitive data on the phone, just by running some malicious JavaScript code on a remote web server.
+In this paper, we propose W ebV Sec a static analysis tool that relies on a set of heuristically designed inference rules to detect four types of vulnerabilities involving Android WebView objects. The evaluation of W ebV Sec over a set of 2000 applications led to the detection of 48 vulnerable applications (20 ones having Type 1 vulnerability and 36 having Type 3 vulnerability). On the contrary, BabelView, the state-of-the-art approach which we compared with, identified only 20 vulnerable apps (11 having Type 1 vulnerability and 0 having Type 3 vulnerability). Besides being more accurate in detecting vulnerabilities, W ebV Sec also overcomes BabelView in terms of efficiency, by requiring 27 hours for the analysis of the whole dataset concerning the 63 hours required by BabelView.
+# 8. Current state
+This section discusses the current state of Android applications using WebView, interfaces, WebViewClient, and other different elements that contribute to the vulnerabilities addressed in this paper.
+# 8. Interfaces.
+The number of classes containing methods annotated with @JavascriptInterface is 3110 classes. These classes belong to 991 applications (49% of the dataset). This reveals that annotating interface method is a common practice in implementing WebView. For applications that target minimum SDK less than 17, the number of defined interface classes is 3609 in 1320 applications (66% of the dataset). W ebV Sec counted 53367 methods in 1405 interface classes. The interface classes are used in 4444 classes in the 1404 application (70% of the dataset).
+# 8. WebViewClient.
+The dataset contained 9615 WebViewClient classes in 1749 applications (87% of the dataset). The number of methods found in WebViewClient classes is 43772. These classes were used by 15050 classes in 1774 applications (88% of the dataset). The number of applications that use WebViewClient is larger than the number of application defining WebViewClient classes because some applications use WebViewClient classes from libraries without needing to define them.
+# 8. Relevant methods.
+The number of elements of the set M of methods selected by the third phase of W ebV Sec (Identification of relevant methods) is 500152 (in 1797 applications). On average each application has 278 methods of these methods. By applying the heuristic described in phase 3, the number of methods became 366708 which reduced the average number of methods (needing analysis) to 204 per application. Android creates access methods (we denoted them in phase 3 of W ebV Sec as Ma) to access global variables. It is necessary to include these methods in M. W ebV Sec found 13525 access methods (in 148 applications).
+# 8. Sources and sinks.
+Among all analyzed methods, 2567 methods (in 827 applications) invoked a source-API. The total number of these invocations is 5079. Almost 18% of these methods are WebViewClient ones (in 410 applications) which are responsible for almost 29% of these source-API invocations. On the other hand, 18763 analyzed methods (in 1770 applications) contained 35839 sink-API invocations. Almost a quarter of these methods are WebViewClient ones (in 1276 applications) that are responsible for almost a quarter of the sink-API invocations. The exact numbers are shown in Table 9. It is worth noting that although almost 46% of the vulnerabilities discovered.
+# CRediT authorship contribution statement
+Mohamed A. El-Zawawy: Writing – original draft, Writing – review & editing. Eleonora Losiouk: Writing – original draft, Writing – review & editing. Mauro Conti: Writing – original draft, Writing – review & editing.
+# Authors
+# Mohamed A. El-Zawawy
+Mohamed A. El-Zawawy received a Ph.D. in Computer Science from the University of Birmingham in 2007, an M.Sc. in Computational Sciences in 2002 from Cairo University and a BSc. in Computer Science in 1999 from Cairo University. Dr. El-Zawawy is an associate professor of Computer Science at Faculty of Science, Cairo University Since 2014. During the period 2007-2014 Dr El-Zawawy held the position of an Assistant Professor of Computer Science at Faculty of Science, Cairo University. During the year 2009, he held the position of an extra-ordinary senior research at the Institute of Cybernetics, Tallinn University of Technology, Estonia, and worked as a teaching assistant at Cairo University from 1999 to 2003 and later at Birmingham University from 2003 to 2007. Dr. El-Zawawy is interested in Android security and privacy, IoT security.
+# Eleonora Losiouk
+Eleonora Losiouk is a Postdoc Fellow working in the SPRITZ Group of the University of Padova, Italy. In 2018, she obtained her Ph.D. in Bioengineering and Bioinformatics from the University of Pavia, Italy. She has been a Visiting Fellow at the Ecole Polytechnique Federale de Lausanne in 2017. Her main research interests regard the security and privacy evaluation of the Android Operating System and the Information-Centric Networking. During her Ph.D. she published several papers in peer-reviewed journals and IEEE conferences.
+# Computers & Security
+Mauro Conti is Full Professor at the University of Padua, Italy, and Affiliate Professor at the University of Washington, Seattle, USA. He obtained his Ph.D. from Sapienza University of Rome, Italy, in 2009. After his Ph.D., he was a Postdoc Researcher at Vrije Universiteit Amsterdam, The Netherlands. In 2011 he joined as Assistant Professor the University of Padua, where he became Associate Professor in 2015, and Full Professor in 2018. He has been Visiting Researcher at GMU (2008, 2016), UCLA (2010), UCI (2012, 2013, 2014, 2017), TU Darmstadt (2013), UF (2015), and FIU (2015, 2016, 2018). He has been awarded with a Marie Curie Fellowship (2012) by the European Commission, and with a Fellowship by the German DAAD (2013). His research is also funded by companies, including Cisco, Intel, and Huawei. His main research interest is in the area of security and privacy. In this area, he published more than 250 papers in topmost international peer-reviewed journals and conferences. He is Area Editor-in-Chief for IEEE Communications Surveys & Tutorials, and Associate Editor for several journals, including IEEE Communications Surveys & Tutorials, IEEE Transactions on Information Forensics and Security, IEEE Transactions on Dependable and Secure Computing, and IEEE Transactions on Network and Service Management. He was Program Chair for TRUST 2015, ICISS 2016, WiSec 2017, and General Chair for SecureComm 2012 and ACM SACMAT 2013. He is Senior Member of the IEEE.

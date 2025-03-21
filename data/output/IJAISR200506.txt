@@ -1,0 +1,448 @@
+# Android Applications Development Intelligent Tutoring System
+Article · May 2020
+# Author
+Hazem A. S. Alrakhawi
+Islamic University of Gaza
+6 PUBLICATIONS 115 CITATIONS
+SEE PROFILE
+All content following this page was uploaded by Hazem A. S. Alrakhawi on 05 March 2023.
+The user has requested enhancement of the downloaded file.
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Android Applications Development Intelligent Tutoring System
+Hazem Awni Al Rekhawi
+Department of Information Technology, Faculty of Engineering & Information Technology
+Al-Azhar University, Gaza, Palestine
+Email: engazem@gmail.com
+# Abstract
+An intelligent tutoring system (ITS) is a computer system that aims to provide immediate and customized instruction or feedback to learners, usually without requiring intervention from a human teacher. ITSs have the common goal of enabling learning in a meaningful and effective manner by using a variety of computing technologies. The proposed system will be implemented using an intelligent tutoring system builder (ITSB). Undeniably, the importance of the mobile phone in our time and the importance of the Android system in particular, which provides millions of applications on the Play Store, international universities have specialized sections in the development of mobile applications to allow the students to develop the applications of Android and published on the Play Store. In this study, the researchers presented an intelligent tutoring system for teaching Android Applications Development. The idea of the system came after the study of the first author for the course of an intelligent tutoring system during the study of the master, where he learned through the course on the importance of an intelligent tutoring system and its advantages in the educational process and based on the experience of the first author in the development of Android applications since 2010 to the present time in addition to his work as an academic teacher in this and the need for such as an intelligent tutoring system to help the student and teacher in the educational process. The system was evaluated by teachers specialized in the development of Android applications as well as students who study in the development of Android applications in local universities in Gaza. The result was excellent.
+Keywords: ITS, Intelligent Tutoring System, Android, Android Applications Development, ITSB.
+# 1. Introduction
+An intelligent tutoring system (ITS) is a computer system that aims to provide immediate and customized instruction or feedback to learners, usually without requiring intervention from a human teacher . ITSs have the common goal of enabling learning in a meaningful and effective manner by using a variety of computing technologies. There are many examples of ITSs being used in both formal education and professional settings in which they have demonstrated their capabilities and limitations. There is a close relationship between intelligent tutoring, cognitive learning theories and design; and there is ongoing research to improve the effectiveness of ITS. An ITS typically aims to replicate the demonstrated benefits of one-to-one, personalized tutoring, in contexts where students would otherwise have access to one-to-many instruction from a single teacher (e.g., classroom lectures), or no teacher at all (e.g., online homework) . ITSs are often designed with the goal of providing access to high quality education to each and every student.
+The mobile applications have a preference over the web-based solutions because they are more transformative than the web and are growing at a much faster rate. The mobile application development space is dominated by the smartphones and among the smartphones, 84 % comprises of Android based devices. We have seen a massive proliferation in the use of mobile apps, particularly in the developing countries. As a result, developers are increasingly interested in the development of Android applications due to the increasing use of Android phones and the user's need for assistive applications .
+In fact, the researchers have eight years of experience in the development of Android applications, where he worked as a teacher in many local universities in addition to his work as a trainer for Android applications development course with local and international institutions and created many training materials for the development of Android applications.
+# 1 Statement of the Problem
+Undeniably, the development of smartphone applications is one of the most important disciplines currently being taught in universities through the Information Technology (IT) departments. The development of Android applications is especially important because it is important to open new business horizons through the creation and deployment of applications on the store as well as the possibility of working within local companies or on freelancing sites.
+Where the student suffers in the process of traditional education to develop Android applications of some difficulties that we have to help solve, the most prominent of these difficulties: the presence of large numbers of students in the classroom, making it difficult for the teacher to follow all students equally, and the existence of some individual differences in Students' comprehension requires a re-explanation by the teacher in some parts of the lesson and this is not easy.
+The development of Android applications requires a relatively large time for programming and solving the problems that students may face during practical application. The time component is one of the most important obstacles for students and
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+teachers. Some lessons require more time for the teacher to explain the lesson. Example The student needs more than one example and practice to install and understand the information and this is often not provided by the lecture.
+The shyness of the students is a strong barrier between the student and the teacher prevents the student's understanding of the lesson because of his inability to communicate with the teacher.
+Because the lessons of the development of Android applications are cumulative and interrelated, they require the student to attend lectures regularly so that the student avoids a gap between the previous lesson and later, and some students delay the time of lectures and the absence of others for certain circumstances is lost by some of the information explained during the delay or absence.
+The explanation of some information at the end of the lecture may not be absorbed by the student, especially since he may be satisfied with the information he received at the time of the lecture. In contrast, it is impossible to find the teacher with the student at any time and place to compensate for what he could not absorb.
+The proposed ITS is expected to create an appropriate learning environment and a reliable source of information to learn the development of Android applications and reduce the difficulties faced by students in traditional education with the possibility of rapid assessment and guidance of students through the system.
+# 1 Objectives
+Main objective: Develop an intelligent tutoring system to teach the development of Android applications through the use of computerized education, in addition to traditional methodological education, and to create a suitable learning environment for students to ensure that the objectives of the educational process are achieved. The system is expected to reduce the difficulties faced by students in learning the development of Android applications.
+Specific objectives:
+- Helping students learn how to develop Android applications
+- Raise the efficiency of students through the employment of computerized education.
+- Create an appropriate study environment to achieve the highest quality
+- Ease and flexibility in obtaining reliable information
+- Overcoming the time and place barrier between teacher and student.
+- The possibility of self-evaluation of the student through the system's short examinations.
+- The system allows the student to repeat the lesson more than once to understand.
+- The system takes into consideration persons with special needs who miss some lectures to their circumstances.
+# 1 Significance of the study
+The proposed ITS to teach the development of Android applications that connects computer education and artificial intelligence, which meets many goals such as taking into considerations the specific needs of each student and taking into considerations the individual differences in the level of students, and the system provides various techniques of text and visual training materials that the student easily interact with.
+The system ensures easy to explain lessons to students and provide examples and exercises at the end of each lesson in addition to tests for the level of the student are subject to it after the end of each unit.
+The system adapts to the level of the student so as to ensure the highest possible quality of the educational process through multiple levels of difficulty of the questions proposed by the system at random.
+The system presents the results for each student and guides them to their own weaknesses and any lessons they must read to understand them.
+# 1 Limitation of the study
+In the development of Android applications, students must learn Java language, especially object programming in advance, as a basic language in the development of Android applications, and must learn Java before using the proposed system.
+In this proposed system, the researchers provide a training material for the development of Android applications since it is presented in English only. Examples and practical exercises will be implemented through the Android Studio program and give the final answers to the proposed system.
+Perhaps the most prominent focus of the researchers that the proposed system is an assistant system for the teacher in the educational process for students and not a complete substitute for the human teacher.
+# 2. Theoretical Background
+# 2 Intelligent Tutoring Systems
+The "Technological Revolution" indicates that reliance on traditional education (which is static lectures in time and space) will gradually decrease .
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+Three components drive this educational infliction point. They are artificial intelligence (AI), cognitive science, and the internet :
+- AI, is the science making computers to take the place of the intelligence of human, with inmost understanding of knowledge, mainly representation and reasoning about "how to" knowledge, like procedural knowledge.
+- Cognitive science, or research into understanding how people act intelligently, leads to a deeper understanding of how people think, solve problems, and learn.
+- The Internet provides an unlimited source of information, available anytime, anywhere.
+AI and cognitive science, two sides of one coin that is, understanding the nature of intelligent work, in any clear entity. Often, AI techniques are used to build software models of cognitive processes, while cognitive science results are used to develop more artificial intelligence techniques to simulate human behavior .
+AI techniques are used in education to model student knowledge, academic subjects, and teaching approaches as shown in Figure 1.
+# 2 Definitions of ITS
+There are many definitions of ITS such as:
+- Intelligent Tutoring Systems (ITSs) are computer software designed as combined methods from Artificial Intelligence (AI) community to deliver expert tutors which recognize the material to teach, the target students and the technique used .
+- Intelligent Tutoring Systems (ITSs) are computer-based instructional systems with models of instructional content that specify what to teach, and teaching strategies that specify how to teach .
+- Intelligent tutoring systems (ITSs) are computer programs that are designed to incorporate techniques from the AI community in order to provide tutors which know what they teach, who they teach and how to teach it .
+- ITS is a system based on artificial intelligence that can think about useful knowledge models in promoting and evaluating learning. The main function of intelligent tutoring systems is to adapt to the learner by understanding or understanding their cognitive, meta-cognitive or cognitive states .
+- ITS is a computer system that tutors a student on some subject matter by presenting course content based on a model of the student. An ITS typically has four components: interface model, instructional model, expert model, and student model .
+- ITS is a computer program that contains some intelligence and it can be used in learning. Moreover, ITS is an outgrowth of the earlier computer-aided instruction .
+- From the researchers point of view: Any computer system providing direct customized instruction or feedback to students while using artificial intelligence strategies. It is made of three models: student, tutor and expert. The first implements students feature like knowledge and behavior (including misconceptions and mental schemes). The second adapts teaching strategies to the various contexts and to the students (i.e., uses the feedback from evaluation surveys to plan recovery actions for the students). The third contains a description of the knowledge or behaviors of the expert.
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 2 Architecture of ITS
+The ITS architecture contains a domain model that contains the material to be learned, an expert model that intelligently controls all system roles, a student model that contains learner information, and a user interface model that is user-to-application communication as shown in Figure 2.
+Student Model
+Interface Model
+Expert Model
+Domain Model
+# 2 Domain Model
+The domain form contains relevant knowledge. The intelligent tutoring system uses its own domain knowledge to solve problems, or to answer questions posed by students. Different knowledge representations may be integrated into the same domain knowledge to support alternative teaching strategies .
+The domain usually refers to the field of study, the goal of most intelligent tutors is to teach part of the domain. The creation of a domain model is often the first step in representing students' knowledge, which may represent the same knowledge of the domain model and solve same problems. Domain models are qualitative representations of expert knowledge in a particular area. May represent facts, procedures, or methods that experts use to accomplish tasks or solve problems. The student's knowledge is then represented as explanatory versions of the information for that domain .
+# 2 Expert Model
+The Expert Model was carried out to collect information needed to generate feedback . The expert model is able to solve the resulting problems by analyzing the template. Because the expert model can execute any code, it can create the correct answer to a problem of its own, and determine if the user answer is correct / incorrect. In addition to whether the user answer is correct / incorrect, the model can provide the student with the correct answer when requested. In addition, the model provides the student with appropriate feedback in response to the student's response.
+# 2 Student Model
+Student model in intelligent teacher monitors student behavior and creates a qualitative representation of their cognitive and emotional knowledge. this is partially model calculations for student performance (time on task, observed errors) and reasons for modifying the comments. In itself, the student model achieves very little. Its purpose is to provide knowledge that is used to determine the conditions for adjust the feedback. It provides data to other tutor models, especially teaching alone. The long-term goal of artificial intelligence and education is to support learning students who have a range of abilities, disabilities, interests, backgrounds, and other characteristics .
+# 2 User Interface Model
+The user interface model is a way to communicate between students and computers (graphical interfaces, animated agents, or dialogue mechanisms) .
+From the user's point of view, most of an intelligent tutoring system can be considered as a user interface. It is therefore important to highlight the aspects of ITS that are concerned with user interaction and domain knowledge, particularly in the presentation of text and graphics as well as user input acceptance. It should be noted that starting already since the early days of the development of ITSs has given insufficient consideration to the interaction between student and teacher and knowledge; this is still Achilles' heel for most ITSs .
+Graphical user interfaces, often supported by visual programming facilities, are recent answers to the problems of interaction in this area, the result of the technological maturity of existing computer systems. The importance of graphical user interfaces in education can best be described by the following quote: "People keep about 25 percent of what they hear, 45 percent of what they see and hear, and 70 percent of what they see, hear and do" .
+# 2 History of ITS
+The microcomputer revolution of the late 1970s and early 1980s helped revive the development of the Computer-Assisted Instruction (CAI) system and the development of ITSs. Personal computers such as Apple 2, Commodore PET and TRS-80 have reduced resources for computer ownership. By 1981, 50% of American schools were using computers. Apple 2 as a system to
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+provide CAI programs in secondary schools and universities including the British Columbia Project and the California State University Project in 1981 .
+In the early 1980s, would also see Intelligent Computer-Assisted Instruction (ICAI) and ITS goals diverge from their roots in CAI. With CAI increasingly focused on deeper interactions with content created for a particular area of interest, ITS sought to create systems that focused on knowledge of the task and the ability to generalize that knowledge in non-specific ways . The main objectives set for the intelligent tutoring system were to be able to teach a task as well as to carry out, and adapt dynamically with its mode. In moving from the CAI system to the ICAI systems, the computer will have to distinguish not only between the correct and false response but the incorrect response type to adjust the type of instruction. Research on Artificial Intelligence and Cognitive Psychology has fueled the new principles of ITS. Psychologists considered how computers can solve problems and perform 'intelligent' activities. The ITS should be able to represent, store, retrieve, and even search its own database to derive its own new knowledge to answer learners' questions. Essentially, the early specifications of ITS or ICAI require "to diagnose errors and modify processing according to diagnosis". The idea of diagnosis and treatment is still in use today when ITS programming .
+After implementing the initial ITS, more researchers created a number of ITS for different students. In the late 20th century, Intelligent Tutoring Tools (ITTs) were developed by the Byzantium Project, which included six universities. ITTs were builders of the general-purpose tutoring system and many institutions had positive feedback during their use. . This ITT originator will produce an Intelligent Tutoring Applet (ITA) for various fields. Various teachers created ITAs and built a large inventory of knowledge that others could access online. Once ITS is created, teachers can copy and modify it for future use. This system was effective and flexible. However, Abu-Naser believed that ITS was not designed from an educational point of view and was not developed based on the actual needs of students and teachers. Recent work has used ethnographic research and design methods to examine methods used by students (ITSs) and teachers in a range of contexts, often revealing unexpected needs that they meet or fail to meet, or in some cases, even create .
+ITSs in modern times try to replicate the role of teacher or teaching assistant, and increasingly lead to the automation of pedagogical functions such as problem generation, problem selection, and feedback generation. However, given the current shift towards blended learning models, the recent work in ITS focuses on ways in which these systems can effectively enhance the complementary strengths human-led instruction from a teacher or peer, when used in classrooms or other social contexts are located .
+There were three ITS projects that were based on the conversational dialogue: Auto-Tutor, Atlas and Why2. The idea behind these projects was that as students learn better by building their own knowledge, the programs will start with the students' key questions and give answers as a last resort. Auto-Tutor students focused on answering computer technology questions. Atlas students focused on solving quantitative problems, and Why2 students focused on explaining physical systems in a qualitative way. Other similar educational systems such as Andes tend to offer students immediate hints and comments when students have difficulty answering questions. They can guess their answers and get the correct answers without a deep understanding of the concepts. The research was conducted with a small group of students using Atlas and Andes respectively. The results showed that students using Atlas improved significantly compared to students who used Andes. However, since the above-mentioned systems require an analysis of student dialogues, improvements still need to be made to manage more complex dialogues [22,37-43].
+# 2 Features of ITS
+ITS has many features such as :
+- Generativity: The ability to generate appropriate problems, hints, and customized help for students' learning needs.
+- Student modeling: The ability to represent the student's current knowledge and learning needs and to respond to them by providing instruction.
+- Expert modeling: A representation and reason about the performance of experts in the domain and the implicit ability to respond by providing instructions.
+- Mixed initiative: The ability to initiate interactions with the student, as well as to explain and respond to the interactions initiated by the student.
+- Interactive learning: Learning activities that require real student participation and are context-appropriate and appropriate for the domain.
+- Instructional modeling: The ability to change the teaching method based on inferences about student’s learning.
+- Self-improving: The ability of the system to monitor, evaluate and improve the performance of its teaching based on its experience with former students.
+# 2 Study Community
+The target audience for the proposed ITS is teachers working in the field of teaching Android applications development, as well as students who want to learn the development of Android applications or belong to a university department that gives university degrees in the development of mobile applications.
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 3. Literature Review
+Information Technology has many studies on artificial intelligence and intelligent tutoring. In this part of the study, the researchers reviewed what was written in the previous studies, either directly or indirectly. The researchers will present and analyze some of the previous studies that have been obtained, which are relevant to the subject of the current study, and the previous studies were presented according to their importance for the current study.
+- The study of (Al-Shawwa et. al., 2019). An Intelligent Tutoring System for Learning Java
+Java is one of the most widely used languages in Desktop developing, Web Development and Mobile Development, so there are many lessons that explain its basics, so it should be an intelligent tutoring system that offers lessons and exercises for this language. Why tutoring system? Simply because it is one-one teacher, adapts with all the individual differences of students, begins gradually with students from easier to harder level, save time for teacher and student, the student is not ashamed to make mistakes, and more. In this paper, The authors describe the design of an Intelligent Tutoring System for teaching Java to help students learn Java easily and smoothly. Tutor provides beginner level in Java. Finally, The authors evaluated our tutor and the results were excellent by students and teachers .
+- The study of (Alshawwa et. al., 2019). An Intelligent Tutoring System for Learning Computer Network CCNA
+Networking is one of the most important areas currently used for data transfer and enterprise management. It also includes the security aspect that enables us to protect our network to prevent hackers from accessing the organization's data. In this paper, The authors would like to learn what the network is and how it works. And what are the basics of the network since its emergence and know the mechanism of action components. After reading this paper-even if you do not have a general background on networking-you will be able to manage your own network and be able to distribute and control your IP .
+- The study of (Bakeer et. al., 2019). An Intelligent Tutoring System for Learning TOEFL
+An e-learning system is increasingly gaining popularity in the academic community because of several benefits of learning anywhere anyplace and anytime. An Intelligent Tutoring System (ITS) is a computer system that aims to provide immediate and customized instruction or feedback to learners, usually without requiring intervention from a human teacher. (ITSB) is the tutoring system Builder Which designed and improved to help teachers in building intelligent tutoring system in many fields. In this paper, The authors have an example and an evaluating are presented of building an intelligent tutoring system for teaching TOEFL using ITSB tool .
+- The study of (Nassr et. al., 2019). ITS for Enhancing Training Methodology for Students Majoring in Electricity
+This study focuses on the use of intelligent tutoring system for education and training of students specialized in electricity in the field of technical and vocational education. The use of modern systems in training and education will have a great positive impact in improving the level of students receiving training and education; this will improve the level of the local economy by producing students of professionals who are able to engage in society efficiently, especially for those who have specialized in electricity. It is known that students in electrical specialties face many problems because of time and cost. Learning and training is not as easy as you imagine, so intelligence is how to overcome these limitations effectively by motivating the Intelligent Tutorial System (ITS) for this type of training. This system consists of a student model, which in turn will contain lessons, exercises and examples that will be used by the student in addition to the user interface model which makes the teacher to be able to manage lessons, examples, and questions and make changes to the system. Expert System (ES) model representing the Artificial Intelligence (AI) here has been used to determine the level of the student and gives him the results, directions and levels. The program was implemented and was used by trainees to show the extent of its impact. The students expressed their surprise and admiration in this way of education as the system used focuses on individual education which can be used at any time and without restrictions. After this experience, the dedicated (ITS) system needs to be developed in several ways such as to be used on mobile systems and web systems in addition to linking some of the specialized programs in the field of electricity .
+- The study of (Al Rekhawi et. al., 2018). DROID Tutor: Android Applications UI Development Intelligent Tutoring System.
+The researchers described the design of a web-based intelligent tutoring system to teach Android applications development to students to overcome the difficulties they face. The basic idea of this system is a systematic introduction to the concept of Android applications development. The system introduces Android applications development and automatically manages the problems created for students to resolve. The system is automatically adapted at run time with individual student growth. The system provides clear support for adaptive transitions. A preliminary evaluation study was conducted to examine the impact of the use of intelligent tutoring system on the performance of students enrolled in the development of smart phone applications at the University College of Applied Sciences (UCAS) in Gaza. The results showed a positive impact on residents .
+- The study of (Albatish et. al., 2018). ARDUINO Tutor: An Intelligent Tutoring System for Training on ARDUINO.
+The researchers were documented to help trainees overcome the difficulties they face when dealing with the Arduino platform by describing the design of the intelligent tutoring system on the desktop. The main idea of this system is a systematic introduction to the Arduino platform concept. The system displays circuit boards in Arduino that can be purchased at low cost or
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Studies on Intelligent Tutoring Systems
+- The study of (Mosa, Albatish et. al., 2018). ASP.NET Tutor: Intelligent Tutoring System for learning ASP.NET.
+The researchers have been implementing a new intelligent tutoring system of tutorials that offer lessons and exercises for the ASP.NET language. Simply because it is one-to-one teacher, adapts to all individual differences of students, gradually starts with students of the most difficult level, saves time for the teacher and student, the student is not ashamed to make mistakes, and more. Therefore, they described the design of Intelligent Tutoring System to teach ASP.net to help students learn ASP.net easily and smoothly. It provides a beginner level tutor in ASP.net. Finally, they evaluated their tutor and the results were excellent by the students and the teacher .
+- The study of (AbuEl-Reesh et. al., 2018). An Intelligent Tutoring System for Learning Classical Cryptography Algorithms (CCAITS)
+In this research work, the researchers introduced an intelligent tutoring system for Learning Classical cryptography algorithms. The structure of this system and the elements of every part are presented in the first place, and then the program flow on which the agents in this system base to participate with the others to suggest reasonable learning pedagogical for individual student according to the evaluation of students' cognitive capability level is discussed. Moreover, the algorithm and procedure which are sophisticated to execute the designed functions of the agents explained. The suggested system for Learning Classical cryptography algorithms will derive adaptive learning pedagogical for individual student to learn in compelling and effective way. This an intelligent tutoring system concentrate on the students registered in Advanced Topics in Information Security in the faculty of Engineering and Information Technology at Al-Azhar University in Gaza and we suggest reasonable and suitable learning pedagogical for individual student to perform adaptive learning. During which the student will be able to think about the course and deal with related issues and solving the problems. An evaluation of the Learning Classical cryptography algorithms system was finished and the results were positive .
+- The study of (Al-Bastami et. al., 2017). Design and Development of an Intelligent Tutoring System for C# Language
+The authors are trying to help users learn C # programming language using the Intelligent Tutoring System. This service was developed using the ITSB authoring tool to be able to help the user learn programming efficiently and make the learning process very enjoyable. The knowledge base was used by using the ITSB authoring tool method to represent the user's work and to provide feedback and customized support to users .
+- The study of (Weber and Prusilovsky, 2016). ELM-ART -An interactive and intelligent Web-based electronic textbook.
+The researchers built a Web-based Intelligent Tutoring System (WITS) designed for teaching users programming in LISP (List Processing) programming language. It integrates intelligent educational system with electronic textbook program in a unique environment in which the user can broaden and deepen previously acquired knowledge. It was used as an intelligent interactive electronic textbook on programming in LISP programming language logic .
+- The study of (Mona H. Mahmoud and Abo El-Hamayed, 2016). An intelligent tutoring system for teaching the grammar of the Arabic language
+In this research work, an Intelligent tutoring system presented to simulate the behavior of the educational process. Any intelligent tutoring system consists of a Tutoring Model, a question selector, an Expert Model, a student model, and a graphical user interface. This work is presented in parallel with implementing a project called “Arabic Grammar Tutor” which was quoted as “AGTUTOR”. A part of this project is adopted and discussed in this paper. This part consists of the first three models of the ITS. These models are: The Tutor Model, the Question Selector Model, and the Expert Model. Moreover, the knowledge base and/or domain knowledge will be also conducted. Such models are implemented and tested. The curriculum of the Arabic grammar of the fourth grade; elementary schools in Egypt; is adopted as a domain knowledge. Moreover, some sort of text analysis will be considered .
+- The study of (Mahdi et. al., 2016). An intelligent tutoring system for teaching advanced topics in information security
+In This research work the researchers implemented an intelligent tutoring system which target the users enrolled in Advanced Topics in Information Security in the faculty of Engineering and Information Technology at Al-Azhar University in Gaza. Through which the user will be able to study the course and solve related problems. An evaluation of the intelligent tutoring systems was carried out and the results were good .
+- The study of (Alhabbash et. al., 2016). An Intelligent Tutoring System for Teaching Grammar English Tenses
+In this paper, authors describe the design of an Intelligent Tutoring System to teach English grammar to help users learn English grammar easily and smoothly. The system provides all English grammar topics and automatically generates a series of questions for each topic for users to resolve. The system adapts to all individual differences of users and gradually starts with users of the most difficult level. The intelligent tutoring system was given to a group of users from all age groups to experience it and to see the impact of the system on users. The results showed good satisfaction for users towards the system .
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 3. Comments about previous studies
+Through reading these previous studies, I found that ITS design is used in many things. The above studies are intended to be used in many fields such as Cryptography, Mathematics, Grammar English Tenses and Programming Language (C#, ASP.NET, C++).
+This study aims to teach the development of Android applications through an intelligent tutoring system that helps students and teachers overcome many obstacles in the learning process in addition to improve the student's abilities and ensure the quality of education.
+# 4. Design And Development Of The Proposed System
+# 4. Overview of the Proposed System
+The researchers built the proposed ITS for teaching Android Applications Development to students to overcome the difficulties they face. The basic idea of this system is a systematic introduction into the concept of Android Application Development. The system presents the topics of Android Application Development and generates problems for the students to solve. The system is automatically adapted at runtime to the student’s individual growth. The system provides obvious support for adaptive demonstration constructs.
+The Proposed ITS has role-based access control and there are two types of users that can sign in the system:
+1. Teacher (or admin) user
+2. Student user
+Once signed in to the system decides which interface to provide for the specified user.
+# The teacher interface provides ability to:
+- Add a new student.
+- Add new lessons or modify existing ones.
+- Add new examples or modify existing ones.
+- Add new questions or modify existing ones.
+- Add hints or modify existing ones.
+- Adjust the themes of the system.
+- Change the main system language.
+# The student interface provides ability to:
+- Read the training material and related examples.
+- Go through the lessons in a hierarchical pattern.
+- Solve the questions.
+- Request for hint.
+- Do the final exam.
+- See the results in a statistical view.
+The training material used in the proposed ITS for teaching the development of Android applications is prepared by the researchers. It has been approved for training by UNRWA's Khan Younis Training College (KYTC) and has been audited by experts in the development of Android applications.
+This training material helps the trainee to develop Android applications step-by-step from scratch to professionalism. It includes how to build Android applications, how to design, develop and deploy applications on the Google play store, as well as how to protect and test these applications to ensure their integrity from gaps and crashes.
+# 4. Authoring Language Used
+The researchers used the Intelligent Tutoring System Builder (ITSB) tool to assemble an intelligent tutoring system to teach the development of Android applications .
+ITSB is an authoring tool designed and developed to help teachers build intelligent learning systems in multidisciplinary areas. The teacher is needed to create a set of educational basics, which, in-line, are automatically trained to build a broad teacher framework and build an intelligent tutoring system .
+ITSB has two interfaces, one for teacher interface through which to add lessons, examples, questions and answers, and the other for students to learn lessons and answer questions. ITSB supports English and Arabic languages .
+The authoring process goes through several steps as follows:
+- Add lessons and examples,
+- Add questions and hints,
+- Set the difficulty level for each question, and
+- Add students. Each student has his own profile.
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 4. Architecture of the proposed ITS
+A Typical ITS include four basic models: the domain model, the student model, the expert model, and the user interface model as shown in Figure 2 in section 2. The proposed ITS uses the typical structure of ITS. The proposed ITS uses the Intelligent Tutoring System Builder (ITSB) tool, developed by Prof. Dr. Sami S. Abu Naser using the Delphi language .
+# 4 Domain Model
+The domain model adds the course format in a systematic way. The course may contain parts, such as division, sub-section, and subject. These parts are kept in the domain model with all the elements and resources needed to teach the student.
+The training material is arranged for six chapters containing 96 lessons and 290 examples. There are exams at the end of each chapter, and a final test for all chapters.
+The key sections that draw the main structure of the tutoring material are:
+# Chapter 1: Android Overview and history
+- Mobile phones revolution
+- What is Android? Android Features, Android Versions
+- Android Devices on the market
+- Android Architecture
+- The Advantage of adopting Android as a Developer
+- Android Applications
+- Android Development Environment
+- Android Development Prerequisites
+# Chapter 2: Basics Android User Interface
+- Android Applications Components
+- Installing Android Studio Environment
+- Create First Android Application and Run AVD
+- Anatomy of Android Application
+- Layout Manager and Android Views
+- Android UI Control
+- Activity Lifecycle
+- Views Events Handling
+- Build Styles and Themes
+- Dealing with Container Views and Adapters
+- Build Menu Groups and Items
+- Build Android Dialogs
+- Intent and Intent Filters
+# Chapter 3: Advanced Android Applications Design
+- Android Fragments and Fragment Manager
+- Android Drawable Styles
+- Android Animations
+- Android Material Designs
+- Advanced UI Examples
+- Localizations and Multilanguage’s
+- Support Multiscreen mobile and tablet
+# Chapter 4: Android Applications Development
+- Android Shared Preferences
+- SQLite Database
+- Android Multimedia
+- Android Service
+- Android Content Provider
+- Android Web Service
+- Android Broadcast Receiver
+- Google Maps and Location Service
+- Android Push Notifications
+- Camera and Sensors
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Table of Contents
+- Social Media API
+- Monetize Applications
+- Chapter 5: Android Applications Testing and Publishing
+- - Introduction to Android Applications Testing
+- Android Applications Testing Types
+- Unit and Instrumentation Testing
+- Using Fabric Library
+- Publishing Android Applications
+Chapter 6: Android Security Essentials
+# 4 Student Model
+The new student must create their own account for a profile. The profile contains information about the student such as his name, the dates of the login, the results of each session, and progress in learning during each session. Student degree can be viewed at any time during the session describing the student's performance in problem solving in the following subjects: casting, classes, and inheritance.
+# 4 Expert Model
+The Expert Model was carried out to collect information needed to generate feedback . The expert model is able to solve the resulting problems by analyzing the template. Since the expert model can execute any code, it can create the correct answer to a problem of its own, and determine whether the user answer is correct / incorrect. In addition to whether the user answer is correct / incorrect, the model can provide the student with the correct answer when requested. In addition, the unit provides the student with appropriate feedback in response to the student's response.
+Students can answer questions from the first difficulty level. If the student gets 75% or higher at any level, he can move to the next difficulty level. However, if the student is less than 75% and above 50%, the ITS forces him to repeat the exercises at the same level of difficulty again in a random way. If the student receives a score of less than 50%, the ITS forces the student to return to the relevant lesson and after that the student can return to the exercises as shown in Figure 3.
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+Login
+Questions enter the Bludeni choose the question of the lesson he/she wants. The student answers the questions of the document of the current lesson.
+Score > 50
+Cloze question session and take the student to lesson a102 later. Present the questions of the current.
+# 4 User interface Model
+The user interface has two sections; one is for the teacher to add lessons, examples and questions with the correct answers to each one, and the student to read lessons, examples and test his comprehension by answering exam questions.
+The researchers used ITSB features such as text, graphics, colors, audio and video to improve student motivation.
+# 4 Screen captures
+These are some screenshots of the proposed ITS divided into two sections:
+1. Teacher interfaces:
+- Figure 4: This interface contains text boxes to enter the teacher's ID and name and then press the login button to move it to the main window.
+- Figure 6: The main interface of the teacher, which contains a set of buttons for administrative processes such as the addition of lessons and others, and contains a front to display lessons and also contains examples of lessons.
+- Figure 8: Special interface for the teacher to modify the colors and types of fonts and size of forms and buttons for all interfaces to suit the overall appearance of the application.
+- Figure 9: The basic data interface is specific to the teacher, through which he enters the name of the intelligent tutoring system in English and Arabic in addition to the creator of the system. It also contains a dropdown list to choose the main language of the smart educational system and has the option to add a background image of the system login interface.
+- Figure 10: The interface is to add a new student and review the data of students in the system with the possibility to modify the student data or delete it permanently from the system.
+- Figure 11: A teacher interface where he can add the lesson title and then choose the lesson file.
+- Figure 12: A teacher-specific interface where he can add the examples of the lesson that has been added before, with the possibility of adding an audio file optionally.
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Figures
+- Figure 13: A special interface to add questions and answers to each specific lesson by the teacher, in addition to specifying the difficulty level of the question in addition to the basic processes add, modify and delete.
+- Figure 19: The interface to show the student's statistics in terms of level and score of specific lesson.
+- Figure 20: Teacher-specific interface for basic operations on lessons (add-edit-delete).
+# 2- Student interfaces:
+- Figure 5: This window contains text boxes to enter the student's ID and name and then press the login button to move it to the main window.
+- Figure 7: The student's main interface enables him to browse the lessons.
+- Figure 14: A student interface that shows lessons and examples of lessons.
+- Figure 15: A student interface to view the lesson to be presented.
+- Figure 16: A student interface based on the previous interface in which to view questions.
+- Figure 17: An alert message showing that the student has exceeded the difficulty level of a given lesson successfully in addition to the score.
+- Figure 18: An alert message showing that the student failed to exceed the difficulty level of a particular lesson.
+- Figure 19: The interface to show the student's statistics in terms of level and score of specific lesson.
+# ITSBLanguage was created by Prof. Dr; Samy $. Abu Naser
+# Android ITS by Eng- Hazem A. S.Al Rekhawi
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# TTSB Language was created by Prof; Dr; Samy $. Abu Naser
+# Android ITS by Eng- Hazem A. S. Al Rekhawi
+Login Exit
+www.ijeais.org/ijaisr
+45
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Figures
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Figures
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Figures
+www.ijeais.org/ijaisr
+48
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Figures
+www.ijeais.org/ijaisr
+49
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Figures
+www.ijeais.org/ijaisr
+50
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 5. Evaluation And Result Discussion
+# 5 System Evaluation
+The system evaluation is used to measure the quality of an application that refers to efficiency, effectiveness, and user satisfaction to perform tasks performed using the application. Usability assessment is a vital part of the system development process, and a set of questions to evaluate the ITS has been developed by people interested in learning about the effectiveness of the intelligent tutoring system for teaching Android application development.
+An evaluation of the proposed ITS was conducted by the lecturers and students who joined the Android Application Development Course during the second semester of 2018/2019 in the Mobile Applications Development Department of the University College of Applied Sciences (UCAS) in Gaza.
+A questionnaire consisting of the items in Table 1 was filled out by each evaluator (lecturers and students). A group of 4 lecturers and 20 students divided into two groups participated in the system evaluation, one group containing 10 males and the
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 5 Results of Lecturers group:
+# 5 Results of Students groups:
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+Results of questions asked to the Android Applications Development Students
+150
+100
+50
+0
+q1 q2 q3 q4 q5 q6 q7 q8 q9 q10 q11 q12 q13
+Males       Females
+In assessing the proposed ITS, evaluators were required to use the proposed ITS. They were then asked to provide feedback on the proposed ITS by filling out the questionnaire consisting of the 13 questions listed above in table 1 and table 2.
+In this way, the efficiency and satisfaction of the proposed ITS were measured as described in the above figure 21 and figure 22. The Overall evaluation of lecturers and students was very positive and can be seen from the figure 32.
+Overall Average Rating
+Lecturers        Male Students         Female Students
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# 5 Evaluator Comments in the questioner about the proposed system
+There are some observations and recommendations for the development of the smart educational system presented by the lecturers and students where the recommendations were as follows:
+- Addition of training material to teach the development of android applications by the Kotlin language.
+- Adding a voice tone if the student's answer to the question is correct and add another voice tone if the student's answer to the question is wrong.
+- Some questions have only one answer and the current design of the intelligent tutoring system allows the student to choose more than one answer.
+- The possibility of providing a training material in Arabic to learn the development of Android applications.
+- The possibility of providing a copy of the intelligent tutoring system presented to the web.
+- The possibility of providing a means of direct communication with the teacher through the intelligent tutoring system in the case of some questions.
+- The possibility of providing mobile application for the intelligent tutoring system offered to students.
+The development recommendations and observations will be taken into account in the future work of developing the proposed Intelligent Tutoring System.
+# 6. Conclusion
+In this study, theory and architecture of the Intelligent Tutoring System were described in details. The ITS was designed and developed to teach Android application development by encouraging lecturers and students to use this system to increase their ability and knowledge about Android applications development. The ITS addressed some of the problems’ students and lecturers face in learning about Android application development. In addition, it provides an integrated training material to learn the development of Android applications prepared by the researchers.
+The proposed ITS was presented to two groups: lecturers and students (male and female) enrolled in the Android Application Development Course during the second semester of 2018/2019 in the Mobile Application Development department of the University College of Applied Sciences (UCAS) in Gaza to test the system and provide feedback by filling out a questionnaire. The results of the evaluation were promising.
+It is necessary to follow up existing results in the development of artificial intelligence and Android applications development at the same time in order to produce a reasonable method for efficient and effective purposes. In addition, It recommends using intelligent tutoring system in teaching many modern programming languages.
+# 7. Future Work
+For future work, I am planning to convert the ITS into a mobile application, provide a web application as well and add direct communication through chat between the student and the teacher when there are some questions. In addition to solving the problems written by participants in the evaluation process, including adding a voice tone to the success or failure of the answer and solve the problem of questions that have only one answer not to allow the student to choose more than one answer.
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# Language." EUROPEAN ACADEMIC RESEARCH 6(10): 8795.
+20. G. Weber, P. Brusilovsky. (2016). ELM-ART-An interactive and intelligent Web-based electronic textbook, International Journal of Artificial Intelligence in Education, Vol. 26, No. 1, pp. 72-81.
+21. Mona H. Mahmoud, Sanaa H. Abo El-Hamayed (2016), "An Intelligent Tutoring System for Teaching the Grammar of the Arabic Language, Journal of Electrical Systems and Information Technology.
+22. Mahdi, A. O., et al. (2016). "An Intelligent Tutoring system for teaching advanced topics in information security." World Wide Journal of Multidisciplinary Research and Development 2(12): 1-9.
+23. AbuEl-Reesh, J. Y. and S. S. Abu-Naser (2018). "An Intelligent Tutoring System for Learning Classical Cryptography Algorithms (CCAITS)." International Journal of Academic and Applied Research (IJAAR) 2(2): 1-11.
+24. Alhabbash, M. I., et al. (2016). "An Intelligent Tutoring System for Teaching Grammar English Tenses." EUROPEAN ACADEMIC RESEARCH 6(9): 7743-7757.
+25. Hamed, M. A. and S. S. Abu Naser (2017). "An Intelligent Tutoring system for teaching the 7 characteristics for living things." International Journal of Advanced Research and Development 2(1): 31-45.
+26. M. Zin, A. Aljunid, Z. Shukur, and M.J. Nordin. (2000). A knowledge-based automated debugger in learning system,” In: Proceedings of 4th International Workshop on Automated Debugging (AADEBUG-2000).
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+1. Akkila, A. N., et al. (2019). "Survey of Intelligent Tutoring Systems up to the end of 2017." International Journal of Academic Information Systems Research (IJAISR) 3(4): 36-49.
+2. Alawar, M. W. and S. S. Abu Naser (2017). "CSS-Tutor: An Intelligent Tutoring system for CSS and HTML." International Journal of Academic Research and Development 2(1): 94-98.
+3. Albatish, I. M. and S. S. Abu-Naser (2019). Modeling and Controlling Smart Traffic Light System Using a Rule Based System. 2019 International Conference on Promising Electronic Technologies (ICPET), IEEE.
+4. Al-Bayed, M. H. and S. S. Abu Naser (2017). "An Intelligent Tutoring system for health problems related to addiction of video game playing." International Journal of Advanced Scientific Research 2(1): 4-10.
+5. Al-Bayed, M. H. and S. S. Abu-Naser (2018). "Intelligent Multi-Language Plagiarism Detection System." International Journal of Academic Information Systems Research (IJAISR) 2(3): 19-34.
+6. Aldahdooh, R. and S. S. Abu Naser (2017). "Development and Evaluation of the Oracle Intelligent Tutoring System (OITS)." EUROPEAN ACADEMIC RESEARCH 6(10): 8711-8721.
+7. Al-Hanjori, M. M., et al. (2017). "Learning computer networks using Intelligent Tutoring system." International Journal of Advanced Research and Development(2): 1.
+8. Almasri, A., et al. (2019). "Intelligent Tutoring Systems Survey for the Period 2000-2018." International Journal of Academic Engineering Research (IJAER) 3(5): 21-37.
+9. Almurshidi, S. H. and S. S. Abu Naser (2017). "Design and Development of Diabetes Intelligent Tutoring System." EUROPEAN ACADEMIC RESEARCH 6(9): 8117-8128.
+10. Almurshidi, S. H. and S. S. Abu Naser (2017). "Stomach disease Intelligent Tutoring system." International Journal of Advanced Research and Development 2(1): 26-30.
+11. Alnajjar, M. and S. S. Abu Naser (2015). "EVALUATING SOFTWARE ENGINEERING PRACTICES IN PALESTINE." International Journal of Soft Computing, Mathematics and Control (IJSCMC) 4(1): 35-47.
+12. Alnajjar, M. and S. S. Abu Naser (2015). "Improving Quality Of Feedback Mechanism In Un By Using Data Mining Techniques." International Journal of Soft Computing, Mathematics and Control 4(2).
+13. Al-Nakhal, M. A. and S. S. Abu Naser (2017). "Adaptive Intelligent Tutoring System for learning Computer Theory." EUROPEAN ACADEMIC RESEARCH 6(10): 8770-8782.
+14. AlZamily, J. Y. and S. S. Abu-Naser (2018). "A Cognitive System for Diagnosing Musa Acuminata Disorders." International Journal of Academic Information Systems Research (IJAISR) 2(8): 1-8.
+15. Anderson, J., et al. (2005). "Adaptation of Problem Presentation and Feedback in an Intelligent Mathematics Tutor." Information Technology Journal 5(5): 167-207.
+16. El Agha, M. I., et al. (2018). "SQL Tutor for Novice Students." International Journal of Academic Information Systems Research (IJAISR) 2(2): 1-7.
+17. El Haddad, I. A. and S. S. Abu Naser (2017). "ADO-Tutor: Intelligent Tutoring System for leaning ADO. NET." EUROPEAN ACADEMIC RESEARCH 6(10): 8810-8821.
+18. Elnajjar, A. E. A. and S. S. Abu Naser (2017). "DES-Tutor: An Intelligent Tutoring System for Teaching DES Information Security Algorithm." International Journal of Advanced Research and Development 2(1): 69-73.
+19. Elreesh, J. Y. A. and S. S. Abu-Naser (2019). "Cloud Network Security Based on Biometrics Cryptography Intelligent Tutoring System." International Journal of Academic Information Systems Research (IJAISR) 3(3): 37-70.
+20. Ghali, M. J. A. and S. S. Abu-Naser (2019). "ITS for Data Manipulation Language (DML) Commands Using SQLite." International Journal of Engineering and Information Systems (IJEAIS) 3(3): 57-92.
+21. Hamed, M. A., et al. (2018). "Intelligent Tutoring System Effectiveness for Water Knowledge and Awareness." International Journal of Academic Information Systems Research (IJAISR) 2(4): 18-34.
+22. Hasanein, H. A. A. and S. S. Abu-Naser (2018). "Developing Education in Israa University Using Intelligent Tutoring System." International Journal of Academic Pedagogical Research (IJAPR) 2(5): 1-16.
+23. Hilles, M. M. and S. S. Abu Naser (2017). "Knowledge-based Intelligent Tutoring System for Teaching Mongo Database." EUROPEAN ACADEMIC RESEARCH 6(10): 8783-8794.
+24. Khella, R. A. and S. S. Abu Naser (2018). "An Intelligent Tutoring System for Teaching French." International Journal of Academic Multidisciplinary Research (IJAMR) 2(2): 9-13.
+www.ijeais.org/ijaisr
+# International Journal of Academic Information Systems Research (IJAISR)
+ISSN: 2643-9026
+Vol. 4, Issue 5, May – 2020, Pages: 33-58
+1. Marouf, A. and S. S. Abu-Naser (2019). "Intelligent Tutoring System for Teaching Computer Science I in Al-Azhar University, Gaza." International Journal of Academic and Applied Research (IJAAR) 3(3): 31-53.
+2. Marouf, A., et al. (2018). "An Intelligent Tutoring System for Learning Introduction to Computer Science." International Journal of Academic Multidisciplinary Research (IJAMR) 2(2): 1-8.
+3. Masri, N., et al. (2019). "Survey of Rule-Based Systems." International Journal of Academic Information Systems Research (IJAISR) 3(7): 1-23.
+4. Mosa, M. J., et al. (2018). "ASP. NET-Tutor: Intelligent Tutoring System for leaning ASP. NET." International Journal of Academic Pedagogical Research (IJAPR) 2(2): 1-8.
+5. Qwaider, S. R. and S. S. Abu-Naser (2018). "Excel Intelligent Tutoring System." International Journal of Academic Information Systems Research (IJAISR) 2(2): 8-18.
+6. Shaath, M. Z., et al. (2017). "Photoshop (CS6) Intelligent Tutoring system." International Journal of Academic Research and Development 2(1): 81-87.
+7. Sulisel, O., et al. (2005). "Growth and Maturity of Intelligent Tutoring Systems." Information Technology Journal 7(7): 9-37.
+www.ijeais.org/ijaisr
+View publication stats

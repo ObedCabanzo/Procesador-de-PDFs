@@ -1,0 +1,225 @@
+# Detecting Vulnerable Android Inter-App Communication in Dynamically Loaded Code
+Mohannad Alhanahnah∗, Qiben Yan∗, Hamid Bagheri∗, Hao Zhou†, Yutaka Tsutano∗, Witawas Srisa-an∗, Xiapu Luo†
+∗The Department of Computer Science and Engineering, University of Nebraska-Lincoln, USA
+†The Department of Computing, The Hong Kong Polytechnic University, China
+# Abstract
+Java reflection and dynamic class loading (DCL) are effective features for enhancing the functionalities of Android apps. However, these features can be abused by sophisticated malware to bypass detection schemes. Advanced malware can utilize reflection and DCL in conjunction with Android Inter-App Communication (IAC) to launch collusion attacks using two or more apps. Such dynamically revealed malicious behaviors enable a new type of stealthy, collusive attacks, bypassing all existing detection mechanisms. In this paper, we present DINA, a novel hybrid analysis approach for identifying malicious IAC behaviors concealed within dynamically loaded code through reflective/DCL calls. DINA continuously appends reflection and DCL invocations to control-flow graphs; it then performs incremental dynamic analysis on such augmented graphs to detect the misuse of reflection and DCL that may lead to malicious, yet concealed, IAC activities. Our extensive evaluation on 3,000 real-world Android apps and 14,000 malicious apps corroborates the prevalent usage of reflection and DCL, and reveals previously unknown and potentially harmful, hidden IAC behaviors in real-world apps.
+Index Terms—Mobile security; inter-app communication; reflection; dynamically loaded code
+# I. INTRODUCTION
+Despite recent significant advances in malware detection, trojanized apps can still circumvent the defense and enter the official Google Play Store. Intricate Android malware, such as Obad , has been creating a more stealthy threat by employing Java reflection to commit malicious acts at runtime. Java reflection mechanism is extensively used in Android apps for maintaining backward compatibility, accessing hidden/internal application program interface (API), providing external library support, and reinforcing app security , . But the use of the reflection mechanism renders the security analysis approaches designed to analyze and detect malicious apps ineffective .
+The current state-of-the-art security mechanisms, both static and dynamic analysis approaches, are insufficient for detecting the increasingly sophisticated security attacks. Static analysis approaches – can be easily bypassed by apps that covertly invoke malicious IAC using reflection or DCL. On the other hand, dynamic analysis approaches, such as TAMI-FLEX , STADYNA , and DyDroid , suffer from false negatives largely due to the reachability challenges, where vulnerabilities are missed because of inputs that fail to reach the vulnerable code; they thus do not detect malicious IACs concealed behind reflective and DCL calls.
+In this paper, we present DINA, a novel hybrid inter-app analysis technique that can detect IAC behaviors concealed by reflection and DCL. Our goal is to develop a fully automated, lightweight tool that operates in real-time to effectively identify apps that deliver vulnerable IAC components at runtime. DINA combines scalable static and dynamic analyses to incrementally augment the control-flow and data-flow graphs using dynamically loaded classes. DINA ensures every method in every class of the dynamically loaded code is analyzed. Vulnerable IAC detection is conducted continuously in real-time over the dynamically updated graphs to precisely pinpoint collusive data leaks and data manipulations. The continuous and real-time analysis allows DINA to be highly efficient in both identifying dynamically loaded components and detecting potential malicious behaviors thereof, making DINA ideally suited for large-scale security vetting. In addition, DINA enables concurrent multi-app analysis using a thorough graph generation and analysis approach, which has the potential to be deployed locally for real-time app auditing.
+In summary, this paper presents the following contributions:
+- We develop DINA, the first inter-app vulnerability detection tool with the capability of analyzing dynamically loaded code, to pinpoint the stealthy inter-app communications that are concealed using reflection and DCL. DINA combines static IAC analysis with incremental dynamic analysis to identify potential IAC vulnerabilities within dynamically loaded code at runtime.
+# Malicious IAC
+# External resource DCL
+# Reflective Call
+# Messenger App
+- We analyze 3,000 popular benign apps and 14,000 malicious apps to identify their reflection usage and IAC communications via reflection/DCL. The analysis results confirm the prevalent usage of reflection and DCL in popular real-world apps, wherein surreptitious IAC behaviors concealed by reflective calls have been observed. We provide detailed case studies to assess how the vulnerable apps can be exploited to launch stealthy attacks through reflection and DCL.
+- We evaluate DINA in the context of both real-world and benchmark apps, corroborating DINA’s effectiveness in detecting sophisticated IAC threats that can evade the state-of-the-art security analysis tools. We perform a comprehensive comparison with the existing analysis tools. The experimental results confirm the superior performance of DINA in detecting malicious IACs in dynamically loaded code.
+# II. BACKGROUND AND MOTIVATION
+Components including activities, services, broadcast receivers, and content providers1 are the basic building blocks of Android apps. These components communicate through a specific type of event messages called Intent, which can be either explicit, when its recipient component is specified, or implicit, when no specific recipient component is declared. In this section, we present motivating examples showing how Intent can be used as an attack vector to launch information leakage through hidden (dynamically loaded) code, and to conceal method invocations through reflection.
+1 https://developer.android.com/guide/components/fundamentals.html
+public class DynLoadService extends Service {
+public int loadCode();onStartCommand(Intent intent ){    [...]
+}
+public void loadCode(){
+//  Read a jar file that contains classes .dex file
+String jarPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/dynamicCode.jar";
+//  Load the code
+DexClassLoader mDexClassLoader = new DexClassLoader(jarPath, getDir("dex", MODE_PRIVATE).getAbsolutePath());
+//  Use reflection to load a class and call its method
+Class<?> loadedClass = mDexClassLoader.loadClass("MalIAC");
+Method methodGetIntent = loadedClass.getMethod("getIntent", android.content.Context.class);
+Object object = loadedClass.newInstance();
+Intent intent = (Intent) methodGetIntent.invoke(object, DynamicService.this);
+startService(intent);
+}
+}
+Listing 1: DynLoadService component resides in the malicious app and performs DCL and reflection to hide its malicious behavior.
+public class MalIAC {
+public Intent getIntent(Context context) {
+String account = getBankAccount("Bank_Account");
+String balance = getBankBalance("Balance_USD");
+Intent i = new Intent("SEND_SMS");
+i.putExtra("PHONE_NUM", phoneNumber);
+i.putExtra("Bank_Account", account);
+i.putExtra("Balance_USD", balance);
+return i;
+}
+}
+Listing 2: Malicious IAC component is concealed as external code and loaded at runtime after app installation.
+public class MessageSender extends Service {
+public void onStartCommand(Intent intent) {
+String number = intent.getStringExtra("PHONE_NUM");
+String message = intent.getStringExtra("TEXT_MSG");
+sendTextMessage(number, message);
+}
+void sendTextMessage(String num, String msg) {
+SmsManager mngr = SmsManager.getDefault();
+mngr.sendTextMessage(num, null, msg, null, null);
+}
+}
+Listing 3: MessageSender resides in a benign app to receive Intents and send text messages.
+Listing 4 presents an abbreviated code snippet from a real-world app (i.e., com.example.qianbitou) that uses reflection to conceal IAC behavior. The method instantiate in the class Fragment (line 2) calls the reflection method newInstance() (line 4). This reflective call will initialize the constructor of the class _03_UserFragment (line 6), and execute the method onClick() that invokes toCall(), which defines an implicit Intent for making a phone call to a hard-coded number between 8am and 10pm. The suspicious method toCall() is a private method concealed behind reflective calls, which is difficult to capture in the analysis.
+Authorized licensed use limited to: Pontificia Universidad Javeriana. Downloaded on August 12, 2024 at 03:20:10 UTC from IEEE Xplore. Restrictions apply.
+public class Fragment {
+public ReflectionFragment static siteinstantiate () {
+paramContext = (Fragment)localClass1.newInstance();
+}
+}
+public class _03_UserFragment extends Fragment {
+public onClick () {
+toCall();
+}
+private void toCall () {
+int i = Calendar.getInstance().get();
+if ((i <= 22) || (i >= 8)) {
+startActivity(new Intent("android.intent.action.DIAL", Uri.parse("tel:4000−888−620")));
+}
+}
+}
+# Listing 4: Reflection is used to conceal IAC behavior in a real world app
+DINA is designed to load and resolve the reflective calls in Listings 1 and 4 at runtime. DINA’s dynamic analyzer automatically and incrementally augments both the control-flow and data-flow graphs with the newly loaded code and resolved reflective calls. In tandem with the graph augmentation, DINA’s vulnerability analyzer identifies potential malicious IAC activities on the fly. As a result, DINA has the capability to precisely and efficiently detect the malicious IAC behavior in the motivating examples although it is concealed by reflection.
+# III. DETECTING HIDDEN IAC WITH DINA
+The goal of the attacker considered in this work is to launch stealthy inter-app attacks without being detected. Such stealthy behavior can be manifested by different types of collusive attacks , where an attacker uses the DCL and reflection mechanisms to obfuscate IAC behaviors of the sender app and launch malicious behaviors, e.g., leaking sensitive information, via another receiver app. Fig. 3 illustrates DINA’s architecture. DINA is a graph-centered hybrid analysis system that consists of three main modules: 1) the collective static analysis module that simultaneously analyzes multiple apps to automatically generate a static IAC graph and elicit DCL and reflection call sites within the apps—the identified DCL and reflection call sites become the execution targets for dynamic analysis; 2) the incremental dynamic analysis module that systematically augments the static IAC graphs by attaching new nodes and edges that are loaded at runtime by DCL and reflection; 3) the IAC vulnerability analysis module utilizes real-time IAC graphs to identify potentially vulnerable paths.
+# A. Collective Static Analysis
+The collective static analysis of DINA aims to statically identify the reflection, DCL and IAC capabilities of each app in the app bundle, by analyzing multiple apps at the same time. DINA is a classloader-based analysis system written in C++ that builds upon JITANA  to statically and dynamically analyze multiple apps simultaneously. This approach is more scalable than compiler-based approaches, such as the popular SOOT, which analyzes the entire code of one app at a time.
+We generate two different types of graphs for each app, the method call graph (MCG) and instruction graph (IG). The method call graph maintains the call relationships among the methods defined within the analyzed apps in the bundle, while the instruction graph includes detailed control-flow and data-flow information for a certain method. DINA works on the bytecode level of the target application, and the analysis focuses on the app’s Dalvik bytecode. Algorithm 1 outlines the collective static analysis process, which consists of three major steps:
+1. Preprocessing. We first decompile APKs in the collective app bundle to generate the bytecode of each app and extract its manifest file. Intent filter information for each app is then extracted from the manifest file. This step also involves the generation of MCG for each app and the IG for each method in the method call graph. All extracted information and the generated graphs are stored in a database for fast access.
+2. Reflection/DCL analyzer. We then identify DCL and reflective calls using the MCG of each app by detecting DCL and reflection APIs, such as invoke(), newInstance(), and getMethod(). The list of reflection and DCL APIs (i.e., Ref_DCL_API_List in Algorithm 1) is similar to the API list in STADYNA , which mainly includes APIs of dynamic class loading. We extend that list to include additional reflection APIs involving method invocations . As a result, this step identifies the apps that need to be executed in the incremental dynamic analysis module. We further extract the class and method names (call sites) implementing these APIs.
+3. Static IAC analyzer. We identify the IAC paths by performing string matching over the IGs of each method to match the Intent action strings that are extracted from the manifest files of all apps. If a matching is found, a new edge will be added between the components of two apps related to the matched Intent action, and the static IAC graph will be augmented via the addEdge() method (Algorithm 1, lines 17–19). Collectively, all the component-level IAC paths will be aggregated to construct a complete static IAC graph (i.e., static_IAC in Algorithm 1) for all the analyzed apps in the app bundle. The generated static IAC graph depicts the communication activities of the apps at the component-level. DINA also identifies the methods responsible for Intent-sending activities within each component of the communicating apps in the static IAC graph.
+# B. Incremental Dynamic Analysis
+DINA performs incremental dynamic analysis for each app that contains reflective or DCL calls. The dynamic analysis is
+# Algorithm 1 Collective Static Analysis
+edges pertaining to the identified IAC are added to the graph at runtime.
+INPUT: Bundle of Apps: B, Ref _DCL_AP I_List
+OUTPUT: static_IAC, Intent_F ilter_Appi, Ref _Details
+// Preprocessing
+1. static_IAC ← CreateNodes(|B|)
+2.
+3. for each Appi ∈ B do← {}Intent_F ilter_Appi
+4. Decompile(Appi)
+5. parse_manifest(Appi)
+6. update(Intent_F ilter_Appi) ← {(Appi, class-name, intent-action-string)}
+7. end for
+8. for each Appi ∈ B do
+9. Generate M CG(Appi)
+10. // Reflection analyzer ∈ M CG(Appi) do for each method
+11. if methodj ∈ Ref _DCL_AP I_List then
+12. update(Ref _Details) ← {(Appi, class-name, method-name)}
+13. end if
+14. // Static IAC Analyzer Generate IG(methodj )
+15. for each instruction ∈ IG(methodj ) do
+16. for each String str in instructionk do
+17. if str ∈ Intent_F ilter_Appr.intent-action-string then
+18. Update static_IAC ← addEdge(Appi, Appr)
+19. end if
+20. end for
+21. end for
+22. end for
+Listing 5: Excerpts from DroidBench’s Echoer app.
+capable of capturing and loading code in various formats (i.e. APK, ZIP, JAR, DEX), resolving reflection, and performing IAC analysis incrementally with progressive augmentation of graphs. We modified Android framework for resolving reflective calls and capturing newly loaded codes at runtime.
+The incremental dynamic analysis consists of two major steps as described below (see Algorithm 2).
+# Resolving reflection and loading new codes.
+Every app implementing reflection and DCL will be executed on a real Android device or an emulator. This step aims to capture the dynamic behaviors of the app. To reach the components that implement reflection, we use the reflection details extracted and stored in the database, which includes the component name and the corresponding method name that implement reflection and DCL in each app. These methods/components of an app, regarded as method of interest (MoI), will be exercised in the dynamic analysis for resolving reflection and DCL call sites, which will augment the control-flow and data-flow graphs dynamically. We utilize a fuzzing approach to trigger the components that contain reflection and DCL call sites.
+# Dynamic IAC analyzer.
+DINA’s dynamic analyzer will execute components to generate dynamic analysis graphs. DINA immediately starts pulling and analyzing files when new dex files or classes are loaded through the DCL mechanism. It not only analyzes the triggered MoIs, but also loads the entire class that the MoI belongs to. All methods within the class will be subsequently analyzed, while some of which may initiate reflection/DCL. After generating the dynamic graphs that are augmented by resolving reflection in real-time (i.e., dynamic_IAC in Algorithm 2), it then performs an incremental analysis approach to detect IAC activities continuously during every augmentation process. In the end, the static IAC graph will be refined to include all the IAC detected inside the dynamically loaded codes after resolving reflection.
+# Algorithm 2 Incremental Dynamic Analysis
+INPUT: static_IAC, Ref _Details, Intent_F ilter_Appi
+OUTPUT: dynamic_IAC
+1. dynamic_IAC ← static_IAC // Resolving Reflection and Loading new code
+2. for each Appi do
+3. Install(Appi)
+4. Launch(Appi)
+5. Pull newly loaded code
+6. for each Component ∈ Ref _Details(Appi) do
+7. Find method of interest (MoI)
+8. for each Method ∈ MoI(Appi) do
+9. Execute the component using Monkey (if failed, execute the whole app using Monkey), and incrementally generate IG(methodj)
+10. // Dynamic IAC analyzer for each instruction ∈ IG(methodj) do
+11. for each String str in instruction do
+12. if str matches Intent_F ilter_Appr.action-string then
+13. dynamic_IAC ← addEdge(Appi, Appr)
+14. end if
+15. end for
+16. end for
+17. end for
+18. end for
+uninstall(App)i
+# IAC Vulnerability Analysis
+Algorithm 3 depicts the process of IAC vulnerability analysis. Essentially, it identifies whether the nodes in the dynamic IAC graph constitute a vulnerable path that reveals sensitive information. IAC vulnerability analyzer performs its analysis over all identified IAC paths in the dynamic IAC graph. Then for each path, every node is analyzed, by identifying whether it is a sender or receiver node, and then depth-first search (DFS) is conducted to find if this node can reach a sensitive source method in case of sender node, or can reach a sensitive sink in case the node is receiver. We leverage a sensitive API list that simplifies the widely used SuSi list to identify these sensitive APIs.
+Authorized licensed use limited to: Pontificia Universidad Javeriana. Downloaded on August 12, 2024 at 03:20:10 UTC from IEEE Xplore. Restrictions apply.
+MoI (identified in Algorithm 2) to seek sensitive sources, of existing colluding apps , specifically benchmark apps while another DFS searches from Intent-receiving method at the receiver (line 12 in Algorithm 3) to look for sensitive sinks. Finally, it marks the complete sensitive paths from the sensitive source to the sensitive sink across multiple apps. Note that these paths are stealthy and difficult to find, as they only appear after loading dynamic codes and resolving reflection calls, but they can be captured by DINA efficiently.
+# Algorithm 3 IAC Vulnerability Analysis
+INPUT: dynamic_IAC, Sensitive_AP I_List
+OUTPUT: nodei.sensitive
+1:        for each node of Appm ∈ dynamic_IAC do
+// Identify sensitive methods in the sender node
+2:              if nodei is sender then
+3:                     for each method ∈ DFS(node.method-name) doi
+4:                            if methodj ∈ Sensitive_AP I_List then
+5:                                   node.sensitive = Truei
+6:                            else
+7:                                   node.sensitive = Falsei
+8:                            end if
+9:                     end for
+// Identify sensitive methods in the receiver node
+10:                 else if nodei is receiver then
+11:                        for each method ∈ MG(Appm) doonReceive,
+12: (class-name of methodj {onCreate, if methodj ∈ onStartCommand} && resolution == class-name of node) theni
+13:                                      for each method ∈ DFS(methodj ) do
+14:                                            if methodj ∈ Sensitive_AP I_List then
+15:                                                   node.sensitive = Truei
+16:                                            else
+17:                                                   node.sensitive = Falsei
+18:                                            end if
+19:                                      end for
+20:                               end if
+21:                        end for
+22: end for
+23:                 end if
+# IV. E VALUATION
+This section presents our experimental evaluation of DINA. The current DINA’s dynamic analysis prototype is implemented for Android 4. We find Android 4 is sufficient for our study, since we observe no differences in DCL-related APIs between Android 4 and Android 7. This observation is also confirmed by Qu et al. . Currently, we have begun porting DINA to support ART, the latest Android runtime system. We then conduct our evaluation to answer the following four research questions:
+- • Question 1: How accurate is DINA in identifying vulnerable IAC/ICC activities compared to the state-of-the-art static and dynamic analyses?
+- • Question 2: How robust is DINA in analyzing the capabilities/behaviors of reflection and DCL implementations in real-world apps?
+- • Question 3: How effective is DINA in detecting vulnerabilities in real-world apps?
+- • Question 4: How efficient is DINA in performing hybrid analysis?
+# A. How accurate is DINA?
+Evaluating the accuracy of DINA requires performing the analysis on a ground truth dataset, where the attacks are known in advance. This constitutes a major challenge due to the lack of...
+3 MD5: 00db7fff8dfbd5c7666674f350617827
+# Reflection/DCL Usage Landscape
+We first performed the collective static analysis of DINA using the three previously-mentioned sets of apps to identify reflection and DCL call sites. The experimental results show that 92% (i.e., 26,361/31,894) of AndroZoo apps implement reflection calls, and 51% (i.e., 16,313/31,894) of them implement DCL calls. This shows the wide adoption of DCL and reflection mechanisms in Android apps. More remarkably, 99% of 3,000 popular apps implement reflection calls, and 90% of them implement DCL calls. Therefore, reflection and DCL mechanisms are even more widely adopted in popular apps. For the malware apps, 85% implement reflection mechanism, while only 24% of them adopt DCL mechanism. Solely based on our evaluation, it seems that fewer malware apps use the DCL mechanism. Note that DINA counts the number of APIs by traversing the whole method graph, which produces an accurate representation of the apps under analysis.
+# Table I: IAC detection performance comparison between DroidRA+SEALANT and DINA
+# Table II: Dynamic analysis of real-world apps
+# Table III: Intent sending and receiving capabilities of activated ref/DCL classes
+The experimental results show that DINA can handle reflective and DCL calls to de-obfuscate ICC, and reaches 100% precision and 91% recall in detecting vulnerable ICC. As for the app SharedPreferences1, DINA detects the reflective calls, but misses its ICC path, because the shared preference mechanism used in the app is not considered by DINA. Comparing with dynamic analysis tools, as for the dynamic analysis approach, the most closely-related technique is HARVESTER, which uses program slicing to deobfuscate reflective calls for dynamic execution, yet we were informed by the authors that neither the source code nor the binary version of HARVESTER is available. Moreover, HARVESTER’s precision was not evaluated over benchmark apps, which makes it hard to compare against. IntentDroid is a dynamic analysis tool for detecting vulnerable IAC, but it cannot deal with reflection/DCL.
+# How robust is DINA?
+In this section, we evaluate DINA’s capabilities to reveal the behavior of reflection/DCL classes in complex, real-world apps. We used three datasets with 49,000 real-world apps, including: 1) 31,894 apps from AndroZoo project, 2) 3,000 most popular apps from Google Play store, and 3) uncategorized malware samples from VirusShare.
+# Table IV: Sensitive sources within DCL/reflection classes
+Table IV presents the top 10 sensitive sources in the activated reflection.
+# TABLE IV: Top sensitive sources in the activated reflection and DCL classes.
+and DCL classes in both benign and malicious apps. These sensitive sources can reach Intent-sending APIs concealed by reflection/DCL to leak sensitive information, including device ID, subscriber ID, etc.
+# C. How effective is DINA?
+In our experiment, we found some concealed IAC vulnerabilities that have been effectively detected by DINA, as presented in Table V. We have manually triggered these vulnerable IAC paths to verify that they can be activated at runtime, as described below.
+Intent spoofing vulnerability is observed between appinventor.ai_created4each.My_Diary and com.my.mail. The receiver app manages the users’ emails, which contains two components that can receive the implicit Intent android.intent.action.SEND. The sender app contains the method ShareMessage() that can be triggered through reflection, which initializes the Intent sending activity to configure the email setting for the receiver app. We modified this method to inject a specific email address, which can be used for phishing attacks. The complete attack process is shown in Fig. 4. The stealthy IAC initialized by the sender app cannot be detected by existing static and dynamic analyses. Moreover, the class of ShareMessage() requests to access the external storage, leading to serious privacy leakage. We scan the sender app (downloaded from official Google Play store) on VirusTotal, and is only detected by 2 engines out of 63.
+Android component activation is observed between com.example.qianbitou and com.axis.mobile. The sender is an app providing services for used cars, including financial services. The app also implements reflection for invoking a method that activates an implicit Intent android.intent.action.DIAL to make a phone call to a hard-coded phone number. Therefore, any installed app (i.e. the receiver app) with components that have the matched Intent filter will be activated. The receiver app is a mobile banking app, whose component (com.gtp.framework.UninstallShortcutReceiver) will be activated to make random phone calls.
+Information leakage vulnerability is observed between com.hbg.coloring.fish and cn.jingling.motu.photowonder. The sender is a gaming app, and the receiver app is an image editing app. The sender app contains a reflective call that instantiates an implicit Intent for sending pictures from the mobile storage. We also observed this concealed method invokes a sensitive API (queryIntentActivities) to obtain the running activities on the mobile device. The implicit Intent can be received by any app that contains android.intent.action.SEND. This vulnerable IAC path may lead to the leakage of sensitive images, and it can be very harmful when both apps are managed by one party. Another case is observed between com.sogou.novel and com.gtp.nextlauncher.trial. The sender app is a reader app, while the receiver app is used for 3D image processing. The reflection implemented in this app executes an implicit Intent android.intent.action.SEND for activating a broadcast receiver component of the receiver app. The implicit Intent sends information about a book, which can be easily replaced by sensitive information (e.g., bank accounts, location). This vulnerability can also be exploited to perform denial of service attack on the receiver app, by repeatedly invoking the implicit Intent to send the broadcast messages.
+# D. How efficient is DINA?
+App stores including Google Play receive thousands of new apps every day, all of which require comprehensive security analysis. Therefore, we need efficient tools that can scale to the size of a large app market. We next report the running time of DINA’s app analysis. We report the analysis time for both static analysis phase and dynamic analysis phase. The performance reported in this section was run on a Nexus 7 tablet connecting to a MacBook Pro laptop with Intel Core 2 Duo 2 GHz CPU and 8 GB memory. The static analysis was conducted on the laptop, while the dynamic analysis was performed on the tablet.
+# TABLE V: Risky vulnerabilities have been uncovered by DINA in real-world apps.
+within 2 minutes/app on average as similar to the analysis time of HARVESTER, showing that DINA can be used for large-scale security analysis.
+We further compared DINA’s runtime performance with the state-of-the-art IAC analysis tools, i.e., SEALANT and DroidRA, using the set of benchmark apps (cf. Section IV-A). Fig. 7 shows the results of performance comparison. DINA achieves the best performance for the majority of the apps (8 out of 12), with an average analysis time of 1 minute/app.
+# V. DISCUSSION AND LIMITATIONS
+# Dynamic analysis coverage.
+Improving coverage has been a major challenge for dynamic analysis approaches . In DINA, we currently utilize Monkey for input generation to exercise the targeted components. Although we achieve excellent IAC detection performance, we may still suffer from potential false negatives. We inherit some of the input generation limitations of Monkey. However, this fuzzing approach is still widely used by recent approaches that target DCL (e.g., DyDroid ), which relies on the observation that third-party libraries launch their DCL events when starting the app, which is sufficient for our analysis. Furthermore, the empirical study performed in  shows Monkey has achieved the best coverage among all analyzed input generation tools including DynoDroid  and PUMA .
+IntelliDroid  is a recently-proposed input generation tool using event-chain detection and input injection with constraint solver. We integrate Intellidroid with DINA to replace Monkey. However, it fails to trigger most of the reflective/DCL calls. We found that most of the statically-identified paths related to reflective calls cannot be successfully triggered by Intellidroid, mainly due to the limited input type support, the limitations in the constrain solver, and its lack of support in dealing with environmental contexts/variables. Furthermore, a malicious app may perform emulator detection to halt its malicious activities during the analysis. DINA addresses this issue by performing the analysis on real devices.
+# IAC detection accuracy.
+Compared with static and dynamic tainting analysis based approaches, DINA does not perform precise data flow tracking analysis, which may lead to the imprecision of our detection results. Thus, the static analysis results may contain false positives. However, we use dynamic analysis to narrow down the scope of analysis on the methods that are dynamically executed. Therefore, we can effectively alleviate the imprecision brought by the lack of tainting analysis. One major benefit of our approach, however, is the improvement on runtime performance as shown in Section IV-D compared to other approaches.
+Furthermore, existing static IAC analysis cannot handle an Intent that has been obfuscated in a manifest file. In such scenario, static analysis cannot identify app pairs by simply matching the Intents. This type of obfuscation makes static analysis to identify app pairs ineffective. By using dynamic analysis, DINA, on the other hand, can be extended to uncover app pairs during execution by performing runtime analysis to observe sent and received Intents by apps in the same bundle. This extension can be achieved by monitoring the ActivityManager, which we plan to implement in future work.
+# VI. RELATED WORK
+With respect to reflection and DCL, several research efforts attempt to improve soundness of static analysis in the presence of dynamically loaded code through Java reflection. DroidRA  adapts TAMI F LEX  to statically analyze Android apps for dynamically loaded code. Unlike TAMI - F LEX, DroidRA does not execute apps; instead, it uses a constraint solver to resolve reflection targets. However, these static analysis approaches only work when reflection targets.
+can be identified from the source code, which is typically not the case in sophisticated security attacks, where a malicious component may be externally downloaded from hidden APKs.
+Our approach however detects reflection targets and captures dynamically loaded code using dynamic analysis. With respect to ICC Analysis, numerous techniques have been proposed to focus on Intent and component analysis within the boundary of one app. IccTA  and its successor  leverage an Intent resolution scheme to identify inter-component privacy leaks. However, their approach relies on a preprocessing step connecting Android components through code instrumentation, which can lead to scalability issues , . S EPAR  and SEALANT  perform compositional security analysis at a higher level of abstraction. While these research efforts are concerned with security analysis of component interactions between Android apps, DINA’s analysis, however, goes far beyond single application analysis, and enables reflection and DCL-aware assessment of the overall security posture of a system, greatly increasing the scope of potential ICC-based misbehavior analysis.
+# VII. CONCLUSION
+In this paper, we present DINA, a hybrid analysis approach for detecting malicious IAC activities in dynamically loaded code. DINA utilizes a systematic approach based on control-flow, data-flow, and method call graphs to identify malicious IAC activities across multiple apps. We have shown DINA can effectively resolve reflective and DCL calls at runtime for real-world apps. We demonstrate that multi-app, colluding attacks concealed by reflection and DCL can be launched to perform stealthy attacks, and evading existing detection approaches. In particular, we discover several popular real-world apps, which can trigger vulnerable IAC activities through reflection and DCL, leading to surreptitious privacy leakage. We have compared DINA with existing IAC vulnerability and reflection analysis tools. DINA analyzes most of apps in less than five minutes, and can identify malicious IAC behaviors concealed by reflective calls that no previous approach was able to detect. We believe further effort is required to better regulate the usage of reflection and DCL calls to close the attack avenues without undermining their utilities.
