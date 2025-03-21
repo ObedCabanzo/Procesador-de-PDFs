@@ -39,6 +39,85 @@ Para ejecutar la aplicación, sigue estos pasos:
    ```bash
    python run_pipeline.py --data_dir test
    ```
+# Estructura de Carpetas
+
+La aplicación sigue una estructura de carpetas específica para organizar los archivos de entrada, salida y resultados intermedios. A continuación se describe la estructura detallada y cómo funciona:
+
+### Estructura de Carpetas
+
+```
+Procesador-de-PDFs/
+│
+├── data/                     # Carpeta principal para procesar archivos (en producción)
+│   ├── input/                # Carpeta de entrada para archivos de preprocesamiento
+│   │   ├── raw/              # Archivos PDF originales a procesar
+│   │   └── markdown/         # Archivos Markdown preprocesados (convertidos desde PDF)
+│   ├── output/               # Carpeta de salida para archivos .txt procesados
+│   └── chunks/               # Carpeta para archivos .txt divididos en chunks (extraídos de data/output)
+│
+├── test/                     # Carpeta alternativa para pruebas (misma estructura que 'data')
+│   ├── input/                # Carpeta de entrada para archivos de preprocesamiento (pruebas)
+│   │   ├── raw/              # Archivos PDF originales a procesar (pruebas)
+│   │   └── markdown/         # Archivos Markdown preprocesados (pruebas)
+│   ├── output/               # Carpeta de salida para archivos .txt procesados (pruebas)
+│   └── chunks/               # Carpeta para archivos .txt divididos en chunks (pruebas)
+│
+├── clean_markdown.py         # Script para limpiar Markdown
+├── pdf_to_markdown.py        # Script para convertir PDF a Markdown
+├── process_markdown.py       # Script para procesar Markdown
+├── analyze_output.py         # Script para analizar la salida
+├── split_into_chunks.py      # Script para dividir en chunks
+├── run_pipeline.py           # Script para ejecutar el pipeline completo
+├── config.py                 # Configuración del proyecto
+├── requirements.txt          # Dependencias del proyecto
+└── .env                      # Variables de entorno (crear manualmente)
+```
+
+### Funcionamiento de la Estructura
+
+1. **Carpeta `data/`**:
+   - Esta es la carpeta principal utilizada en producción. Contiene todos los archivos de entrada, salida y resultados intermedios.
+   - **`data/input/raw/`**: Aquí se colocan los archivos PDF originales que se desean procesar.
+   - **`data/input/markdown/`**: Después de la conversión, los archivos Markdown preprocesados se almacenan aquí.
+   - **`data/output/`**: Contiene los archivos de texto (.txt) procesados y limpios, listos para su análisis.
+   - **`data/chunks/`**: Almacena los archivos de texto divididos en chunks más pequeños, extraídos de `data/output/`.
+
+2. **Carpeta `test/`**:
+   - Esta carpeta tiene la misma estructura que `data/`, pero se utiliza exclusivamente para pruebas.
+   - **`test/input/raw/`**: Archivos PDF de prueba para procesar.
+   - **`test/input/markdown/`**: Archivos Markdown preprocesados durante las pruebas.
+   - **`test/output/`**: Archivos de texto procesados durante las pruebas.
+   - **`test/chunks/`**: Archivos de texto divididos en chunks durante las pruebas.
+
+3. **Flujo de Trabajo**:
+   - **Paso 1**: Coloca los archivos PDF en `data/input/raw/` (o `test/input/raw/` para pruebas).
+   - **Paso 2**: Ejecuta el pipeline o los scripts individuales para convertir, limpiar, analizar y dividir los archivos.
+   - **Paso 3**: Los resultados finales (archivos de texto divididos en chunks) se almacenan en `data/chunks/` (o `test/chunks/`).
+
+### Ejemplo de Uso
+
+1. **Procesamiento en Producción**:
+   - Coloca los archivos PDF en `data/input/raw/`.
+   - Ejecuta el pipeline completo:
+     ```bash
+     python run_pipeline.py --data_dir data
+     ```
+   - Los resultados estarán en `data/output/` y `data/chunks/`.
+
+2. **Procesamiento en Pruebas**:
+   - Coloca los archivos PDF en `test/input/raw/`.
+   - Ejecuta el pipeline completo:
+     ```bash
+     python run_pipeline.py --data_dir test
+     ```
+   - Los resultados estarán en `test/output/` y `test/chunks/`.
+
+### Notas Adicionales
+
+- **Archivos de Configuración**:
+  - `baneados.json`: Registra los archivos que fueron eliminados debido a promedios de longitud de palabras anormales.
+  - `procesados.json`: Registra los archivos que ya han sido procesados para evitar duplicados.
+
 # Procesamiento de Nuevos Archivos
 
 Para procesar nuevos archivos en el pipeline de la aplicación, simplemente sigue estos dos pasos:
