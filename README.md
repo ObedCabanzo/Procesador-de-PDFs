@@ -17,8 +17,8 @@ Para ejecutar la aplicación, sigue estos pasos:
 
 1. **Clona el repositorio** (si no lo has hecho ya):
    ```bash
-   git clone <url-del-repositorio>
-   cd <nombre-del-repositorio>
+   git clone https://github.com/ObedCabanzo/Procesador-de-PDFs.git
+   cd Procesador-de-PDFs
    ```
 
 2. **Instala las dependencias**:
